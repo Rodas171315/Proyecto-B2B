@@ -1,0 +1,253 @@
+.header {
+  background-color: #333; /* Un fondo oscuro para elegancia */
+  padding: 0.5rem 1rem; /* Espaciado interno para darle más aire */
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 80px; /* Ajuste de altura para visibilidad */
+  width: auto; /* Mantener la proporción */
+  margin-right: 10px;
+}
+
+.brand-name {
+  font-family: 'Georgia', serif; /* Fuente más elegante */
+  color: #d2b48c; /* Color dorado claro */
+  font-size: 1.5rem; /* Tamaño más grande para el nombre */
+}
+
+.search-input {
+  border-radius: 20px; /* Bordes redondeados para la entrada de búsqueda */
+  border: 2px solid #d2b48c; /* Borde dorado para el campo de texto */
+}
+
+.nav-link, .shopping-cart {
+  margin-left: 1rem;
+  color: #d2b48c; /* Color dorado claro para enlaces */
+}
+
+.nav-link:hover, .shopping-cart:hover {
+  color: #fff;
+}
+
+/* Estilo para el botón de búsqueda */
+.btn-outline-light {
+  border-color: #d2b48c; /* Borde dorado para el botón */
+  color: #d2b48c; /* Texto dorado */
+}
+.btn-outline-light:hover {
+  background-color: #d2b48c; /* Fondo dorado para hover */
+  color: #333; /* Texto oscuro para contraste */
+}
+
+/* Ajustes responsivos */
+@media (max-width: 576px) {
+  .brand-name {
+    font-size: 1.2rem; /* Tamaño de fuente más pequeño para móviles */
+  }
+
+  .logo {
+    height: 60px; /* Logo más pequeño para móviles */
+  }
+}
+
+
+.footer {
+  background-color: #333; /* Un fondo oscuro para elegancia */
+  color: #d2b48c; /* Color dorado para el texto */
+  padding: 20px 0;
+  margin-top: auto; /* Asegura que el footer se mantenga al fondo */
+}
+
+.footer-logo {
+  max-width: 100px; /* Asegúrate de que el logo no sea demasiado grande */
+  margin-bottom: 10px;
+}
+
+.footer h5 {
+  color: #d2b48c; /* Color dorado para los subtítulos */
+  margin-top: 20px;
+}
+
+.footer p, .footer a {
+  color: #d2b48c; /* Color dorado para el texto y enlaces */
+  margin-bottom: 10px;
+  display: block; /* Asegura que los enlaces se muestren en líneas separadas */
+}
+
+.footer a:hover {
+  color: #fff;
+  text-decoration: none; /* Remueve el subrayado al pasar el mouse */
+}
+
+/* Ajustes responsivos para el pie de página */
+@media (max-width: 768px) {
+  .footer-logo {
+    margin: 0 auto; /* Centra el logo en dispositivos móviles */
+  }
+  .footer h5, .footer p, .footer a {
+    text-align: center; /* Centra el texto en dispositivos móviles */
+  }
+}
+
+/* Ajustes globales y estructurales para la app */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.App {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Resto de tus estilos .App aquí */
+}
+
+
+
+/* App.css */
+/* Añadir al final de tu archivo App.css existente */
+
+/* Estilos para HomePage */
+.card {
+  transition: transform 0.2s; /* Animación para el hover */
+}
+
+.card:hover {
+  transform: scale(1.03); /* Escala la card para efecto visual */
+}
+
+.card-img-top {
+  width: 100%;
+  height: 15vw; /* Ajustar según necesites */
+  object-fit: cover;
+}
+
+/* Responsividad para imágenes y cards */
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 40vw;
+  }
+}
+
+
+.elegant-header {
+  font-family: 'Playfair Display', serif; /* o cualquier otra fuente elegante que prefieras */
+  font-weight: 700;
+  color: #4d4132; /* Color dorado para combinar con tu tema */
+  text-shadow: 1px 1px 2px rgba(43, 42, 42, 0.1); /* Sombra sutil para profundidad */
+  /* Otros estilos que desees aplicar */
+}
+
+
+
+/* App.css */
+.search-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.search-form .form-control {
+  border-radius: 0.25rem;
+  border: 1px solid #d2b48c;
+}
+
+.search-form .form-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.search-form .btn-primary {
+  background-color: #d2b48c;
+  border-color: #d2b48c;
+}
+
+.search-form .btn-primary:hover {
+  background-color: #b3926c;
+  border-color: #b3926c;
+}
+
+
+
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* Estilos para los formularios */
+.form-control {
+  background-color: #f8f9fa;
+  border: 1px solid #d2b48c;
+  color: #5a5a5a;
+}
+
+.form-label {
+  color: #333;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #d2b48c;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #b3926c;
+}
+
+
+.login-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.login-form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login-form .form-control {
+  border-radius: 20px;
+}
+
+.login-form .btn-primary {
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+/* Ajustes responsivos para el formulario de inicio de sesión */
+@media (max-width: 576px) {
+  .login-form .btn-primary {
+    width: 100%;
+  }
+}
+
+.gallery-image {
+  width: 65%; /* Asegúrate de que la imagen ocupe todo el ancho del contenedor */
+  margin-bottom: 20px; /* Añade un margen para separar las imágenes */
+}
+
+/* Ajustes para la imagen principal del hotel */
+.main-hotel-image {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Ajustes para las imágenes de la galería */
+.gallery-image {
+  width: 100%; /* Las imágenes ocupan todo el ancho del contenedor de columna */
+}
