@@ -44,8 +44,21 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí manejarías el registro del usuario
-  };
+    fetch('http://localhost:8080/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // Manejar respuesta, como redirigir al usuario o mostrar un mensaje de éxito
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Manejar el error
+    });
+};
 
   return (
     <Container className="my-5">
