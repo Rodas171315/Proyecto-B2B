@@ -1,8 +1,9 @@
 import React from 'react';
-import { Container, Row, Col, Image, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import roomImage from './roomImage.jpg';
 import amenityImage from './amenityImage.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const hotelAmenities = [
   { 
@@ -20,6 +21,13 @@ const roomTypes = [
 ];
 
 const HotelDetailsPage = () => {
+  const navigate = useNavigate(); // Se coloca useNavigate dentro del componente
+
+  // Función para manejar el click del botón de reserva
+  const handleReserveClick = () => {
+    navigate('/checkout'); // Navega a la página de checkout
+  };
+
   return (
     <Container className="my-5">
       <h2>Detalles del Hotel Gala</h2>
@@ -53,7 +61,7 @@ const HotelDetailsPage = () => {
                   <Card.Body>
                     <Card.Title>{room.type}</Card.Title>
                     <Card.Text>Precio: ${room.price} por noche</Card.Text>
-                    <Button variant="primary">Reservar</Button>
+                    <Button variant="primary" onClick={handleReserveClick}>Reservar</Button>
                   </Card.Body>
                 </Card>
               </Col>

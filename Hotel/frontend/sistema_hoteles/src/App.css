@@ -318,3 +318,24 @@ html, body {
 }
 
 /* Ajustes para responsividad y más estilos elegantes pueden ser añadidos según se necesite */
+
+
+/* CheckoutPage.css */
+
+/* Espaciado y estilo para el formulario de pago */
+.form-control {
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Botones con un poco más de margen */
+.btn-secondary {
+  margin-left: 0.5rem;
+}
+
+/* Estilos específicos para el formulario de pago podrían incluir colores personalizados, tipografías, etc. */
+/* Asegúrate de ajustar estos estilos para que coincidan con el tema general de tu aplicación. */

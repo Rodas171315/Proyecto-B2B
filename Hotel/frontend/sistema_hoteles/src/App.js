@@ -10,6 +10,7 @@ import RegisterPage from './components/RegisterPage';
 import LoginPage from './components/LoginPage';
 import BookingHistoryPage from './components/BookingHistoryPage';
 import HotelDetailsPage from './components/HotelDetailsPage'; 
+import CheckoutPage from './components/CheckoutPage'; // Asegúrate de importar el componente
 
 const App = () => {
   return (
@@ -33,6 +34,8 @@ const App = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/booking-history" element={<BookingHistoryPage />} />
               <Route path="/hotel-details" element={<HotelDetailsPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+
             </Routes>
           </div>
         </main>
