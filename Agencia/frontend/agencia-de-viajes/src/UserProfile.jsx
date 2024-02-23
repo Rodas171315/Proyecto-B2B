@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box, TextField, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import UserAdministration from './UserAdministration';
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const UserProfile = () => {
                     <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
                 </Toolbar>
             </AppBar>
+            
             <Container component="main" maxWidth="md">
                 <Box sx={{ mt: 8, mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography component="h1" variant="h4">
@@ -68,6 +70,9 @@ const UserProfile = () => {
                     </Paper>
                 </Box>
             </Container>
+            <Box mt={4}> 
+                <UserAdministration />
+            </Box>
             <footer style={{ marginTop: '20px', padding: '20px', textAlign: 'center', backgroundColor: '#f0f0f0' }}>
                 <Typography variant="h6">Agencia de Viajes</Typography>
                 <Typography variant="subtitle1">

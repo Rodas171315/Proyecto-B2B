@@ -6,6 +6,7 @@ import Login from './Login';
 import Register from './Register'; 
 import AboutUs from './AboutUs';
 import UserProfile from './UserProfile';
+import UserAdministration from './UserAdministration';
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/userprofile" element={<UserProfile />} />
-          
+          <Route path="/useradministration" element={<UserAdministration />} />
         </Routes>
       </div>
     </Router>
