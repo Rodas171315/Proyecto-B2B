@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Container, TextField, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Paper, Grid, AppBar, Toolbar, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -23,6 +23,17 @@ const Register = () => {
     };
 
     return (
+        <div>
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        Agencia de Viajes
+                    </Typography>
+                    <Button color="inherit" onClick={() => navigate('/homepage')}>Inicio</Button>
+                    <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
+                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+                </Toolbar>
+            </AppBar>
         <Container component="main" maxWidth="xs">
             <Box
                 sx={{
@@ -110,6 +121,13 @@ const Register = () => {
                 </Box>
             </Box>
         </Container>
+        <footer style={{ marginTop: '20px', padding: '20px', textAlign: 'center', backgroundColor: '#f0f0f0' }}>
+                <Typography variant="h6">Agencia de Viajes</Typography>
+                <Typography variant="subtitle1">
+                    Conectando el mundo con las maravillas del viaje.
+                </Typography>
+            </footer>
+        </div> 
     );
 };
 
