@@ -299,3 +299,22 @@ html, body {
     font-size: 1.5rem;
   }
 }
+
+
+
+
+.card-img-top {
+  height: 200px; /* Ajusta según necesites */
+  object-fit: cover; /* Para que las imágenes se vean bien */
+}
+
+/* Estilos adicionales para las tarjetas */
+.card {
+  transition: transform 0.3s ease-in-out; /* Para un efecto de hover sutil */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Levanta la tarjeta ligeramente al hacer hover */
+}
+
+/* Ajustes para responsividad y más estilos elegantes pueden ser añadidos según se necesite */

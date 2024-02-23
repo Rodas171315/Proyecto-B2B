@@ -9,7 +9,7 @@ import HotelSearchForm from './components/HotelSearchForm';
 import RegisterPage from './components/RegisterPage';
 import LoginPage from './components/LoginPage';
 import BookingHistoryPage from './components/BookingHistoryPage';
-
+import HotelDetailsPage from './components/HotelDetailsPage'; 
 
 const App = () => {
   return (
@@ -29,6 +29,7 @@ const App = () => {
               <Route path="/registro" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} /> {/* Ruta para iniciar sesión */}
               <Route path="/booking-history" element={<BookingHistoryPage />} />
+              <Route path="/hotel-details" element={<HotelDetailsPage />} />
 
               {/* rutas */}
             </Routes>
