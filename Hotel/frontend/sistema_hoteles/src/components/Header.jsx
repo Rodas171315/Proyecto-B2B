@@ -22,6 +22,8 @@ const Header = () => {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/login">Inicia Sesión</Nav.Link>
             <Nav.Link as={Link} to="/registro">Regístrate</Nav.Link>
+            <Nav.Link as={Link} to="/booking-history">Historial de Reservas</Nav.Link>
+
           </Nav>
           <Form className="d-flex">
             <FormControl type="text" placeholder="Buscar hoteles, vuelos..." className="me-2 search-input" />

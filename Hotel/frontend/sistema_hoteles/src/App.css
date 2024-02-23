@@ -251,3 +251,51 @@ html, body {
 .gallery-image {
   width: 100%; /* Las imágenes ocupan todo el ancho del contenedor de columna */
 }
+
+
+/* Estilos para BookingHistoryPage */
+.booking-history-container {
+  padding: 2rem;
+  background-color: #f5f5f5; /* Fondo claro para contraste */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para profundidad */
+  margin: 2rem auto; /* Centrado con margen */
+  max-width: 800px; /* Ancho máximo para mejor lectura */
+}
+
+.booking-history-title {
+  color: #333; /* Color oscuro para el título */
+  text-align: center; /* Centrado del título */
+  margin-bottom: 1.5rem; /* Espaciado después del título */
+  font-size: 2rem; /* Tamaño de fuente grande */
+}
+
+.booking-item {
+  background-color: #ffffff; /* Fondo blanco para cada reserva */
+  padding: 1rem; /* Espaciado interno */
+  margin-bottom: 1rem; /* Espaciado entre reservas */
+  border-radius: 4px; /* Bordes redondeados para las reservas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.booking-item h3 {
+  color: #9c511f; /* Color azul para el nombre del hotel */
+  margin-bottom: 0.5rem; /* Espaciado después del nombre del hotel */
+}
+
+.booking-item p {
+  color: #666; /* Color gris para los detalles */
+  margin-bottom: 0.25rem; /* Espaciado entre detalles */
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .booking-history-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .booking-history-title {
+    font-size: 1.5rem;
+  }
+}
