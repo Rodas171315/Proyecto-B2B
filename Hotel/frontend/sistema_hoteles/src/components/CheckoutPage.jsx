@@ -20,10 +20,19 @@ const CheckoutPage = () => {
     state: '',
     zip: '',
     country: '',
-    nights: 1, // Asumiendo una estancia mínima de 1 noche
+    checkIn: '',
+    checkOut: '',
   });
   
-
+  
+  const calculateNights = () => {
+    const checkInDate = new Date(paymentDetails.checkIn);
+    const checkOutDate = new Date(paymentDetails.checkOut);
+    const difference = checkOutDate - checkInDate;
+    const nights = difference / (1000 * 3600 * 24); // Convertir de milisegundos a días
+    return Math.max(nights, 0); // Asegura que el número de noches no sea negativo
+  };
+  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setPaymentDetails({ ...paymentDetails, [name]: value });
@@ -37,31 +46,51 @@ const CheckoutPage = () => {
 
   return (
     <Container className="my-5">
-<Form.Group as={Row} className="mb-3" controlId="nights">
-  <Form.Label column sm={4}>Noches</Form.Label>
-  <Col sm={8}>
-    <Form.Control
-      type="number"
-      name="nights"
-      min="1" // Mínimo una noche
-      value={paymentDetails.nights}
-      onChange={handleInputChange}
-      required
-    />
+<Row>
+  <Col sm={6}>
+    <Form.Group as={Row} className="mb-3" controlId="checkIn">
+      <Form.Label column sm={4}>Check-in</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          type="date"
+          name="checkIn"
+          value={paymentDetails.checkIn}
+          onChange={handleInputChange}
+          required
+        />
+      </Col>
+    </Form.Group>
   </Col>
-</Form.Group>
+  <Col sm={6}>
+    <Form.Group as={Row} className="mb-3" controlId="checkOut">
+      <Form.Label column sm={4}>Check-out</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          type="date"
+          name="checkOut"
+          value={paymentDetails.checkOut}
+          onChange={handleInputChange}
+          required
+        />
+      </Col>
+    </Form.Group>
+  </Col>
+</Row>
+
 
       <Form onSubmit={handleSubmit}>
-                {/* Resumen de la reserva */}
-                {roomType && (
+{/* Resumen de la reserva */}
+{roomType && (
   <div className="reservation-summary mb-4">
-    <h4>Resumen de la Reserva</h4>
-    <p><strong>Tipo de Habitación:</strong> {roomType}</p>
-    <p><strong>Precio por noche:</strong> ${roomPrice}</p>
-    <p><strong>Noches:</strong> {paymentDetails.nights}</p>
-    <p><strong>Precio Total:</strong> ${roomPrice * paymentDetails.nights}</p>
-  </div>
+  <h4>Resumen de la Reserva</h4>
+  <p><strong>Tipo de Habitación:</strong> {roomType}</p>
+  <p><strong>Precio por noche:</strong> ${roomPrice}</p>
+  <p><strong>Noches:</strong> {calculateNights()}</p>
+  <p className="total-price"><strong>Precio Total:</strong> ${roomPrice * calculateNights()}</p>
+</div>
+
 )}
+
       <h2>Proceso de Pago</h2>
         {/* Información de la tarjeta */}
         <Form.Group as={Row} className="mb-3" controlId="cardName">
