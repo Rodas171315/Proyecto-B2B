@@ -24,8 +24,8 @@ const HotelDetailsPage = () => {
   const navigate = useNavigate(); // Se coloca useNavigate dentro del componente
 
   // Función para manejar el click del botón de reserva
-  const handleReserveClick = () => {
-    navigate('/checkout'); // Navega a la página de checkout
+  const handleReserveClick = (room) => {
+    navigate('/checkout', { state: { roomType: room.type, roomPrice: room.price } });
   };
 
   return (
@@ -54,17 +54,17 @@ const HotelDetailsPage = () => {
         <Col md={12}>
           <h3>Tipos de Habitación</h3>
           <Row>
-            {roomTypes.map((room) => (
-              <Col key={room.id} md={6} lg={3}>
-                <Card className="mb-3">
-                  <Card.Img variant="top" src={room.image} />
-                  <Card.Body>
-                    <Card.Title>{room.type}</Card.Title>
-                    <Card.Text>Precio: ${room.price} por noche</Card.Text>
-                    <Button variant="primary" onClick={handleReserveClick}>Reservar</Button>
-                  </Card.Body>
-                </Card>
-              </Col>
+          {roomTypes.map((room) => (
+  <Col key={room.id} md={6} lg={3}>
+    <Card className="mb-3">
+      <Card.Img variant="top" src={room.image} />
+      <Card.Body>
+        <Card.Title>{room.type}</Card.Title>
+        <Card.Text>Precio: ${room.price} por noche</Card.Text>
+        <Button variant="primary" onClick={() => handleReserveClick(room)}>Reservar</Button>
+      </Card.Body>
+    </Card>
+  </Col>
             ))}
           </Row>
         </Col>

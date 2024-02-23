@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
 import { Container, Button, Form, Row, Col, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Estado para controlar la visibilidad del modal
+  const location = useLocation(); // Mover la llamada a useLocation aquí, dentro del componente.
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Extraer roomType y roomPrice del estado de navegación, si existe.
+  const { roomType, roomPrice } = location.state || { roomType: '', roomPrice: '' };
+
   const [paymentDetails, setPaymentDetails] = useState({
     cardName: '',
     cardNumber: '',
     expiryDate: '',
     cvv: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: '',
+    nights: 1, // Asumiendo una estancia mínima de 1 noche
   });
+  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -20,13 +32,37 @@ const CheckoutPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Procesando pago con detalles: ', paymentDetails);
-    setShowSuccessModal(true); // Muestra el modal de éxito tras procesar el pago
+    setShowSuccessModal(true);
   };
 
   return (
     <Container className="my-5">
-      <h2>Proceso de Pago</h2>
+<Form.Group as={Row} className="mb-3" controlId="nights">
+  <Form.Label column sm={4}>Noches</Form.Label>
+  <Col sm={8}>
+    <Form.Control
+      type="number"
+      name="nights"
+      min="1" // Mínimo una noche
+      value={paymentDetails.nights}
+      onChange={handleInputChange}
+      required
+    />
+  </Col>
+</Form.Group>
+
       <Form onSubmit={handleSubmit}>
+                {/* Resumen de la reserva */}
+                {roomType && (
+  <div className="reservation-summary mb-4">
+    <h4>Resumen de la Reserva</h4>
+    <p><strong>Tipo de Habitación:</strong> {roomType}</p>
+    <p><strong>Precio por noche:</strong> ${roomPrice}</p>
+    <p><strong>Noches:</strong> {paymentDetails.nights}</p>
+    <p><strong>Precio Total:</strong> ${roomPrice * paymentDetails.nights}</p>
+  </div>
+)}
+      <h2>Proceso de Pago</h2>
         {/* Información de la tarjeta */}
         <Form.Group as={Row} className="mb-3" controlId="cardName">
           <Form.Label column sm={2}>Nombre en la Tarjeta</Form.Label>
@@ -108,7 +144,8 @@ const CheckoutPage = () => {
             />
           </Col>
         </Form.Group>
-        
+
+
         <Row>
           <Col sm={4}>
             <Form.Group as={Row} className="mb-3" controlId="city">

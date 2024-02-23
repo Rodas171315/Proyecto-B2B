@@ -337,5 +337,30 @@ html, body {
   margin-left: 0.5rem;
 }
 
-/* Estilos específicos para el formulario de pago podrían incluir colores personalizados, tipografías, etc. */
-/* Asegúrate de ajustar estos estilos para que coincidan con el tema general de tu aplicación. */
+
+.reservation-summary {
+  border: 1px solid #dee2e6; /* Color de borde suave */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  background-color: #f8f9fa; /* Fondo ligeramente gris */
+  padding: 20px; /* Espaciado interno */
+  margin-top: 20px; /* Espaciado superior */
+  margin-bottom: 40px; /* Espaciado inferior */
+}
+
+.reservation-summary h4 {
+  color: #495057; /* Color oscuro para el título */
+  margin-bottom: 15px; /* Espaciado después del título */
+}
+
+.reservation-summary p {
+  font-size: 16px; /* Tamaño de fuente */
+  color: #343a40; /* Color de fuente */
+  margin-bottom: 10px; /* Espaciado entre párrafos */
+}
+
+.reservation-summary p strong {
+  color: #007bff; /* Color para destacar */
+}
+
+
+
