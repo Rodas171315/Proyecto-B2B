@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Header from './components/Header';
@@ -16,6 +16,9 @@ const App = () => {
     <Router>
       <div className="App">
         <Header />
+        {/* Ejemplo de cómo agregar el enlace en el Header */}
+        <nav>
+        </nav>
         <main role="main" className="flex-shrink-0">
           <div className="container">
             <Routes>
@@ -27,15 +30,13 @@ const App = () => {
                 </>
               } />
               <Route path="/registro" element={<RegisterPage />} />
-              <Route path="/login" element={<LoginPage />} /> {/* Ruta para iniciar sesión */}
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/booking-history" element={<BookingHistoryPage />} />
               <Route path="/hotel-details" element={<HotelDetailsPage />} />
-
-              {/* rutas */}
             </Routes>
           </div>
         </main>
-        <Footer /> {/* footer */}
+        <Footer />
       </div>
     </Router>
   );
