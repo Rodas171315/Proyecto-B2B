@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Button, Form, Row, Col } from 'react-bootstrap';
+import { Container, Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-
-  // Definir correctamente handleGoBack dentro del componente
-  const handleGoBack = () => {
-    navigate(-1); // Navegar de regreso a la página anterior
-  };
-
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Estado para controlar la visibilidad del modal
   const [paymentDetails, setPaymentDetails] = useState({
     cardName: '',
     cardNumber: '',
@@ -24,10 +19,8 @@ const CheckoutPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Aquí se integraría la lógica para procesar el pago
     console.log('Procesando pago con detalles: ', paymentDetails);
-    // Navegar a alguna página de confirmación o resultado
-    navigate('/payment-success'); // Asegúrate de tener esta ruta configurada
+    setShowSuccessModal(true); // Muestra el modal de éxito tras procesar el pago
   };
 
   return (
@@ -43,6 +36,8 @@ const CheckoutPage = () => {
               value={paymentDetails.cardName}
               onChange={handleInputChange}
               required
+              pattern="[a-zA-Z\s]+" // Solo permite letras y espacios
+              title="El nombre debe contener solo letras y espacios."
             />
           </Col>
         </Form.Group>
@@ -55,6 +50,8 @@ const CheckoutPage = () => {
               value={paymentDetails.cardNumber}
               onChange={handleInputChange}
               required
+              pattern="\d{16}" // Suponiendo que todos los números de tarjeta tienen 16 dígitos
+              title="El número de tarjeta debe tener 16 dígitos."
             />
           </Col>
         </Form.Group>
@@ -70,6 +67,8 @@ const CheckoutPage = () => {
                   value={paymentDetails.expiryDate}
                   onChange={handleInputChange}
                   required
+                  pattern="(0[1-9]|1[0-2])\/[0-9]{2}" // MM/AA
+                  title="La fecha de vencimiento debe estar en formato MM/AA."
                 />
               </Col>
             </Form.Group>
@@ -84,14 +83,30 @@ const CheckoutPage = () => {
                   value={paymentDetails.cvv}
                   onChange={handleInputChange}
                   required
+                  pattern="\d{3}" // Suponiendo que el CVV tiene 3 dígitos
+                  title="El CVV debe tener 3 dígitos."
                 />
               </Col>
             </Form.Group>
           </Col>
         </Row>
         <Button variant="primary" type="submit">Procesar Pago</Button>
-        <Button variant="secondary" onClick={handleGoBack} className="ms-2">Volver</Button>
       </Form>
+
+      {/* Modal de éxito */}
+      <Modal show={showSuccessModal} onHide={() => setShowSuccessModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Pago Realizado con Éxito</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¡Tu pago ha sido procesado exitosamente! Revisa tu correo electrónico para más detalles.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowSuccessModal(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
