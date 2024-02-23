@@ -9,7 +9,7 @@
 }
 
 .logo {
-  height: 80px; /* Ajuste de altura para visibilidad */
+  height: 120px; /* Ajuste de altura para visibilidad */
   width: auto; /* Mantener la proporción */
   margin-right: 10px;
 }
@@ -64,7 +64,7 @@
 }
 
 .footer-logo {
-  max-width: 100px; /* Asegúrate de que el logo no sea demasiado grande */
+  max-width: 200px; /* Asegúrate de que el logo no sea demasiado grande */
   margin-bottom: 10px;
 }
 

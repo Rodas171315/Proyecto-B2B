@@ -3,7 +3,7 @@ import React from 'react';
 import { Navbar, Nav, Form, FormControl, Button, Container, Badge } from 'react-bootstrap';
 import { FaShoppingCart } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import logo from './logo.svg';
+import logo from './logo.jpg';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
