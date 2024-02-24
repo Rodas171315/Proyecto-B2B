@@ -54,7 +54,7 @@ const HotelDetailsPage = () => {
         <Col md={12}>
           <h3>Tipos de Habitación</h3>
           <Row>
-          {roomTypes.map((room) => (
+{roomTypes.map((room) => (
   <Col key={room.id} md={6} lg={3}>
     <Card className="mb-3">
       <Card.Img variant="top" src={room.image} />

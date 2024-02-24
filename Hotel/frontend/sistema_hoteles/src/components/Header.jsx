@@ -1,13 +1,13 @@
-// Header.jsx
 import React from 'react';
 import { Navbar, Nav, Form, FormControl, Button, Container, Badge } from 'react-bootstrap';
 import { FaShoppingCart } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './logo.jpg';
 import { Link } from 'react-router-dom';
+import { useCart } from './CartContext';
 
 const Header = () => {
-  const cartCount = 5;
+  const { cartItems } = useCart();
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="header">
@@ -32,7 +32,7 @@ const Header = () => {
           </Form>
           <Nav.Link as={Link} to="/cart" className="shopping-cart">
             <FaShoppingCart color="white" />
-            <Badge pill bg="danger">{cartCount}</Badge>
+            <Badge pill bg="danger">{cartItems.length}</Badge>
           </Nav.Link>
         </Navbar.Collapse>
       </Container>
