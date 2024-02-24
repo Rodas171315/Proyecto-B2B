@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Container, Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useReservations } from './ReservationsContext';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Mover la llamada a useLocation aquí, dentro del componente.
+  const location = useLocation();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { addReservation } = useReservations();
 
-  // Extraer roomType y roomPrice del estado de navegación, si existe.
   const { roomType, roomPrice } = location.state || { roomType: '', roomPrice: '' };
 
   const [paymentDetails, setPaymentDetails] = useState({
@@ -23,25 +24,38 @@ const CheckoutPage = () => {
     checkIn: '',
     checkOut: '',
   });
-  
-  
+
   const calculateNights = () => {
     const checkInDate = new Date(paymentDetails.checkIn);
     const checkOutDate = new Date(paymentDetails.checkOut);
-    const difference = checkOutDate - checkInDate;
-    const nights = difference / (1000 * 3600 * 24); // Convertir de milisegundos a días
-    return Math.max(nights, 0); // Asegura que el número de noches no sea negativo
+    const difference = checkOutDate.getTime() - checkInDate.getTime(); // Usar getTime() para obtener la diferencia en milisegundos
+    const nights = difference / (1000 * 3600 * 24);
+    return Math.max(nights, 0);
   };
-  
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setPaymentDetails({ ...paymentDetails, [name]: value });
+    setPaymentDetails(prevState => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('Procesando pago con detalles: ', paymentDetails);
+    
+    // Mover la creación de newReservation dentro de handleSubmit
+    const newReservation = {
+      id: Date.now(),
+      hotelName: roomType,
+      date: paymentDetails.checkOut,
+      status: "Confirmada",
+      price: roomPrice * calculateNights(),
+      nights: calculateNights(),
+      checkIn: paymentDetails.checkIn,
+      checkOut: paymentDetails.checkOut,
+    };
+
+    addReservation(newReservation);
     setShowSuccessModal(true);
+    // Aquí puedes incluir más lógica, como redirigir al usuario a otra página
   };
 
   return (

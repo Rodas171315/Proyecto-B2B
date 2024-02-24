@@ -7,23 +7,29 @@ export const useReservations = () => useContext(ReservationsContext);
 export const ReservationsProvider = ({ children }) => {
   const [reservations, setReservations] = useState([]);
 
-  // Cargar reservas al iniciar la aplicación
   useEffect(() => {
     const loadedReservations = JSON.parse(localStorage.getItem('reservations')) || [];
     setReservations(loadedReservations);
   }, []);
 
-  // Guardar reservas en localStorage cada vez que cambian
   useEffect(() => {
     localStorage.setItem('reservations', JSON.stringify(reservations));
   }, [reservations]);
 
   const addReservation = (reservation) => {
-    setReservations((prevReservations) => [...prevReservations, reservation]);
+    setReservations(prevReservations => [...prevReservations, reservation]);
+  };
+
+  const cancelReservation = (id) => {
+    setReservations(prevReservations =>
+      prevReservations.map(reservation =>
+        reservation.id === id ? { ...reservation, status: "Cancelada" } : reservation
+      )
+    );
   };
 
   return (
-    <ReservationsContext.Provider value={{ reservations, addReservation }}>
+    <ReservationsContext.Provider value={{ reservations, addReservation, cancelReservation }}>
       {children}
     </ReservationsContext.Provider>
   );
