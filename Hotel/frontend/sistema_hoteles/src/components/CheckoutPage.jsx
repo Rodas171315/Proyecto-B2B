@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Asegúrate de incluir useEffect aquí
 import { Container, Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useReservations } from './ReservationsContext';
@@ -9,7 +9,8 @@ const CheckoutPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { addReservation } = useReservations();
 
-  const { roomType, roomPrice } = location.state || { roomType: '', roomPrice: '' };
+  const { roomType, roomPrice } = location.state || { roomType: '', roomPrice: 0 };
+  const { fromCart, cartItems } = location.state || { fromCart: false, cartItems: [] };
 
   const [paymentDetails, setPaymentDetails] = useState({
     cardName: '',
@@ -25,13 +26,27 @@ const CheckoutPage = () => {
     checkOut: '',
   });
 
+  useEffect(() => {
+    if (fromCart && cartItems.length > 0) {
+      // Suponiendo que todos los ítems tienen las mismas fechas de check-in y check-out
+      const { checkIn, checkOut } = cartItems[0];
+      setPaymentDetails(prevDetails => ({
+        ...prevDetails,
+        checkIn: checkIn || '',
+        checkOut: checkOut || '',
+      }));
+    }
+  }, [fromCart, cartItems]);
+
   const calculateNights = () => {
     const checkInDate = new Date(paymentDetails.checkIn);
     const checkOutDate = new Date(paymentDetails.checkOut);
-    const difference = checkOutDate.getTime() - checkInDate.getTime(); // Usar getTime() para obtener la diferencia en milisegundos
-    const nights = difference / (1000 * 3600 * 24);
-    return Math.max(nights, 0);
+    const difference = checkOutDate.getTime() - checkInDate.getTime();
+    const nights = Math.ceil(difference / (1000 * 3600 * 24));
+    return nights > 0 ? nights : 0;
   };
+
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -40,22 +55,22 @@ const CheckoutPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const nights = calculateNights();
+    const totalPrice = nights * (fromCart ? cartItems.reduce((acc, item) => acc + item.price, 0) / cartItems.length : roomPrice);
     
-    // Mover la creación de newReservation dentro de handleSubmit
     const newReservation = {
       id: Date.now(),
-      hotelName: roomType,
+      hotelName: roomType || "Doble",
       date: paymentDetails.checkOut,
       status: "Confirmada",
-      price: roomPrice * calculateNights(),
-      nights: calculateNights(),
+      price: totalPrice,
+      nights,
       checkIn: paymentDetails.checkIn,
       checkOut: paymentDetails.checkOut,
     };
 
     addReservation(newReservation);
     setShowSuccessModal(true);
-    // Aquí puedes incluir más lógica, como redirigir al usuario a otra página
   };
 
   return (

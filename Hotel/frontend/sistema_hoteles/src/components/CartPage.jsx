@@ -6,10 +6,9 @@ import { useCart } from './CartContext'; // Asegúrate de ajustar la importació
 const CartPage = () => {
     const { cartItems, emptyCart } = useCart();
     const navigate = useNavigate();
-
-    // Función para manejar la navegación hacia el checkout
+  
     const handleCheckout = () => {
-        navigate('/checkout');
+        navigate('/checkout', { state: { fromCart: true, cartItems } });
     };
 
     // Función para vaciar el carrito
@@ -28,20 +27,21 @@ const CartPage = () => {
 
     return (
         <Container>
-            <h2>Carrito de Compras</h2>
-            <ListGroup>
-                {cartItems.map((item, index) => (
-                    <ListGroup.Item key={index}>
-                        Habitación: {item.roomType} - ${item.price} por noche
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
-            <div className="text-end mt-3">
-                <Button variant="warning" onClick={clearCart}>Vaciar Carrito</Button>
-                <Button variant="primary" onClick={handleCheckout} className="ms-2">Continuar al Checkout</Button>
-            </div>
+          <h2>Carrito de Compras</h2>
+          {/* Lista de ítems en el carrito */}
+          <ListGroup>
+            {cartItems.map((item, index) => (
+              <ListGroup.Item key={index}>
+                Habitación: {item.roomType} - ${item.price} por noche
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+          <div className="text-end mt-3">
+            <Button variant="warning" onClick={emptyCart}>Vaciar Carrito</Button>
+            <Button variant="primary" onClick={handleCheckout} className="ms-2">Continuar al Checkout</Button>
+          </div>
         </Container>
-    );
-};
-
-export default CartPage;
+      );
+    };
+    
+    export default CartPage;

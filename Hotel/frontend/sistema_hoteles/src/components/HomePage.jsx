@@ -24,9 +24,9 @@ const HotelDetailsPage = () => {
 
 
   const handleAddToCart = (room) => {
-    addToCart(room);
+    addToCart({ ...room, roomType: room.type });
     alert(`Has añadido la habitación ${room.type} al carrito.`);
-};
+  };
 
   // Función para manejar el envío de un nuevo comentario
   const handleCommentSubmit = (event) => {
