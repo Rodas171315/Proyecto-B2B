@@ -7,17 +7,18 @@ import { Box } from '@mui/material';
 
 const HomePage = () => {
     const navigate = useNavigate();
-const popularDestinations = [
-    { name: "París", description: "La ciudad del amor y la luz", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-    { name: "Bali", description: "La isla de los dioses", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-    { name: "Nueva York", description: "La ciudad que nunca duerme", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-];
-
-const specialOffers = [
-    { name: "Aventura en Costa Rica", description: "Descuento especial de temporada", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-    { name: "Tour por Italia", description: "Paquete todo incluido a un precio increíble", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-    { name: "Tour por Italia", description: "Paquete todo incluido a un precio increíble", imageUrl: "https://source.unsplash.com/random?travel-destinations&sig=" },
-];
+    const popularDestinations = [
+        { name: "París", description: "La ciudad del amor y la luz", imageUrl: "https://source.unsplash.com/random?paris" },
+        { name: "Bali", description: "La isla de los dioses", imageUrl: "https://source.unsplash.com/random?bali" },
+        { name: "Nueva York", description: "La ciudad que nunca duerme", imageUrl: "https://source.unsplash.com/random?newyork" },
+    ];
+    
+    const specialOffers = [
+        { name: "Aventura en Costa Rica", description: "Descuento especial de temporada", imageUrl: "https://source.unsplash.com/random?costarica" },
+        { name: "Tour por Italia", description: "Paquete todo incluido a un precio increíble", imageUrl: "https://source.unsplash.com/random?italy" },
+        { name: "Descubrimiento de Japón", description: "Explora la tierra del sol naciente", imageUrl: "https://source.unsplash.com/random?japan" },
+    ];
+    
 
     return (
         <div>

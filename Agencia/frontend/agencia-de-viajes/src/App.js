@@ -7,6 +7,8 @@ import Register from './Register';
 import AboutUs from './AboutUs';
 import UserProfile from './UserProfile';
 import UserAdministration from './UserAdministration';
+import HospedajesDisponibles from './HospedajesDisponibles';
+import VuelosDisponibles from './VuelosDisponibles';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/useradministration" element={<UserAdministration />} />
+          <Route path="/hospedajes-disponibles" element={<HospedajesDisponibles />} />
+          <Route path="/vuelos-disponibles" element={<VuelosDisponibles />} />
         </Routes>
       </div>
     </Router>

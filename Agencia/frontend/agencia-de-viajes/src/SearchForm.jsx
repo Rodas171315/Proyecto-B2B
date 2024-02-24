@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dialog, DialogTitle, List, ListItem, ListItemText, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -53,6 +55,17 @@ const SearchForm = () => {
         setOpenHuéspedes(false);
     };
 
+    const navigate = useNavigate(); 
+
+    
+    const handleBuscarHospedaje = () => {
+        navigate('/hospedajes-disponibles'); 
+    };
+
+    const handleBuscarVuelos = () => {
+        navigate('/vuelos-disponibles'); 
+    };
+
     return (
         <Container>
             <Tabs value={tabValue} onChange={handleTabChange} centered>
@@ -69,7 +82,7 @@ const SearchForm = () => {
                                     <ListItem button onClick={() => { setDestino('Cancún, México'); handleCloseDestino(); }}>
                                         <ListItemText primary="Cancún, México" />
                                     </ListItem>
-                                    {/* Agregar más destinos según sea necesario */}
+                                    
                                 </List>
                             </Dialog>
                         </Grid>
@@ -122,7 +135,7 @@ const SearchForm = () => {
                             </Dialog>
                         </Grid>
                     </Grid>
-                    <Button variant="contained" color="primary" fullWidth>Buscar Hospedaje</Button>
+                    <Button variant="contained" color="primary" fullWidth onClick={handleBuscarHospedaje}>Buscar Hospedaje</Button>
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
                 <Grid container spacing={2}>
@@ -180,12 +193,14 @@ const SearchForm = () => {
                             >
                                 <FormControlLabel value="economica" control={<Radio />} label="Económica" />
                                 <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutiva" />
-                                {/* Más opciones según sea necesario */}
+                                
                             </RadioGroup>
                         </FormControl>
                     </Grid>
                 </Grid>
-                <Button variant="contained" color="primary" fullWidth>Buscar Vuelos</Button>
+                
+                
+                <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
             </TabPanel>
         </Container>
     );
