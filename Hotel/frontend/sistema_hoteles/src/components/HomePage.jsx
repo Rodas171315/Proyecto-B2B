@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap';
 import Rating from './Rating'; 
-import image1 from './image1.jpeg'; // Importa la imagen
+import image1 from './image1.jpeg';
 import { useCart } from './CartContext'; 
- 
+import HotelList from './HotelList'; 
+import { useHotels } from './HotelsContext'; 
 
 // Datos ficticios para la galería de imágenes
 const galleryImages = [image1, image1, image1];
@@ -16,11 +17,11 @@ const roomTypes = [
 
 ];
 
-const HotelDetailsPage = () => {
+const HomePage = () => {
   const [comments, setComments] = useState(["Buena atención", "Excelente vista", "Perfecto para familias"]);
   const [rating, setRating] = useState(4.5); // Ejemplo de un rating por defecto
   const { addToCart } = useCart();
-
+  const { hotels } = useHotels();
 
 
   const handleAddToCart = (room) => {
@@ -38,6 +39,27 @@ const HotelDetailsPage = () => {
 
   return (
     <Container className="my-5">
+                  <h1>Hoteles Disponibles</h1>
+
+                  <Row>
+                {hotels.map((hotel, index) => (
+                    <Col key={index} sm={12} md={6} lg={4} className="mb-4">
+                        <Card>
+                            <Card.Img variant="top" src={hotel.imageUrl || "placeholder.jpg"} /> {/* imagen por defecto */}
+                            <Card.Body>
+                                <Card.Title>{hotel.name}</Card.Title>
+                                <Card.Text>
+                                    {hotel.description}
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => {/* acción al seleccionar el hotel */}}>
+                                    Ver Detalles
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
+
       <Row>
         <Col md={6}>
           {/* Muestra la imagen principal del hotel */}
@@ -100,4 +122,4 @@ const HotelDetailsPage = () => {
   );
 };
 
-export default HotelDetailsPage;
+export default HomePage;

@@ -25,6 +25,8 @@ const Header = () => {
             <Nav.Link as={Link} to="/booking-history">Historial de Reservas</Nav.Link>
             {/* Nuevo enlace a Hoteles */}
             <Nav.Link as={Link} to="/hotel-details">Hoteles</Nav.Link>
+            <Nav.Link as={Link} to="/add-hotel">Agregar Hotel</Nav.Link>
+
           </Nav>
           <Form className="d-flex">
             <FormControl type="text" placeholder="Buscar hoteles, vuelos..." className="me-2 search-input" />
