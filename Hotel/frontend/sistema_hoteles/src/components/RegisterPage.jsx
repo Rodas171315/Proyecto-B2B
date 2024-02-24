@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 
-// Lista de países de ejemplo (puedes reemplazarla con una lista completa)
 const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
 "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
 "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
@@ -38,30 +37,33 @@ const RegisterPage = () => {
     passportNumber: ''
   });
 
+  const [showSuccess, setShowSuccess] = useState(false); // Nuevo estado para mostrar el mensaje de éxito
+
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('http://localhost:8080/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        // Manejar respuesta, como redirigir al usuario o mostrar un mensaje de éxito
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        // Manejar el error
+    // Guardar usuario en localStorage
+    localStorage.setItem('user', JSON.stringify(user));
+    setShowSuccess(true); 
+
+    setUser({
+      name: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      age: '',
+      country: '',
+      passportNumber: ''
     });
-};
+  };
 
   return (
     <Container className="my-5">
+      {showSuccess && <Alert variant="success">Registro exitoso. Por favor inicia sesión.</Alert>}
       <Row className="justify-content-md-center">
         <Col md={6}>
           <h2 className="mb-4">Crear Cuenta</h2>

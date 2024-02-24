@@ -1,28 +1,35 @@
-// LoginPage.jsx
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
   });
+  const [loginSuccess, setLoginSuccess] = useState(false); // Estado para manejar el éxito del login
+  const [loginError, setLoginError] = useState(false); // Estado para manejar el error del login
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials(prevCredentials => ({
-      ...prevCredentials,
-      [name]: value
-    }));
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí manejarías la autenticación del usuario
+    // Verificar credenciales
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser && storedUser.email === credentials.email && storedUser.password === credentials.password) {
+      setLoginSuccess(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+      setLoginSuccess(false);
+    }
   };
 
   return (
     <Container className="my-5">
+      {loginSuccess && <Alert variant="success">Bienvenido/a {credentials.email}</Alert>}
+      {loginError && <Alert variant="danger">Error en el inicio de sesión. Verifica tus credenciales.</Alert>}
       <Row className="justify-content-md-center">
         <Col md={6}>
           <h2 className="mb-4">Iniciar Sesión</h2>
