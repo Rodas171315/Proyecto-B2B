@@ -1,0 +1,47 @@
+import React from 'react';
+import { Container, Button, ListGroup } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from './CartContext'; // Asegúrate de ajustar la importación según la ubicación de tu archivo
+
+const CartPage = () => {
+    const { cartItems, emptyCart } = useCart();
+    const navigate = useNavigate();
+
+    // Función para manejar la navegación hacia el checkout
+    const handleCheckout = () => {
+        navigate('/checkout');
+    };
+
+    // Función para vaciar el carrito
+    const clearCart = () => {
+        emptyCart();
+    };
+
+    if (cartItems.length === 0) {
+        return (
+            <Container>
+                <h2>Carrito de Compras</h2>
+                <p>Tu carrito está vacío.</p>
+            </Container>
+        );
+    }
+
+    return (
+        <Container>
+            <h2>Carrito de Compras</h2>
+            <ListGroup>
+                {cartItems.map((item, index) => (
+                    <ListGroup.Item key={index}>
+                        Habitación: {item.roomType} - ${item.price} por noche
+                    </ListGroup.Item>
+                ))}
+            </ListGroup>
+            <div className="text-end mt-3">
+                <Button variant="warning" onClick={clearCart}>Vaciar Carrito</Button>
+                <Button variant="primary" onClick={handleCheckout} className="ms-2">Continuar al Checkout</Button>
+            </div>
+        </Container>
+    );
+};
+
+export default CartPage;

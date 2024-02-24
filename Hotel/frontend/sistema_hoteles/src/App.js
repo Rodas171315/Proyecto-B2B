@@ -12,7 +12,9 @@ import BookingHistoryPage from './components/BookingHistoryPage';
 import HotelDetailsPage from './components/HotelDetailsPage'; 
 import CheckoutPage from './components/CheckoutPage'; 
 import { ReservationsProvider } from './components/ReservationsContext';
-import { CartProvider } from './components/CartContext'; // Asegúrate de que la ruta de importación sea correcta
+import { CartProvider } from './components/CartContext'; 
+import CartPage from './components/CartPage';
+
 
 const App = () => {
   return (
@@ -36,6 +38,8 @@ const App = () => {
                   <Route path="/booking-history" element={<BookingHistoryPage />} />
                   <Route path="/hotel-details" element={<HotelDetailsPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+
                 </Routes>
               </div>
             </main>
