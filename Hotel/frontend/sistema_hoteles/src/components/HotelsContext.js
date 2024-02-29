@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const HotelsContext = createContext();
+export const HotelsContext = createContext(); 
 
 export const useHotels = () => useContext(HotelsContext);
 

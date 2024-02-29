@@ -26,6 +26,8 @@ const Header = () => {
             {/* Nuevo enlace a Hoteles */}
             <Nav.Link as={Link} to="/hotel-details">Hoteles</Nav.Link>
             <Nav.Link as={Link} to="/add-hotel">Agregar Hotel</Nav.Link>
+            <Nav.Link as={Link} to="/perfil">Perfil</Nav.Link>
+            <Nav.Link as={Link} to="/Administrar">Administrar</Nav.Link>
 
           </Nav>
           <Form className="d-flex">
