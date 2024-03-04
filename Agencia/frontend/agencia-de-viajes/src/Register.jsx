@@ -12,14 +12,13 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aquí manejar el registro
-        // verificar que las contraseñas coinciden antes de enviar
+     
         if(password !== confirmPassword) {
             alert("Las contraseñas no coinciden.");
             return;
         }
-        console.log('Registro completado'); // Simulación de registro
-        navigate('/'); // Redirigir al usuario a la página principal 
+        console.log('Registro completado'); 
+        navigate('/');
     };
 
     return (
@@ -29,7 +28,7 @@ const Register = () => {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Agencia de Viajes
                     </Typography>
-                    <Button color="inherit" onClick={() => navigate('/homepage')}>Inicio</Button>
+                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
                     <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
                     <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
                 </Toolbar>

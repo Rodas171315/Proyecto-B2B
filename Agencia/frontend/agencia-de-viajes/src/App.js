@@ -9,6 +9,7 @@ import UserProfile from './UserProfile';
 import UserAdministration from './UserAdministration';
 import HospedajesDisponibles from './HospedajesDisponibles';
 import VuelosDisponibles from './VuelosDisponibles';
+import DetallesHospedaje from './DetallesHospedaje';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/useradministration" element={<UserAdministration />} />
           <Route path="/hospedajes-disponibles" element={<HospedajesDisponibles />} />
           <Route path="/vuelos-disponibles" element={<VuelosDisponibles />} />
+          <Route path="/hospedajes/:id" element={<DetallesHospedaje />} />
         </Routes>
       </div>
     </Router>
