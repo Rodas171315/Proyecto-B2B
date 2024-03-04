@@ -27,38 +27,62 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
 
 const RegisterPage = () => {
   const [user, setUser] = useState({
-    name: '',
-    lastName: '',
+    rol: 1, 
     email: '',
     password: '',
-    confirmPassword: '',
-    dateOfBirth: '',
-    country: '',
-    passportNumber: ''
+    primerNombre: '',
+    segundoNombre: '', 
+    primerApellido: '',
+    segundoApellido: '', 
+    fechaNacimiento: '',
+    nacionalidad: '',
+    pasaporte: ''
   });
 
-  const [showSuccess, setShowSuccess] = useState(false); // Nuevo estado para mostrar el mensaje de éxito
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Guardar usuario en localStorage
-    localStorage.setItem('user', JSON.stringify(user));
-    setShowSuccess(true); 
 
-    setUser({
-      name: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      dateOfBirth: '',
-      country: '',
-      passportNumber: ''
-    });
+
+    try {
+      const response = await fetch('http://localhost:8080/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...user,
+          pasaporte: parseInt(user.pasaporte), 
+        }),
+      });
+      if (response.ok) {
+        setShowSuccess(true);
+        // Restablecer el formulario
+        setUser({
+          rol: 1,
+          email: '',
+          password: '',
+          primerNombre: '',
+          segundoNombre: '',
+          primerApellido: '',
+          segundoApellido: '',
+          fechaNacimiento: '',
+          nacionalidad: '',
+          pasaporte: ''
+        });
+      } else {
+
+        alert('Error al registrar el usuario. Por favor, inténtelo de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error al enviar datos:', error);
+      alert('Error al conectar con el servidor');
+    }
   };
 
   return (
@@ -68,43 +92,80 @@ const RegisterPage = () => {
         <Col md={6}>
           <h2 className="mb-4">Crear Cuenta</h2>
           <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formBasicName">
-              <Form.Label>Nombres</Form.Label>
+
+  
+            <Form.Group controlId="formBasicFirstName">
+              <Form.Label>Primer Nombre</Form.Label>
               <Form.Control 
                 type="text" 
-                placeholder="Ingrese su nombre" 
-                name="name"
+                placeholder="Ingrese su primer nombre" 
+                name="primerNombre"
+                value={user.primerNombre}
                 onChange={handleChange}
               />
             </Form.Group>
-
-            <Form.Group controlId="formBasicName">
-              <Form.Label>Apellidos</Form.Label>
+  
+            <Form.Group controlId="formBasicSecondName">
+              <Form.Label>Segundo Nombre</Form.Label>
               <Form.Control 
                 type="text" 
-                placeholder="Ingrese sus apellidos" 
-                name="name"
+                placeholder="Ingrese su segundo nombre" 
+                name="segundoNombre"
+                value={user.segundoNombre}
                 onChange={handleChange}
               />
             </Form.Group>
-
+  
+            <Form.Group controlId="formBasicLastName">
+              <Form.Label>Primer Apellido</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su primer apellido" 
+                name="primerApellido"
+                value={user.primerApellido}
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicSecondLastName">
+              <Form.Label>Segundo Apellido</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su segundo apellido" 
+                name="segundoApellido"
+                value={user.segundoApellido}
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
             <Form.Group controlId="formBasicDateOfBirth">
               <Form.Label>Fecha de Nacimiento</Form.Label>
               <Form.Control 
                 type="date" 
-                name="dateOfBirth"
-                value={user.dateOfBirth}
+                name="fechaNacimiento"
+                value={user.fechaNacimiento}
                 onChange={handleChange}
-                required
               />
             </Form.Group>
-
+  
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Correo electrónico</Form.Label>
               <Form.Control 
                 type="email" 
                 placeholder="Ingrese su correo" 
                 name="email"
+                value={user.email}
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control 
+                type="password" 
+                placeholder="Contraseña" 
+                name="password"
+                value={user.password}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -112,8 +173,8 @@ const RegisterPage = () => {
             <Form.Group controlId="formBasicCountry">
               <Form.Label>País de Origen</Form.Label>
               <Form.Select 
-                name="country"
-                value={user.country}
+                name="nacionalidad"
+                value={user.nacionalidad}
                 onChange={handleChange}
               >
                 <option>Seleccione un país</option>
@@ -122,38 +183,18 @@ const RegisterPage = () => {
                 ))}
               </Form.Select>
             </Form.Group>
-
+  
             <Form.Group controlId="formBasicPassportNumber">
               <Form.Label>Número de Pasaporte</Form.Label>
               <Form.Control 
                 type="text" 
                 placeholder="Ingrese su número de pasaporte" 
-                name="passportNumber"
+                name="pasaporte"
+                value={user.pasaporte}
                 onChange={handleChange}
               />
             </Form.Group>
-
-
-            <Form.Group controlId="formBasicPassword">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control 
-                type="password" 
-                placeholder="Contraseña" 
-                name="password"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formBasicConfirmPassword">
-              <Form.Label>Confirmar Contraseña</Form.Label>
-              <Form.Control 
-                type="password" 
-                placeholder="Confirme su contraseña" 
-                name="confirmPassword"
-                onChange={handleChange}
-              />
-            </Form.Group>
-
+  
             <Button variant="primary" type="submit" className="mt-3">
               Registrarse
             </Button>
