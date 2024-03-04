@@ -32,7 +32,7 @@ const RegisterPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    age: '',
+    dateOfBirth: '',
     country: '',
     passportNumber: ''
   });
@@ -55,7 +55,7 @@ const RegisterPage = () => {
       email: '',
       password: '',
       confirmPassword: '',
-      age: '',
+      dateOfBirth: '',
       country: '',
       passportNumber: ''
     });
@@ -88,13 +88,14 @@ const RegisterPage = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicAge">
-              <Form.Label>Edad</Form.Label>
+            <Form.Group controlId="formBasicDateOfBirth">
+              <Form.Label>Fecha de Nacimiento</Form.Label>
               <Form.Control 
-                type="number" 
-                placeholder="Ingrese su edad" 
-                name="age"
+                type="date" 
+                name="dateOfBirth"
+                value={user.dateOfBirth}
                 onChange={handleChange}
+                required
               />
             </Form.Group>
 
