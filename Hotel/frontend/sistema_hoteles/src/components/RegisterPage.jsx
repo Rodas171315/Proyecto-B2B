@@ -27,16 +27,15 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
 
 const RegisterPage = () => {
   const [user, setUser] = useState({
-    rol: 1, 
     email: '',
     password: '',
-    primerNombre: '',
-    segundoNombre: '', 
-    primerApellido: '',
-    segundoApellido: '', 
-    fechaNacimiento: '',
+    primer_nombre: '',
+    segundo_nombre: '', // Asumiendo que quieres capturar este dato también
+    primer_apellido: '',
+    segundo_apellido: '', // Asumiendo que quieres capturar este dato también
+    fecha_nacimiento: '', // Asegúrate de ajustar el formato de fecha para que coincida con el esperado por el backend
     nacionalidad: '',
-    pasaporte: ''
+    pasaporte: '' // Este se convertirá a número antes de enviar
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -48,40 +47,40 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     try {
+      const usuarioToSend = {
+        ...user,
+        rol: 1, // Estableciendo rol predeterminado a 1
+        pasaporte: parseInt(user.pasaporte, 10) // Convertir pasaporte a número
+      };
+
       const response = await fetch('http://localhost:8080/usuarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...user,
-          pasaporte: parseInt(user.pasaporte), 
-        }),
+        body: JSON.stringify(usuarioToSend),
       });
-      if (response.ok) {
-        setShowSuccess(true);
-        // Restablecer el formulario
-        setUser({
-          rol: 1,
-          email: '',
-          password: '',
-          primerNombre: '',
-          segundoNombre: '',
-          primerApellido: '',
-          segundoApellido: '',
-          fechaNacimiento: '',
-          nacionalidad: '',
-          pasaporte: ''
-        });
-      } else {
 
-        alert('Error al registrar el usuario. Por favor, inténtelo de nuevo.');
+      if (!response.ok) {
+        throw new Error('La respuesta de la red no fue ok');
       }
+
+      setShowSuccess(true);
+      setUser({
+        email: '',
+        password: '',
+        primer_nombre: '',
+        segundo_nombre: '',
+        primer_apellido: '',
+        segundo_apellido: '',
+        fecha_nacimiento: '',
+        nacionalidad: '',
+        pasaporte: ''
+      });
     } catch (error) {
       console.error('Error al enviar datos:', error);
-      alert('Error al conectar con el servidor');
+      alert('Error al conectar con el servidor. Por favor, asegúrate de que el servidor esté corriendo y accesible.');
     }
   };
 
@@ -92,62 +91,6 @@ const RegisterPage = () => {
         <Col md={6}>
           <h2 className="mb-4">Crear Cuenta</h2>
           <Form onSubmit={handleSubmit}>
-
-  
-            <Form.Group controlId="formBasicFirstName">
-              <Form.Label>Primer Nombre</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Ingrese su primer nombre" 
-                name="primerNombre"
-                value={user.primerNombre}
-                onChange={handleChange}
-              />
-            </Form.Group>
-  
-            <Form.Group controlId="formBasicSecondName">
-              <Form.Label>Segundo Nombre</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Ingrese su segundo nombre" 
-                name="segundoNombre"
-                value={user.segundoNombre}
-                onChange={handleChange}
-              />
-            </Form.Group>
-  
-            <Form.Group controlId="formBasicLastName">
-              <Form.Label>Primer Apellido</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Ingrese su primer apellido" 
-                name="primerApellido"
-                value={user.primerApellido}
-                onChange={handleChange}
-              />
-            </Form.Group>
-  
-            <Form.Group controlId="formBasicSecondLastName">
-              <Form.Label>Segundo Apellido</Form.Label>
-              <Form.Control 
-                type="text" 
-                placeholder="Ingrese su segundo apellido" 
-                name="segundoApellido"
-                value={user.segundoApellido}
-                onChange={handleChange}
-              />
-            </Form.Group>
-  
-            <Form.Group controlId="formBasicDateOfBirth">
-              <Form.Label>Fecha de Nacimiento</Form.Label>
-              <Form.Control 
-                type="date" 
-                name="fechaNacimiento"
-                value={user.fechaNacimiento}
-                onChange={handleChange}
-              />
-            </Form.Group>
-  
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Correo electrónico</Form.Label>
               <Form.Control 
@@ -169,7 +112,61 @@ const RegisterPage = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-
+  
+            <Form.Group controlId="formBasicFirstName">
+              <Form.Label>Primer Nombre</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su primer nombre" 
+                name="primer_nombre" // Cambiado a snake_case para coincidir con la clase Java
+                value={user.primer_nombre} // Asegúrate de ajustar el estado inicial
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicSecondName">
+              <Form.Label>Segundo Nombre</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su segundo nombre" 
+                name="segundo_nombre" // Cambiado a snake_case
+                value={user.segundo_nombre} // Asegúrate de ajustar el estado inicial
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicLastName">
+              <Form.Label>Primer Apellido</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su primer apellido" 
+                name="primer_apellido" // Cambiado a snake_case
+                value={user.primer_apellido} // Asegúrate de ajustar el estado inicial
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicSecondLastName">
+              <Form.Label>Segundo Apellido</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ingrese su segundo apellido" 
+                name="segundo_apellido" // Cambiado a snake_case
+                value={user.segundo_apellido} // Asegúrate de ajustar el estado inicial
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
+            <Form.Group controlId="formBasicDateOfBirth">
+              <Form.Label>Fecha de Nacimiento</Form.Label>
+              <Form.Control 
+                type="date" 
+                name="fecha_nacimiento" // Cambiado a snake_case
+                value={user.fecha_nacimiento} // Asegúrate de ajustar el estado inicial
+                onChange={handleChange}
+              />
+            </Form.Group>
+  
             <Form.Group controlId="formBasicCountry">
               <Form.Label>País de Origen</Form.Label>
               <Form.Select 
@@ -203,6 +200,7 @@ const RegisterPage = () => {
       </Row>
     </Container>
   );
+  
 };
 
 export default RegisterPage;
