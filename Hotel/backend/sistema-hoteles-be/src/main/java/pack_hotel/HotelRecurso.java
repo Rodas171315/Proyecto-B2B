@@ -33,11 +33,11 @@ public class HotelRecurso {
     }
     
     @POST
-    public Hoteles insert(Hoteles insertedHotel) {
-        assert insertedHotel.getId_hotel() == null;
-        hotelesRepositorio.persist(insertedHotel);
-        assert insertedHotel.getId_hotel() != null;
-        return insertedHotel;
+    public Hoteles insert(Hoteles insertedData) {
+        assert insertedData.getId_hotel() == null;
+        hotelesRepositorio.persist(insertedData);
+        assert insertedData.getId_hotel() != null;
+        return insertedData;
     }
     
     @GET
@@ -63,17 +63,17 @@ public class HotelRecurso {
     @PUT
     @Path("{id}")
     public Hoteles update(@PathParam("id") Long id, Hoteles hotel) {
-        var updatedHotel = hotelesRepositorio.findById(id);
-        if (updatedHotel != null) {
-            updatedHotel.setId_cadena(hotel.getId_cadena());
-            updatedHotel.setNombre(hotel.getNombre());
-            updatedHotel.setPais(hotel.getPais());
-            updatedHotel.setCiudad(hotel.getCiudad());
-            updatedHotel.setDireccion(hotel.getDireccion());
-            updatedHotel.setCheckin(hotel.getCheckin());
-            updatedHotel.setCheckout(hotel.getCheckout());
-            hotelesRepositorio.persist(updatedHotel);
-            return updatedHotel;
+        var updatedData = hotelesRepositorio.findById(id);
+        if (updatedData != null) {
+            updatedData.setId_cadena(hotel.getId_cadena());
+            updatedData.setNombre(hotel.getNombre());
+            updatedData.setPais(hotel.getPais());
+            updatedData.setCiudad(hotel.getCiudad());
+            updatedData.setDireccion(hotel.getDireccion());
+            updatedData.setCheckin(hotel.getCheckin());
+            updatedData.setCheckout(hotel.getCheckout());
+            hotelesRepositorio.persist(updatedData);
+            return updatedData;
         }
         throw new NoSuchElementException("No existe un hotel con el ID: " + id + ".");
     }
