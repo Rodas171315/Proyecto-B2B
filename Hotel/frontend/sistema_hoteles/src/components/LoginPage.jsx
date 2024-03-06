@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext'; // Ajusta la ruta de importación según tu estructura de archivos
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 
 const LoginPage = () => {
@@ -6,30 +8,45 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
-  const [loginSuccess, setLoginSuccess] = useState(false); // Estado para manejar el éxito del login
-  const [loginError, setLoginError] = useState(false); // Estado para manejar el error del login
+  const [loginMessage, setLoginMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertVariant, setAlertVariant] = useState('success');
+  const navigate = useNavigate();
+  const { login } = useUser(); // Asumiendo que tu contexto proporciona una función 'login'
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Verificar credenciales
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser && storedUser.email === credentials.email && storedUser.password === credentials.password) {
-      setLoginSuccess(true);
-      setLoginError(false);
-    } else {
-      setLoginError(true);
-      setLoginSuccess(false);
+    try {
+      const response = await fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Guarda los datos del usuario en el contexto global y/o en localStorage
+        login(data); // Actualiza el estado global del usuario con los datos de inicio de sesión
+        localStorage.setItem('user', JSON.stringify(data)); // Opcional, si también usas localStorage
+        navigate('/perfil'); // Redirige al usuario al perfil
+      } else {
+        throw new Error('Inicio de sesión fallido');
+      }
+    } catch (error) {
+      setLoginMessage(error.message || 'Error al conectar con el servidor.');
+      setShowAlert(true);
+      setAlertVariant('danger');
     }
   };
 
   return (
     <Container className="my-5">
-      {loginSuccess && <Alert variant="success">Bienvenido/a {credentials.email}</Alert>}
-      {loginError && <Alert variant="danger">Error en el inicio de sesión. Verifica tus credenciales.</Alert>}
+      {showAlert && <Alert variant={alertVariant}>{loginMessage}</Alert>}
       <Row className="justify-content-md-center">
         <Col md={6}>
           <h2 className="mb-4">Iniciar Sesión</h2>

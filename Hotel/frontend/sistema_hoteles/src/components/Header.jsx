@@ -5,9 +5,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './logo.jpg';
 import { Link } from 'react-router-dom';
 import { useCart } from './CartContext';
+import { useUser } from './UserContext'; // Importa el hook useUser
 
 const Header = () => {
   const { cartItems } = useCart();
+  const { user } = useUser(); // Utiliza el hook para acceder al estado del usuario
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="header">
@@ -20,15 +22,19 @@ const Header = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
-            <Nav.Link as={Link} to="/login">Inicia Sesión</Nav.Link>
-            <Nav.Link as={Link} to="/registro">Regístrate</Nav.Link>
+            {!user && ( // Muestra Inicia Sesión y Regístrate solo si no hay usuario logueado
+              <>
+                <Nav.Link as={Link} to="/login">Inicia Sesión</Nav.Link>
+                <Nav.Link as={Link} to="/registro">Regístrate</Nav.Link>
+              </>
+            )}
             <Nav.Link as={Link} to="/booking-history">Historial de Reservas</Nav.Link>
-            {/* Nuevo enlace a Hoteles */}
             <Nav.Link as={Link} to="/hotel-details">Hoteles</Nav.Link>
             <Nav.Link as={Link} to="/add-hotel">Agregar Hotel</Nav.Link>
-            <Nav.Link as={Link} to="/perfil">Perfil</Nav.Link>
+            {user && ( // Muestra Perfil solo si hay usuario logueado
+              <Nav.Link as={Link} to="/perfil">Perfil</Nav.Link>
+            )}
             <Nav.Link as={Link} to="/Administrar">Administrar</Nav.Link>
-
           </Nav>
           <Form className="d-flex">
             <FormControl type="text" placeholder="Buscar hoteles, vuelos..." className="me-2 search-input" />

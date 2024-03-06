@@ -19,9 +19,11 @@ import HotelAdminPage from './components/HotelAdminPage';
 import { ReservationsProvider } from './components/ReservationsContext';
 import { CartProvider } from './components/CartContext'; 
 import { HotelsProvider } from './components/HotelsContext'; 
+import { UserProvider } from './components/UserContext'; 
 
 const App = () => {
   return (
+    <UserProvider> 
     <ReservationsProvider>
       <CartProvider>
         <HotelsProvider> {/* Wrap the application with HotelsProvider */}
@@ -56,6 +58,8 @@ const App = () => {
         </HotelsProvider>
       </CartProvider>
     </ReservationsProvider>
+    </UserProvider> // UserProvider agregado aquí
+
   );
 };
 
