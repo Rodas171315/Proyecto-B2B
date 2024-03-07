@@ -4,14 +4,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
 
-
 const HotelDetailsPage = () => {
   const [hotelDetails, setHotelDetails] = useState(null);
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
 
+  // Objeto para mapear los tipos de habitación
+  const tiposHabitacion = {
+    1: 'Doble',
+    2: 'Junior Suite',
+    3: 'Suite',
+    4: 'Gran Suite'
+  };
 
-  
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
@@ -51,26 +56,28 @@ const HotelDetailsPage = () => {
           <Col key={room.id_habitacion} md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Habitación: {room.tipo_habitacion}</Card.Title>
+                <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
+                <Card.Text>Disponible: {room.disponible ? 'Sí' : 'No'}</Card.Text>
+                <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
+                <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
                 <Card.Text>Precio por persona: ${room.precioxpersona}</Card.Text>
                 <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
+                <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
                 <Card.Img variant="top" src={defaultRoomImage} />
-                <Button
-  variant="primary"
-  onClick={() => navigate('/checkout', {
-    state: {
-      hotelDetails,
-      roomDetails: {
-        ...room,
-        idHabitacion: room.id_habitacion,
-        roomPrice: room.precioxnoche, // Asegurarse de que este campo se maneja correctamente
-      }
-    }
-  })}
->
-  Reservar
-</Button>
-
+                <Button variant="primary" onClick={() => navigate('/checkout', {
+                  state: {
+                    hotelDetails,
+                    roomDetails: {
+                      ...room,
+                      idHabitacion: room.id_habitacion,
+                      roomType: tiposHabitacion[room.tipo_habitacion],
+                      roomPrice: room.precioxnoche,
+                      capacidadPersonas: room.capacidad_personas
+                    }
+                  }
+                })}>
+                  Reservar
+                </Button>
               </Card.Body>
             </Card>
           </Col>

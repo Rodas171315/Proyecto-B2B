@@ -50,7 +50,8 @@ const CheckoutPage = () => {
       codigoReserva: Math.floor(Math.random() * 1000000), // Asegúrate de que este campo se maneje correctamente en el backend si es necesario
       fechaIngreso: formattedCheckIn, // Nombre del campo actualizado para coincidir con el backend
       fechaSalida: formattedCheckOut, // Nombre del campo actualizado para coincidir con el backend
-      totalReserva: reservationData.totalReserva // Asegúrate de que coincide con el backend
+      totalReserva: reservationData.totalReserva, // Asegúrate de que coincide con el backend
+      personasReserva: roomDetails.capacidadPersonas, // Agregar esta línea para enviar la capacidad de personas basada en la habitación seleccionada
     };
 
     console.log("Final reservation data being sent:", finalReservationData);
