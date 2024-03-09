@@ -57,10 +57,8 @@ const HotelDetailsPage = () => {
             <Card className="mb-3">
               <Card.Body>
                 <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
-                <Card.Text>Disponible: {room.disponible ? 'Sí' : 'No'}</Card.Text>
                 <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
                 <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
-                <Card.Text>Precio por persona: ${room.precioxpersona}</Card.Text>
                 <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
                 <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
                 <Card.Img variant="top" src={defaultRoomImage} />

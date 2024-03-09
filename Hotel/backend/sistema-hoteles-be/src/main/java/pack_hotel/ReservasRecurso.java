@@ -13,6 +13,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Path("/reservas")
@@ -39,22 +40,60 @@ public class ReservasRecurso {
         }
     }
 
+
+
+    @POST
+    @Path("/verificar-disponibilidad")
+    @Transactional
+    public Response verificarDisponibilidad(VerificarDisponibilidadDTO verificarDisponibilidadDTO) {
+        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1", verificarDisponibilidadDTO.getIdHabitacion());
+        LocalDate fechaIngreso = LocalDate.parse(verificarDisponibilidadDTO.getFechaIngreso());
+        LocalDate fechaSalida = LocalDate.parse(verificarDisponibilidadDTO.getFechaSalida());
+        for (Reservas reserva : reservasExistentes) {
+            if (!(fechaSalida.isBefore(reserva.getFechaIngreso()) || fechaIngreso.isAfter(reserva.getFechaSalida()))) {
+                return Response.ok(new DisponibilidadDTO(false)).build();
+            }
+        }
+        return Response.ok(new DisponibilidadDTO(true)).build();
+    }
+
+
+    @PUT
+    @Path("{id}/estado")
+    @Transactional
+    public Response actualizarEstadoReserva(@PathParam("id") Long id, Reservas estadoReserva) {
+        Reservas reservaExistente = reservasRepositorio.findById(id);
+        if (reservaExistente != null) {
+            // Aquí solo actualizamos el estado de la reserva, pero podrías ajustar para manejar otras propiedades si fuera necesario.
+            reservaExistente.setEstadoReserva(estadoReserva.getEstadoReserva());
+            reservasRepositorio.persist(reservaExistente);
+            return Response.ok(reservaExistente).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    
     @POST
     @Transactional
     public Response crearReserva(Reservas reserva) {
+        // Convertir las fechas a LocalDate
+        LocalDate fechaIngreso = reserva.getFechaIngreso();
+        LocalDate fechaSalida = reserva.getFechaSalida();
+    
+        // Verificar disponibilidad
+        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1", reserva.getIdHabitacion());
+        for (Reservas reservaExistente : reservasExistentes) {
+            if (!(fechaSalida.isBefore(reservaExistente.getFechaIngreso()) || fechaIngreso.isAfter(reservaExistente.getFechaSalida()))) {
+                // Si se encuentra una reserva existente que se superpone en fechas, retorna una respuesta indicando no disponibilidad
+                return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
+            }
+        }
+    
+        // Si la habitación está disponible, procede con la creación de la reserva
         try {
             System.out.println("Creando reserva con datos: " + reserva);
-            // Agregar impresiones de depuración para cada campo
-            System.out.println("ID Habitación: " + reserva.getIdHabitacion());
-            System.out.println("ID Usuario: " + reserva.getIdUsuario());
-            System.out.println("Código Reserva: " + reserva.getCodigoReserva());
-            System.out.println("Fecha Ingreso: " + reserva.getFechaIngreso());
-            System.out.println("Fecha Salida: " + reserva.getFechaSalida());
-            System.out.println("Total Reserva: " + reserva.getTotalReserva());
-    
-            if (reserva.getPersonasReserva() == null) {
-                reserva.setPersonasReserva(1); // O cualquier valor predeterminado lógico
-            }
+            reserva.setEstadoReserva("confirmada");
             reservasRepositorio.persist(reserva);
             return Response.status(Response.Status.CREATED).entity(reserva).build();
         } catch (Exception e) {
@@ -62,6 +101,8 @@ public class ReservasRecurso {
             return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
         }
     }
+    
+    
     
 
     @PUT

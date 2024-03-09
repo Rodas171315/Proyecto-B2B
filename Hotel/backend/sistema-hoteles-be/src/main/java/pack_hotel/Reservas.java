@@ -29,7 +29,7 @@ public class Reservas {
     @Column(name = "CODIGO_RESERVA", nullable = false)
     private Integer codigoReserva;
 
-    @Column(name = "PERSONAS_RESERVA") // Se eliminó nullable = false
+    @Column(name = "PERSONAS_RESERVA", nullable = false)
     private Integer personasReserva;
 
     @Column(name = "FECHA_INGRESO", nullable = false)

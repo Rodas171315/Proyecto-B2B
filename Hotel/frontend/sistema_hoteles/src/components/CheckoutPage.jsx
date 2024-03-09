@@ -44,35 +44,86 @@ const CheckoutPage = () => {
     const formattedCheckIn = new Date(reservationData.checkIn).toISOString().split('T')[0];
     const formattedCheckOut = new Date(reservationData.checkOut).toISOString().split('T')[0];
     
-    const finalReservationData = {
-      idHabitacion: roomDetails.idHabitacion, // Asegúrate de que coincide con el backend
-      idUsuario: user.id, // Asegúrate de que coincide con el backend
-      codigoReserva: Math.floor(Math.random() * 1000000), // Asegúrate de que este campo se maneje correctamente en el backend si es necesario
-      fechaIngreso: formattedCheckIn, // Nombre del campo actualizado para coincidir con el backend
-      fechaSalida: formattedCheckOut, // Nombre del campo actualizado para coincidir con el backend
-      totalReserva: reservationData.totalReserva, // Asegúrate de que coincide con el backend
-      personasReserva: roomDetails.capacidadPersonas, // Agregar esta línea para enviar la capacidad de personas basada en la habitación seleccionada
+    // Datos para verificar la disponibilidad
+    const verificarDisponibilidadData = {
+      idHabitacion: roomDetails.idHabitacion,
+      fechaIngreso: formattedCheckIn,
+      fechaSalida: formattedCheckOut,
     };
-
+  
+    // Verificar disponibilidad primero
+    const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(verificarDisponibilidadData),
+    });
+  
+    const disponibilidad = await responseDisponibilidad.json();
+  
+    if (!disponibilidad.esDisponible) {
+      alert('La habitación no está disponible para las fechas seleccionadas. Por favor, elige otras fechas.');
+      return; // Detiene la función aquí si no hay disponibilidad
+    }
+  
+    // Datos finales de la reserva, solo si la habitación está disponible
+    const finalReservationData = {
+      idHabitacion: roomDetails.idHabitacion,
+      idUsuario: user.id,
+      codigoReserva: Math.floor(Math.random() * 1000000),
+      fechaIngreso: formattedCheckIn,
+      fechaSalida: formattedCheckOut,
+      totalReserva: reservationData.totalReserva,
+      personasReserva: roomDetails.capacidadPersonas,
+    };
+  
     console.log("Final reservation data being sent:", finalReservationData);
-
+  
     try {
       const response = await fetch('http://localhost:8080/reservas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalReservationData),
       });
-
+  
       if (!response.ok) {
         throw new Error('Error al crear la reserva');
       }
-
+  
       setShowSuccessModal(true);
     } catch (error) {
       alert('Hubo un error al procesar tu reserva. Por favor, intenta nuevamente.');
       console.error('Error en la reserva:', error);
     }
   };
+  
+
+
+  const [isRoomAvailable, setIsRoomAvailable] = useState(true);
+  useEffect(() => {
+    const verificarDisponibilidad = async () => {
+      if (reservationData.checkIn && reservationData.checkOut) {
+        // Asumiendo que tienes una endpoint en tu API para verificar la disponibilidad
+        try {
+          const response = await fetch(`http://localhost:8080/verificar-disponibilidad`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              idHabitacion: roomDetails.idHabitacion,
+              fechaIngreso: new Date(reservationData.checkIn).toISOString().split('T')[0],
+              fechaSalida: new Date(reservationData.checkOut).toISOString().split('T')[0],
+            }),
+          });
+          const disponibilidad = await response.json();
+          setIsRoomAvailable(disponibilidad.esDisponible);
+        } catch (error) {
+          console.error('Error verificando disponibilidad:', error);
+        }
+      }
+    };
+    verificarDisponibilidad();
+  }, [reservationData.checkIn, reservationData.checkOut, roomDetails.idHabitacion]);
+  
+
 
   return (
     <Container className="my-5">
@@ -103,8 +154,16 @@ const CheckoutPage = () => {
             </Form.Group>
           </Col>
         </Row>
-        <Button variant="primary" type="submit">Confirmar Reserva</Button>
-      </Form>
+
+  {
+    !isRoomAvailable && (
+      <div className="alert alert-danger" role="alert">
+        La habitación no está disponible para las fechas seleccionadas. Por favor, elige otras fechas.
+      </div>
+    )
+  }
+  <Button variant="primary" type="submit" disabled={!isRoomAvailable}>Confirmar Reserva</Button>
+</Form>
 
       {/* Modal de éxito */}
       <Modal show={showSuccessModal} onHide={() => setShowSuccessModal(false)}>
