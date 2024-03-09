@@ -103,7 +103,16 @@ public class ReservasRecurso {
     }
     
     
-    
+    @GET
+@Path("/usuario/{idUsuario}")
+public Response obtenerReservasPorUsuario(@PathParam("idUsuario") Long idUsuario) {
+    List<Reservas> reservas = reservasRepositorio.list("idUsuario", idUsuario);
+    if (reservas.isEmpty()) {
+        return Response.status(Response.Status.NOT_FOUND).entity("No se encontraron reservas para el usuario.").build();
+    }
+    return Response.ok(reservas).build();
+}
+
 
     @PUT
     @Path("{id}")
