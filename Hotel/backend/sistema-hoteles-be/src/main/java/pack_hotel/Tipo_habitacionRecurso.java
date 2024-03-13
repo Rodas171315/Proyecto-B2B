@@ -29,7 +29,9 @@ public class Tipo_habitacionRecurso {
     
     @GET
     public List<Tipos_habitacion> index() {
-        return tipos_habitacionRepositorio.listAll();
+        List<Tipos_habitacion> tipos = tipos_habitacionRepositorio.listAll();
+        System.out.println("Fetching tipos_habitacion: " + tipos);
+        return tipos;
     }
     
     @POST
@@ -49,6 +51,8 @@ public class Tipo_habitacionRecurso {
         }
         throw new NoSuchElementException("No hay tipo de habitacion con el ID " + id + ".");
     }
+    
+
     
     @DELETE
     @Path("{id}")

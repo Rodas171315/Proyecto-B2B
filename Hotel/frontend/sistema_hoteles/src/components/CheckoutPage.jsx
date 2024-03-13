@@ -10,6 +10,9 @@ const CheckoutPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { hotelDetails, roomDetails } = location.state;
 
+  // Log para verificar los detalles del hotel recibidos
+  console.log("Hotel details received:", hotelDetails);
+
   const [reservationData, setReservationData] = useState({
     checkIn: '',
     checkOut: '',
@@ -68,6 +71,7 @@ const CheckoutPage = () => {
     // Datos finales de la reserva, solo si la habitación está disponible
     const finalReservationData = {
       idHabitacion: roomDetails.idHabitacion,
+      idHotel: hotelDetails.id_hotel,  // Asegúrate de usar id_hotel aquí
       idUsuario: user.id,
       codigoReserva: Math.floor(Math.random() * 1000000),
       fechaIngreso: formattedCheckIn,
@@ -75,9 +79,12 @@ const CheckoutPage = () => {
       totalReserva: reservationData.totalReserva,
       personasReserva: roomDetails.capacidadPersonas,
     };
-  
+    
     console.log("Final reservation data being sent:", finalReservationData);
-  
+    console.log("Hotel ID being sent:", hotelDetails.id_hotel);  // Asegúrate de usar id_hotel aquí
+    console.log("Hotel details received:", hotelDetails);
+    console.log("Room details received:", roomDetails);
+    
     try {
       const response = await fetch('http://localhost:8080/reservas', {
         method: 'POST',

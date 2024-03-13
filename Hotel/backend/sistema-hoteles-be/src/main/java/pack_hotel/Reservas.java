@@ -20,6 +20,9 @@ public class Reservas {
     @Column(name = "ID_RESERVA")
     private Long idReserva;
 
+    @Column(name = "ID_HOTEL")
+    private Long idHotel; 
+
     @Column(name = "ID_HABITACION", nullable = false)
     private Long idHabitacion;
 
@@ -51,6 +54,14 @@ public class Reservas {
 
     public void setIdReserva(Long idReserva) {
         this.idReserva = idReserva;
+    }
+
+    public Long getIdHotel() {
+        return idHotel;
+    }
+
+    public void setIdHotel(Long idHotel) {
+        this.idHotel = idHotel;
     }
 
     public Long getIdHabitacion() {
@@ -123,12 +134,13 @@ public class Reservas {
         if (this == o) return true;
         if (!(o instanceof Reservas)) return false;
         Reservas reservas = (Reservas) o;
-        return Objects.equals(idReserva, reservas.idReserva);
+        return Objects.equals(idReserva, reservas.idReserva) &&
+                Objects.equals(idHotel, reservas.idHotel); // Incluye idHotel en equals
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idReserva);
+        return Objects.hash(idReserva, idHotel); // Incluye idHotel en hashCode
     }
 
     @Override
@@ -137,6 +149,7 @@ public class Reservas {
                 "idReserva=" + idReserva +
                 ", idHabitacion=" + idHabitacion +
                 ", idUsuario=" + idUsuario +
+                ", idHotel=" + idHotel +
                 ", codigoReserva=" + codigoReserva +
                 ", personasReserva=" + personasReserva +
                 ", fechaIngreso=" + fechaIngreso +

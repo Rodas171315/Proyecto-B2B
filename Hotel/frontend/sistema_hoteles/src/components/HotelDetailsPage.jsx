@@ -62,20 +62,27 @@ const HotelDetailsPage = () => {
                 <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
                 <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
                 <Card.Img variant="top" src={defaultRoomImage} />
-                <Button variant="primary" onClick={() => navigate('/checkout', {
-                  state: {
-                    hotelDetails,
-                    roomDetails: {
-                      ...room,
-                      idHabitacion: room.id_habitacion,
-                      roomType: tiposHabitacion[room.tipo_habitacion],
-                      roomPrice: room.precioxnoche,
-                      capacidadPersonas: room.capacidad_personas
-                    }
-                  }
-                })}>
-                  Reservar
-                </Button>
+                <Button variant="primary" onClick={() => {
+  console.log("Navigating with hotelDetails:", hotelDetails);
+  navigate('/checkout', {
+    state: {
+      hotelDetails: {
+        ...hotelDetails,
+      },
+      roomDetails: {
+        ...room,
+        idHabitacion: room.id_habitacion,
+        roomType: tiposHabitacion[room.tipo_habitacion],
+        roomPrice: room.precioxnoche,
+        capacidadPersonas: room.capacidad_personas
+      }
+    }
+  });
+}}>
+  Reservar
+</Button>
+
+
               </Card.Body>
             </Card>
           </Col>

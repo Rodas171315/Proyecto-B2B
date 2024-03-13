@@ -15,4 +15,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ReservasRepositorio implements PanacheRepository<Reservas> {
     
+
+
+    
 }

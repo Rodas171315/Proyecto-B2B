@@ -2,6 +2,7 @@ package pack_hotel;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -10,11 +11,15 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Path("/reservas")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,6 +29,15 @@ public class ReservasRecurso {
     @Inject
     ReservasRepositorio reservasRepositorio;
 
+    @Inject
+    private HabitacionRepositorio habitacionRepositorio;
+
+    @Inject
+    HotelRepositorio hotelRepositorio;
+
+    @Inject
+    Tipo_habitacionRepositorio tipoHabitacionRepositorio; 
+    
     @GET
     public List<Reservas> listarTodasLasReservas() {
         return reservasRepositorio.listAll();
@@ -58,6 +72,8 @@ public class ReservasRecurso {
     }
 
 
+
+    
     @PUT
     @Path("{id}/estado")
     @Transactional
@@ -73,34 +89,38 @@ public class ReservasRecurso {
         }
     }
 
+
+    
     
     @POST
     @Transactional
     public Response crearReserva(Reservas reserva) {
-        // Convertir las fechas a LocalDate
         LocalDate fechaIngreso = reserva.getFechaIngreso();
         LocalDate fechaSalida = reserva.getFechaSalida();
     
-        // Verificar disponibilidad
-        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1", reserva.getIdHabitacion());
+        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion", reserva.getIdHabitacion());
         for (Reservas reservaExistente : reservasExistentes) {
             if (!(fechaSalida.isBefore(reservaExistente.getFechaIngreso()) || fechaIngreso.isAfter(reservaExistente.getFechaSalida()))) {
-                // Si se encuentra una reserva existente que se superpone en fechas, retorna una respuesta indicando no disponibilidad
                 return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
             }
         }
     
         // Si la habitación está disponible, procede con la creación de la reserva
-        try {
-            System.out.println("Creando reserva con datos: " + reserva);
-            reserva.setEstadoReserva("confirmada");
-            reservasRepositorio.persist(reserva);
-            return Response.status(Response.Status.CREATED).entity(reserva).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
-        }
+    try {
+        Habitaciones habitacion = habitacionRepositorio.findByIdOptional(reserva.getIdHabitacion())
+        .orElseThrow(() -> new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND));
+
+        reserva.setEstadoReserva("confirmada"); // Estado inicial de la reserva
+        reservasRepositorio.persist(reserva);
+        return Response.status(Response.Status.CREATED).entity(reserva).build();
+    } catch (WebApplicationException e) {
+        return Response.status(e.getResponse().getStatus()).entity(e.getMessage()).build();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
     }
+}
+    
     
     
     @GET
@@ -112,6 +132,63 @@ public Response obtenerReservasPorUsuario(@PathParam("idUsuario") Long idUsuario
     }
     return Response.ok(reservas).build();
 }
+
+
+
+@GET
+@Path("/detalle/usuario/{idUsuario}")
+public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long idUsuario) {
+    List<Reservas> reservas = reservasRepositorio.list("idUsuario", idUsuario);
+    if (reservas.isEmpty()) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    List<DetalleReservaDTO> detalleReservasList = reservas.stream().map(reserva -> {
+        DetalleReservaDTO detalle = new DetalleReservaDTO();
+
+        Hoteles hotel = hotelRepositorio.findById(reserva.getIdHotel());
+        if (hotel == null) {
+            throw new WebApplicationException("Hotel no encontrado.", Response.Status.NOT_FOUND);
+        }
+        
+        Habitaciones habitacion = habitacionRepositorio.findById(reserva.getIdHabitacion());
+        if (habitacion == null) {
+            throw new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND);
+        }
+        detalle.setIdReserva(reserva.getIdReserva());
+        detalle.setNombreHotel(hotel.getNombre());
+        detalle.setPais(hotel.getPais());
+        detalle.setCiudad(hotel.getCiudad());
+        detalle.setDireccion(hotel.getDireccion());
+        detalle.setTipoHabitacion(getTipoHabitacionAsString(habitacion.getTipo_habitacion()));
+        detalle.setFechaIngreso(reserva.getFechaIngreso());
+        detalle.setFechaSalida(reserva.getFechaSalida());
+        long numeroNoches = java.time.temporal.ChronoUnit.DAYS.between(reserva.getFechaIngreso(), reserva.getFechaSalida());
+        detalle.setNumeroNoches((int) numeroNoches);
+        detalle.setCodigoReserva(reserva.getCodigoReserva());
+        detalle.setTotalReserva(reserva.getTotalReserva());
+        detalle.setEstadoReserva(reserva.getEstadoReserva());
+        detalle.setCapacidadPersonas(habitacion.getCapacidad_personas());
+
+        return detalle;
+    }).collect(Collectors.toList());
+
+    return Response.ok(detalleReservasList).build();
+}
+
+private String getTipoHabitacionAsString(int tipoHabitacionId) {
+    // Aquí va la implementación de tu método
+    switch(tipoHabitacionId) {
+        case 1: return "Doble";
+        case 2: return "Junior Suite";
+        case 3: return "Suite";
+        case 4: return "Gran Suite";
+        default: return "Unknown";
+    }
+}
+    
+
+
 
 
     @PUT
