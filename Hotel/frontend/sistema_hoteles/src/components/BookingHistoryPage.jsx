@@ -16,10 +16,12 @@ const BookingHistoryPage = () => {
   }, [user]);
 
   const fetchReservations = async () => {
+    console.log('Fetching reservations for user:', user.id);
     try {
       const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Reservations fetched successfully:', data);
         setReservations(data);
       } else {
         console.error("Failed to fetch reservations.");
@@ -37,17 +39,16 @@ const BookingHistoryPage = () => {
   };
 
   const handleEdit = (reserva) => {
+    console.log('Opening edit modal for reservation:', reserva.idReserva);
     setCurrentReservation(reserva);
     setShowEditModal(true);
   };
 
   const handleCancel = async (idReserva) => {
-    console.log("Cancelando reserva", idReserva);
+    console.log("Canceling reservation", idReserva);
     // Implement cancellation logic here
     await fetchReservations();
   };
-
-
 
   const actualizarReserva = async (reservaActualizada) => {
     console.log('Updating reservation with:', reservaActualizada);

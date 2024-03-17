@@ -4,20 +4,16 @@ import { Modal, Button, Form } from 'react-bootstrap';
 const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) => {
   const [checkIn, setCheckIn] = useState(reserva.fechaIngreso);
   const [checkOut, setCheckOut] = useState(reserva.fechaSalida);
-  // Asumiendo que tipoHabitacion ya viene correctamente mapeado a un idHabitacion
-  const [tipoHabitacion, setTipoHabitacion] = useState(reserva.tipoHabitacion);
+  const [tipoHabitacion, setTipoHabitacion] = useState(reserva.tipoHabitacion.toString());
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Aquí asumimos que el campo idHabitacion debe ser parte de reservaActualizada
     const reservaActualizada = {
         ...reserva,
         fechaIngreso: checkIn,
         fechaSalida: checkOut,
-        idTipoHabitacion: tipoHabitacion,
-        idHabitacion: reserva.idHabitacion, // Asumiendo que reserva ya tiene idHabitacion
+        tipoHabitacion: parseInt(tipoHabitacion), // Asegurarse de enviar un entero
     };
 
     console.log('Enviando reserva actualizada:', reservaActualizada);
@@ -32,19 +28,16 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
         });
 
         if (!response.ok) {
-            throw new Error('No se pudo actualizar la reserva');
+            throw new Error(`No se pudo actualizar la reserva, status: ${response.status}`);
         }
 
-        // Si la actualización es exitosa, haz lo que sea necesario, como cerrar el modal
-        handleClose();
+        console.log('Reserva actualizada con éxito');
+        handleClose(); // Cerrar modal si la actualización es exitosa
+        actualizarReserva(reservaActualizada); // Actualizar las reservas mostradas con la nueva información
     } catch (error) {
         console.error('Error al actualizar la reserva:', error);
     }
-};
-
-
-
-
+  };
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -72,16 +65,15 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
           <Form.Group controlId="formTipoHabitacion">
             <Form.Label>Tipo de Habitación</Form.Label>
             <Form.Control
-  as="select"
-  value={tipoHabitacion}
-  onChange={(e) => setTipoHabitacion(Number(e.target.value))} // Asegúrate de convertir a número
->
-  <option value="1">Doble</option>
-  <option value="2">Junior Suite</option>
-  <option value="3">Suite</option>
-  <option value="4">Gran Suite</option>
-</Form.Control>
-
+              as="select"
+              value={tipoHabitacion}
+              onChange={(e) => setTipoHabitacion(e.target.value)}
+            >
+              <option value="1">Doble</option>
+              <option value="2">Junior Suite</option>
+              <option value="3">Suite</option>
+              <option value="4">Gran Suite</option>
+            </Form.Control>
           </Form.Group>
           <Button variant="primary" type="submit">
             Guardar Cambios
