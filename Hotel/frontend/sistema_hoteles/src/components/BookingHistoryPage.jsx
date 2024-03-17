@@ -72,17 +72,27 @@ const BookingHistoryPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservaActualizada),
       });
-
+  
       if (!response.ok) {
-        throw new Error(`Reservation update failed: ${response.statusText}`);
+        if (response.status === 409) {
+          // Conflicto encontrado, notifica al usuario
+          alert("Habitación no disponible.");
+        } else {
+          // Otro tipo de error HTTP
+          throw new Error(`Reservation update failed: ${response.statusText}`);
+        }
+      } else {
+        console.log('Reservation updated successfully');
+        setShowEditModal(false);
+        await fetchReservations(); // Refresh the list of reservations
       }
-      console.log('Reservation updated successfully');
-      setShowEditModal(false);
-      fetchReservations(); // Refresh the list of reservations to reflect the changes
     } catch (error) {
       console.error('Error updating reservation:', error);
+      // Maneja el error genérico
+      alert("Ocurrió un error al actualizar la reserva. Por favor, intenta de nuevo.");
     }
   };
+  
 
   return (
     <div className="booking-history-container">

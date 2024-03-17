@@ -195,7 +195,6 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
 
 
 
-
 @PUT
 @Path("{id}")
 @Transactional
@@ -209,51 +208,45 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    Habitaciones habitacion = habitacionRepositorio.findById(reservaActualizada.getIdHabitacion());
-    if (habitacion == null) {
-        log.errorf("Habitación no encontrada para ID: %s", reservaActualizada.getIdHabitacion());
-        return Response.status(Response.Status.NOT_FOUND).entity("Habitación no encontrada").build();
+    // Asumir que la habitación y el tipo ya han sido validados como existentes y adecuados
+    // Ahora, aplicar una lógica similar a la creación de reserva para verificar la disponibilidad
+    List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1 AND id != ?2",
+                                                                   reservaActualizada.getIdHabitacion(), id);
+    LocalDate fechaIngreso = reservaActualizada.getFechaIngreso();
+    LocalDate fechaSalida = reservaActualizada.getFechaSalida();
+    boolean conflicto = reservasExistentes.stream().anyMatch(r -> 
+        !(fechaSalida.isBefore(r.getFechaIngreso()) || fechaIngreso.isAfter(r.getFechaSalida())) &&
+        r.getTipoHabitacion().equals(reservaActualizada.getTipoHabitacion()));
+
+    if (conflicto) {
+        return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas y el tipo de habitación seleccionados.").build();
     }
 
-    // Verificar disponibilidad excluyendo la reserva actual
-    boolean disponible = verificarDisponibilidadConExclusion(
-        reservaActualizada.getIdHabitacion(),
-        reservaActualizada.getFechaIngreso(),
-        reservaActualizada.getFechaSalida(),
-        id
-    );
-    if (!disponible) {
-        return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
-    }
-
-    // Actualizar la reserva con los nuevos valores
-    reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
-    reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
+    // Actualiza la reserva si no hay conflictos
+    reservaExistente.setFechaIngreso(fechaIngreso);
+    reservaExistente.setFechaSalida(fechaSalida);
     reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
-    reservaExistente.setTipoHabitacion(reservaActualizada.getTipoHabitacion()); // Ensure this updates correctly
-
-    // Actualizar el total de la reserva según sea necesario
-    reservaExistente.setTotalReserva(calcularTotalReserva(
-        habitacion,
-        reservaExistente.getFechaIngreso(),
-        reservaExistente.getFechaSalida()
-    ));
-
+    reservaExistente.setTipoHabitacion(reservaActualizada.getTipoHabitacion());
     reservasRepositorio.persist(reservaExistente);
 
     log.infof("Reserva actualizada con éxito para el ID: %s", id);
     return Response.ok(reservaExistente).build();
 }
 
-private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId) {
-    List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1 AND id != ?2", idHabitacion, reservaId);
-    for (Reservas reserva : reservasExistentes) {
-        if (!(fechaSalida.isBefore(reserva.getFechaIngreso()) || fechaIngreso.isAfter(reserva.getFechaSalida()))) {
-            return false; // No disponible si se encuentra alguna reserva que se solape
-        }
-    }
-    return true; // Disponible si no se encuentra ninguna reserva que se solape
+
+private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId, Integer tipoHabitacion) {
+    // Aquí asumimos que "list" realiza una consulta a la base de datos que retorna todas las reservas excepto la actual (reservaId)
+    List<Reservas> reservasExistentes = reservasRepositorio.list(
+        "idHabitacion = ?1 AND tipoHabitacion = ?2 AND id != ?3", idHabitacion, tipoHabitacion, reservaId);
+
+    return reservasExistentes.stream().noneMatch(reserva -> 
+        (fechaIngreso.isBefore(reserva.getFechaSalida()) && fechaSalida.isAfter(reserva.getFechaIngreso()))
+    );
 }
+
+
+
+
 
 private Integer calcularTotalReserva(Habitaciones habitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
     // Asumiendo que tienes una lógica para calcular el total basada en el tipo de habitación, las fechas, etc.
