@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pack_hotel;
 
 import jakarta.inject.Inject;
@@ -14,11 +10,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-/**
- *
- * @author root
- */
 
 @Path("/habitaciones")
 @Transactional
@@ -34,8 +25,10 @@ public class HabitacionRecurso {
     
     @POST
     public Habitaciones insert(Habitaciones insertedData) {
+        // Ensure the ID is null to create a new entity
         assert insertedData.getId_habitacion() == null;
         habitacionesRepositorio.persist(insertedData);
+        // After persist, ID should be generated and non-null
         assert insertedData.getId_habitacion() != null;
         return insertedData;
     }
@@ -69,7 +62,7 @@ public class HabitacionRecurso {
             updatedData.setDisponible(habitacion.isDisponible());
             updatedData.setNumero_habitacion(habitacion.getNumero_habitacion());
             updatedData.setCapacidad_personas(habitacion.getCapacidad_personas());
-            updatedData.setTipo_habitacion(habitacion.getTipo_habitacion());
+            updatedData.setTipo_habitacion(habitacion.getTipo_habitacion()); // Now accepts Integer
             updatedData.setPrecioxpersona(habitacion.getPrecioxpersona());
             updatedData.setPrecioxnoche(habitacion.getPrecioxnoche());
             updatedData.setValuacion(habitacion.getValuacion());
@@ -78,5 +71,4 @@ public class HabitacionRecurso {
         }
         throw new NoSuchElementException("No existe una habitacion con el ID: " + id + ".");
     }
-    
 }

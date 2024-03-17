@@ -27,12 +27,12 @@ public class Tipos_habitacion {
         return id_tipo;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
-
     public void setId_tipo(Long id_tipo) {
         this.id_tipo = id_tipo;
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 
     public void setTipo(String tipo) {
@@ -40,36 +40,24 @@ public class Tipos_habitacion {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.id_tipo);
-        hash = 79 * hash + Objects.hashCode(this.tipo);
-        return hash;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Tipos_habitacion that = (Tipos_habitacion) obj;
+        return Objects.equals(id_tipo, that.id_tipo) &&
+               Objects.equals(tipo, that.tipo);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tipos_habitacion other = (Tipos_habitacion) obj;
-        if (!Objects.equals(this.tipo, other.tipo)) {
-            return false;
-        }
-        return Objects.equals(this.id_tipo, other.id_tipo);
+    public int hashCode() {
+        return Objects.hash(id_tipo, tipo);
     }
 
     @Override
     public String toString() {
-        return "Tipos_habitacion{" + "id_tipo=" + id_tipo + ", tipo=" + tipo + '}';
+        return "Tipos_habitacion{" +
+               "id_tipo=" + id_tipo +
+               ", tipo='" + tipo + '\'' +
+               '}';
     }
-    
-    
-    
 }

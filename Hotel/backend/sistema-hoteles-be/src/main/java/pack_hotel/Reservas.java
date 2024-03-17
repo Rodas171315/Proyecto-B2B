@@ -21,12 +21,12 @@ public class Reservas {
     private Long idReserva;
 
     @Column(name = "ID_HOTEL")
-    private Long idHotel; 
+    private Long idHotel;
 
     @Column(name = "ID_HABITACION", nullable = false)
     private Long idHabitacion;
 
-    
+    // La columna ID_TIPO_HABITACION ha sido eliminada
 
     @Column(name = "ID_USUARIO", nullable = false)
     private Long idUsuario;
@@ -48,6 +48,10 @@ public class Reservas {
 
     @Column(name = "ESTADO_RESERVA")
     private String estadoReserva;
+
+    // Se ha añadido la referencia directa al tipo de habitación
+    @Column(name = "TIPO_HABITACION")
+    private Integer tipoHabitacion;
 
     // Getters y setters
     public Long getIdReserva() {
@@ -73,6 +77,7 @@ public class Reservas {
     public void setIdHabitacion(Long idHabitacion) {
         this.idHabitacion = idHabitacion;
     }
+
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -130,6 +135,16 @@ public class Reservas {
         this.estadoReserva = estadoReserva;
     }
 
+        public Integer getTipoHabitacion() {
+        return tipoHabitacion;
+    }
+
+    public void setTipoHabitacion(Integer tipoHabitacion) {
+        this.tipoHabitacion = tipoHabitacion;
+    }
+
+    
+
     // hashCode, equals, toString
     @Override
     public boolean equals(Object o) {
@@ -150,6 +165,7 @@ public class Reservas {
         return "Reservas{" +
                 "idReserva=" + idReserva +
                 ", idHabitacion=" + idHabitacion +
+                ", tipoHabitacion=" + tipoHabitacion +
                 ", idUsuario=" + idUsuario +
                 ", idHotel=" + idHotel +
                 ", codigoReserva=" + codigoReserva +
@@ -160,4 +176,5 @@ public class Reservas {
                 ", estadoReserva='" + estadoReserva + '\'' +
                 '}';
     }
+    
 }

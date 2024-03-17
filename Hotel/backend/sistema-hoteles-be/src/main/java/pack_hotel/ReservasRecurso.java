@@ -105,6 +105,7 @@ public class ReservasRecurso {
         LocalDate fechaIngreso = reserva.getFechaIngreso();
         LocalDate fechaSalida = reserva.getFechaSalida();
     
+        // Verifica disponibilidad de la habitación para las fechas dadas
         List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion", reserva.getIdHabitacion());
         for (Reservas reservaExistente : reservasExistentes) {
             if (!(fechaSalida.isBefore(reservaExistente.getFechaIngreso()) || fechaIngreso.isAfter(reservaExistente.getFechaSalida()))) {
@@ -112,21 +113,25 @@ public class ReservasRecurso {
             }
         }
     
-        // Si la habitación está disponible, procede con la creación de la reserva
-    try {
-        Habitaciones habitacion = habitacionRepositorio.findByIdOptional(reserva.getIdHabitacion())
-        .orElseThrow(() -> new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND));
-
-        reserva.setEstadoReserva("confirmada"); // Estado inicial de la reserva
-        reservasRepositorio.persist(reserva);
-        return Response.status(Response.Status.CREATED).entity(reserva).build();
-    } catch (WebApplicationException e) {
-        return Response.status(e.getResponse().getStatus()).entity(e.getMessage()).build();
-    } catch (Exception e) {
-        e.printStackTrace();
-        return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
+        try {
+            Habitaciones habitacion = habitacionRepositorio.findByIdOptional(reserva.getIdHabitacion())
+                    .orElseThrow(() -> new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND));
+    
+            // Asigna el tipo de habitación obtenido al campo correspondiente en la entidad Reservas
+            System.out.println("Tipo de habitación obtenido: " + habitacion.getTipo_habitacion());
+            reserva.setTipoHabitacion(habitacion.getTipo_habitacion());
+    
+            reserva.setEstadoReserva("confirmada"); // Establece el estado inicial de la reserva
+            reservasRepositorio.persist(reserva);
+    
+            return Response.status(Response.Status.CREATED).entity(reserva).build();
+        } catch (WebApplicationException e) {
+            return Response.status(e.getResponse().getStatus()).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
+        }
     }
-}
     
     
     
@@ -162,7 +167,9 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
         if (habitacion == null) {
             throw new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND);
         }
+
         detalle.setIdReserva(reserva.getIdReserva());
+        detalle.setIdHabitacion(reserva.getIdHabitacion()); // Asegúrate de setear idHabitacion aquí
         detalle.setNombreHotel(hotel.getNombre());
         detalle.setPais(hotel.getPais());
         detalle.setCiudad(hotel.getCiudad());
@@ -170,7 +177,7 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
         detalle.setTipoHabitacion(getTipoHabitacionAsString(habitacion.getTipo_habitacion()));
         detalle.setFechaIngreso(reserva.getFechaIngreso());
         detalle.setFechaSalida(reserva.getFechaSalida());
-        long numeroNoches = java.time.temporal.ChronoUnit.DAYS.between(reserva.getFechaIngreso(), reserva.getFechaSalida());
+        long numeroNoches = ChronoUnit.DAYS.between(reserva.getFechaIngreso(), reserva.getFechaSalida());
         detalle.setNumeroNoches((int) numeroNoches);
         detalle.setCodigoReserva(reserva.getCodigoReserva());
         detalle.setTotalReserva(reserva.getTotalReserva());
@@ -182,6 +189,7 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
 
     return Response.ok(detalleReservasList).build();
 }
+
 
 private String getTipoHabitacionAsString(int tipoHabitacionId) {
     // Aquí va la implementación de tu método
@@ -216,54 +224,43 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    // Antes de verificar la disponibilidad, loguear la información relevante
-    log.infof("Verificando disponibilidad para idHabitacion: %s, FechaIngreso: %s, FechaSalida: %s, excluyendo reservaId: %s",
-              reservaActualizada.getIdHabitacion(), reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida(), id);
+    Habitaciones habitacionActualizada = habitacionRepositorio.findById(reservaActualizada.getIdHabitacion());
+    if (habitacionActualizada == null) {
+        log.errorf("Habitación no encontrada para ID: %s", reservaActualizada.getIdHabitacion());
+        return Response.status(Response.Status.NOT_FOUND).entity("Habitación no encontrada").build();
+    }
 
-    boolean disponible = verificarDisponibilidadConExclusion(
-            reservaActualizada.getIdHabitacion(),
-            reservaActualizada.getFechaIngreso(),
-            reservaActualizada.getFechaSalida(),
-            id);
+    reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
+    reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
+    reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
+    reservaExistente.setTipoHabitacion(habitacionActualizada.getTipo_habitacion()); // Asegura la consistencia en la asignación del tipo de habitación
 
+    // Verificar disponibilidad antes de actualizar
+    boolean disponible = verificarDisponibilidadConExclusion(reservaActualizada.getIdHabitacion(), reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida(), id);
     if (!disponible) {
-        log.infof("Habitación %s no disponible para las fechas seleccionadas", reservaActualizada.getIdHabitacion());
         return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
     }
 
-    // Continuar con la actualización de la reserva
-    reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
-    reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
-    reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
-    
-    // Antes de calcular el total, loguear la información relevante
-    log.infof("Calculando total para la reserva con idHabitacion: %s, FechaIngreso: %s, FechaSalida: %s",
-              reservaActualizada.getIdHabitacion(), reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida());
-
-    reservaExistente.setTotalReserva(calcularTotalReserva(
-            reservaActualizada.getIdHabitacion(),
-            reservaActualizada.getFechaIngreso(),
-            reservaActualizada.getFechaSalida()));
+    // Calcula el total basado en la nueva habitación, fechas, etc.
+    reservaExistente.setTotalReserva(calcularTotalReserva(habitacionActualizada, reservaExistente.getFechaIngreso(), reservaExistente.getFechaSalida()));
 
     reservasRepositorio.persist(reservaExistente);
+
     log.infof("Reserva actualizada con éxito para el ID: %s", id);
     return Response.ok(reservaExistente).build();
 }
 
+private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId) {
+    // Implementa la verificación de disponibilidad aquí. Asegúrate de excluir la reserva actual del chequeo de disponibilidad.
+    return true;
+}
 
-    // Método para verificar la disponibilidad excluyendo la reserva actual
-    private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId) {
-        // Implementación de la lógica para verificar disponibilidad aquí
-        // Esto es un ejemplo genérico, asegúrate de implementarlo según tus necesidades
-        return true;
-    }
+private Integer calcularTotalReserva(Habitaciones habitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
+    // Calcula el total basado en el tipo de habitación, las fechas y cualquier otra lógica relevante.
+    return 100; // Este es un valor de ejemplo. Ajusta según tu lógica de negocio.
+}
 
-    // Método para calcular el total de la reserva
-    private Integer calcularTotalReserva(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
-        // Implementación de la lógica para calcular el total de la reserva aquí
-        // Esto es un ejemplo genérico, asegúrate de implementarlo según tus necesidades
-        return 100; // Valor de ejemplo
-    }
+
 
 
 
