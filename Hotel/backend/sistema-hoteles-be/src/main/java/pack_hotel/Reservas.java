@@ -164,17 +164,16 @@ public class Reservas {
     public String toString() {
         return "Reservas{" +
                 "idReserva=" + idReserva +
-                ", idHabitacion=" + idHabitacion +
-                ", tipoHabitacion=" + tipoHabitacion +
-                ", idUsuario=" + idUsuario +
                 ", idHotel=" + idHotel +
+                ", idHabitacion=" + idHabitacion +
+                ", idUsuario=" + idUsuario +
                 ", codigoReserva=" + codigoReserva +
                 ", personasReserva=" + personasReserva +
                 ", fechaIngreso=" + fechaIngreso +
                 ", fechaSalida=" + fechaSalida +
                 ", totalReserva=" + totalReserva +
                 ", estadoReserva='" + estadoReserva + '\'' +
+                ", tipoHabitacion=" + tipoHabitacion +
                 '}';
     }
-    
 }

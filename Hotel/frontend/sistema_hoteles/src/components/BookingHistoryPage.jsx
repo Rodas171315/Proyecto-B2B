@@ -22,13 +22,28 @@ const BookingHistoryPage = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Reservations fetched successfully:', data);
-        setReservations(data);
+        setReservations(data.map(reserva => ({
+          ...reserva,
+          // Assuming you've updated your backend to return tipoHabitacion as a number
+          tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion), // Translate tipoHabitacion to a readable format if needed
+        })));
       } else {
         console.error("Failed to fetch reservations.");
       }
     } catch (error) {
       console.error("Error fetching reservations:", error);
     }
+  };
+
+  // Function to translate tipoHabitacion number to a readable string (if necessary)
+  const translateTipoHabitacion = (tipoHabitacion) => {
+    const tipoHabitacionMap = {
+      1: "Doble",
+      2: "Junior Suite",
+      3: "Suite",
+      4: "Gran Suite",
+    };
+    return tipoHabitacionMap[tipoHabitacion] || "Unknown";
   };
 
   const calculateNights = (checkIn, checkOut) => {
@@ -46,7 +61,6 @@ const BookingHistoryPage = () => {
 
   const handleCancel = async (idReserva) => {
     console.log("Canceling reservation", idReserva);
-    // Implement cancellation logic here
     await fetchReservations();
   };
 
@@ -76,7 +90,7 @@ const BookingHistoryPage = () => {
       {reservations.length > 0 ? reservations.map((reserva) => (
         <Card key={reserva.idReserva} className="mb-3">
           <Card.Body>
-            <Card.Title>{reserva.nombreHotel} - {reserva.tipoHabitacion}</Card.Title>
+            <Card.Title>{reserva.nombreHotel} - Tipo de habitación: {reserva.tipoHabitacion}</Card.Title>
             <Card.Subtitle>{reserva.ciudad}, {reserva.pais} - {reserva.direccion}</Card.Subtitle>
             <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
             <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>

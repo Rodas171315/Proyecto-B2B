@@ -9,7 +9,7 @@ public class DetalleReservaDTO {
     private String pais;
     private String ciudad;
     private String direccion;
-    private String tipoHabitacion;
+    private Integer tipoHabitacion; // Cambiado de String a Integer
     private LocalDate fechaIngreso;
     private LocalDate fechaSalida;
     private Integer numeroNoches;
@@ -65,11 +65,11 @@ public class DetalleReservaDTO {
         this.direccion = direccion;
     }
 
-    public String getTipoHabitacion() {
+    public Integer getTipoHabitacion() {
         return tipoHabitacion;
     }
 
-    public void setTipoHabitacion(String tipoHabitacion) {
+    public void setTipoHabitacion(Integer tipoHabitacion) {
         this.tipoHabitacion = tipoHabitacion;
     }
 
