@@ -2,7 +2,6 @@ package pack_hotel;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.*;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -14,20 +13,28 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+
+
 
 @Path("/reservas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ReservasRecurso {
 
+    private static final Logger log = Logger.getLogger(ReservasRecurso.class);
+
+
     @Inject
-    ReservasRepositorio reservasRepositorio;
+    private ReservasRepositorio reservasRepositorio;
 
     @Inject
     private HabitacionRepositorio habitacionRepositorio;
@@ -191,26 +198,76 @@ private String getTipoHabitacionAsString(int tipoHabitacionId) {
 
 
 
-    @PUT
-    @Path("{id}")
-    @Transactional
-    public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActualizada) {
-        Reservas reservaExistente = reservasRepositorio.findById(id);
-        if (reservaExistente != null) {
-            reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
-            reservaExistente.setIdUsuario(reservaActualizada.getIdUsuario());
-            reservaExistente.setCodigoReserva(reservaActualizada.getCodigoReserva());
-            reservaExistente.setPersonasReserva(reservaActualizada.getPersonasReserva());
-            reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
-            reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
-            reservaExistente.setTotalReserva(reservaActualizada.getTotalReserva());
-            reservaExistente.setEstadoReserva(reservaActualizada.getEstadoReserva());
-            reservasRepositorio.persist(reservaExistente);
-            return Response.ok(reservaExistente).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+@PUT
+@Path("{id}")
+@Transactional
+public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActualizada) {
+    log.infof("Recibido solicitud de actualización para reserva con ID: %s", id);
+    log.infof("Datos de actualización: %s", reservaActualizada.toString());
+
+    if (reservaActualizada.getIdHabitacion() == null) {
+        log.errorf("Falta idHabitacion en la solicitud para reserva ID: %s", id);
+        return Response.status(Response.Status.BAD_REQUEST).entity("Falta idHabitacion en la solicitud").build();
     }
+
+    Reservas reservaExistente = reservasRepositorio.findById(id);
+    if (reservaExistente == null) {
+        log.errorf("Reserva no encontrada para ID: %s", id);
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    // Antes de verificar la disponibilidad, loguear la información relevante
+    log.infof("Verificando disponibilidad para idHabitacion: %s, FechaIngreso: %s, FechaSalida: %s, excluyendo reservaId: %s",
+              reservaActualizada.getIdHabitacion(), reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida(), id);
+
+    boolean disponible = verificarDisponibilidadConExclusion(
+            reservaActualizada.getIdHabitacion(),
+            reservaActualizada.getFechaIngreso(),
+            reservaActualizada.getFechaSalida(),
+            id);
+
+    if (!disponible) {
+        log.infof("Habitación %s no disponible para las fechas seleccionadas", reservaActualizada.getIdHabitacion());
+        return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
+    }
+
+    // Continuar con la actualización de la reserva
+    reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
+    reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
+    reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
+    
+    // Antes de calcular el total, loguear la información relevante
+    log.infof("Calculando total para la reserva con idHabitacion: %s, FechaIngreso: %s, FechaSalida: %s",
+              reservaActualizada.getIdHabitacion(), reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida());
+
+    reservaExistente.setTotalReserva(calcularTotalReserva(
+            reservaActualizada.getIdHabitacion(),
+            reservaActualizada.getFechaIngreso(),
+            reservaActualizada.getFechaSalida()));
+
+    reservasRepositorio.persist(reservaExistente);
+    log.infof("Reserva actualizada con éxito para el ID: %s", id);
+    return Response.ok(reservaExistente).build();
+}
+
+
+    // Método para verificar la disponibilidad excluyendo la reserva actual
+    private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId) {
+        // Implementación de la lógica para verificar disponibilidad aquí
+        // Esto es un ejemplo genérico, asegúrate de implementarlo según tus necesidades
+        return true;
+    }
+
+    // Método para calcular el total de la reserva
+    private Integer calcularTotalReserva(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
+        // Implementación de la lógica para calcular el total de la reserva aquí
+        // Esto es un ejemplo genérico, asegúrate de implementarlo según tus necesidades
+        return 100; // Valor de ejemplo
+    }
+
+
+
+
 
     @DELETE
     @Path("{id}")

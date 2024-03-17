@@ -26,6 +26,8 @@ public class Reservas {
     @Column(name = "ID_HABITACION", nullable = false)
     private Long idHabitacion;
 
+    
+
     @Column(name = "ID_USUARIO", nullable = false)
     private Long idUsuario;
 

@@ -17,6 +17,7 @@ public class DetalleReservaDTO {
     private Integer totalReserva;
     private String estadoReserva;
     private Integer capacidadPersonas;
+    private Long idHabitacion; // Campo añadido
 
 
     // Constructor vacío
@@ -128,5 +129,14 @@ public class DetalleReservaDTO {
 
     public void setCapacidadPersonas(Integer capacidadPersonas) {
         this.capacidadPersonas = capacidadPersonas;
+    }
+
+
+    public Long getIdHabitacion() {
+        return idHabitacion;
+    }
+
+    public void setIdHabitacion(Long idHabitacion) {
+        this.idHabitacion = idHabitacion;
     }
 }

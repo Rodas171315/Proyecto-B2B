@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useUser } from './UserContext';
+import EditReservationPage from './EditReservationPage';
 
 const BookingHistoryPage = () => {
   const [reservations, setReservations] = useState([]);
   const { user } = useUser();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentReservation, setCurrentReservation] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -12,19 +15,6 @@ const BookingHistoryPage = () => {
     }
   }, [user]);
 
-  const tiposHabitacion = {
-    1: 'Doble',
-    2: 'Junior Suite',
-    3: 'Suite',
-    4: 'Gran Suite'
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchReservations();
-    }
-  }, [user]);
-  
   const fetchReservations = async () => {
     try {
       const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
@@ -32,10 +22,10 @@ const BookingHistoryPage = () => {
         const data = await response.json();
         setReservations(data);
       } else {
-        console.error("No se pudieron obtener las reservas.");
+        console.error("Failed to fetch reservations.");
       }
     } catch (error) {
-      console.error("Error al obtener las reservas:", error);
+      console.error("Error fetching reservations:", error);
     }
   };
 
@@ -46,10 +36,37 @@ const BookingHistoryPage = () => {
     return Math.ceil(diffTime / (1000 * 3600 * 24));
   };
 
+  const handleEdit = (reserva) => {
+    setCurrentReservation(reserva);
+    setShowEditModal(true);
+  };
+
   const handleCancel = async (idReserva) => {
     console.log("Cancelando reserva", idReserva);
-    // Aquí deberías implementar la lógica para cancelar la reserva
+    // Implement cancellation logic here
     await fetchReservations();
+  };
+
+
+
+  const actualizarReserva = async (reservaActualizada) => {
+    console.log('Updating reservation with:', reservaActualizada);
+    try {
+      const response = await fetch(`http://localhost:8080/reservas/${reservaActualizada.idReserva}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reservaActualizada),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Reservation update failed: ${response.statusText}`);
+      }
+      console.log('Reservation updated successfully');
+      setShowEditModal(false);
+      fetchReservations(); // Refresh the list of reservations to reflect the changes
+    } catch (error) {
+      console.error('Error updating reservation:', error);
+    }
   };
 
   return (
@@ -68,11 +85,22 @@ const BookingHistoryPage = () => {
             <Card.Text>Estado: {reserva.estadoReserva}</Card.Text>
             <Card.Text>Código de reserva: {reserva.codigoReserva}</Card.Text>
             {reserva.estadoReserva !== "Cancelada" && (
-              <Button variant="danger" onClick={() => handleCancel(reserva.idReserva)}>Cancelar Reserva</Button>
+              <>
+                <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar Reserva</Button>
+                <Button variant="danger" onClick={() => handleCancel(reserva.idReserva)} className="ms-2">Cancelar Reserva</Button>
+              </>
             )}
           </Card.Body>
         </Card>
       )) : <p>No se encontraron reservas.</p>}
+      {currentReservation && (
+        <EditReservationPage
+          show={showEditModal}
+          handleClose={() => setShowEditModal(false)}
+          reserva={currentReservation}
+          actualizarReserva={actualizarReserva}
+        />
+      )}
     </div>
   );
 };
