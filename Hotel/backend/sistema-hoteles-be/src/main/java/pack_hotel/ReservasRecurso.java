@@ -208,6 +208,12 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    Habitaciones habitacion = habitacionRepositorio.findById(reservaActualizada.getIdHabitacion());
+    if (habitacion == null) {
+        log.errorf("Habitación no encontrada para ID: %s", reservaActualizada.getIdHabitacion());
+        return Response.status(Response.Status.NOT_FOUND).entity("Habitación no encontrada").build();
+    }
+
     // Asumir que la habitación y el tipo ya han sido validados como existentes y adecuados
     // Ahora, aplicar una lógica similar a la creación de reserva para verificar la disponibilidad
     List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1 AND id != ?2",
@@ -227,6 +233,9 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
     reservaExistente.setFechaSalida(fechaSalida);
     reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
     reservaExistente.setTipoHabitacion(reservaActualizada.getTipoHabitacion());
+    int totalReserva = calcularTotalReserva(habitacion, fechaIngreso, fechaSalida);
+    reservaExistente.setTotalReserva(totalReserva);
+    
     reservasRepositorio.persist(reservaExistente);
 
     log.infof("Reserva actualizada con éxito para el ID: %s", id);
@@ -242,22 +251,14 @@ private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate
     return reservasExistentes.stream().noneMatch(reserva -> 
         (fechaIngreso.isBefore(reserva.getFechaSalida()) && fechaSalida.isAfter(reserva.getFechaIngreso()))
     );
+
 }
-
-
-
-
 
 private Integer calcularTotalReserva(Habitaciones habitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
-    // Asumiendo que tienes una lógica para calcular el total basada en el tipo de habitación, las fechas, etc.
-    // Este es un valor de ejemplo, ajusta según tu lógica de negocio
-    return 100;
+    long numeroNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
+    double totalReserva = numeroNoches * habitacion.getPrecioxnoche();
+    return (int) Math.round(totalReserva);
 }
-
-
-
-
-
 
 
 
