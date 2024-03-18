@@ -12,6 +12,10 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,6 +28,8 @@ import java.util.NoSuchElementException;
 @Transactional
 public class UsuarioRecurso {
     
+    private static final Logger log = Logger.getLogger(ReservasRecurso.class);
+
     @Inject
     private UsuarioRepositorio usuariosRepositorio;
     
@@ -80,5 +86,28 @@ public class UsuarioRecurso {
         }
         throw new NoSuchElementException("No existe un usuario con el ID: " + id + ".");
     }
+
+
+    
+
+    @PUT
+@Path("{id}/rol")
+public Response actualizarRolUsuario(@PathParam("id") Long id, @QueryParam("nuevoRol") int nuevoRol) {
+    Usuarios usuario = usuariosRepositorio.findById(id);
+    if (usuario == null) {
+        log.errorf("Usuario no encontrado con ID: %s", id);
+        return Response.status(Response.Status.NOT_FOUND).entity("Usuario no encontrado").build();
+    }
+
+    // Aquí puedes añadir cualquier lógica adicional para validar el cambio de roles,
+    // como verificar si el usuario que realiza la solicitud tiene permisos para hacerlo.
+
+    usuario.setRol(nuevoRol);
+    usuariosRepositorio.persist(usuario);
+
+    log.infof("Rol del usuario con ID: %s actualizado con éxito", id);
+    return Response.ok(usuario).build();
+}
+
     
 }

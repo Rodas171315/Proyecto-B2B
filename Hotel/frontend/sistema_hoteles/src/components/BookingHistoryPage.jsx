@@ -59,9 +59,23 @@ const BookingHistoryPage = () => {
     setShowEditModal(true);
   };
 
-  const handleCancel = async (idReserva) => {
-    console.log("Canceling reservation", idReserva);
-    await fetchReservations();
+  const cancelarReserva = async (idReserva) => {
+    try {
+      const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('No se pudo cancelar la reserva');
+      }
+      alert('Reserva cancelada con éxito');
+      fetchReservations(); // Aquí es donde estaba el error tipográfico.
+    } catch (error) {
+      console.error('Error al cancelar la reserva:', error);
+      alert('Error al cancelar la reserva');
+    }
   };
 
   const actualizarReserva = async (reservaActualizada) => {
@@ -112,7 +126,7 @@ const BookingHistoryPage = () => {
             {reserva.estadoReserva !== "Cancelada" && (
               <>
                 <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar Reserva</Button>
-                <Button variant="danger" onClick={() => handleCancel(reserva.idReserva)} className="ms-2">Cancelar Reserva</Button>
+                <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar Reserva</Button>
               </>
             )}
           </Card.Body>

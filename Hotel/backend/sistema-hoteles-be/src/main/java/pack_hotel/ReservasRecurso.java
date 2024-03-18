@@ -261,16 +261,22 @@ private Integer calcularTotalReserva(Habitaciones habitacion, LocalDate fechaIng
 }
 
 
-
-    @DELETE
-    @Path("{id}")
-    @Transactional
-    public Response eliminarReserva(@PathParam("id") Long id) {
-        boolean eliminado = reservasRepositorio.deleteById(id);
-        if (eliminado) {
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+@PUT
+@Path("/{id}/cancelar")
+@Transactional
+public Response cancelarReserva(@PathParam("id") Long id) {
+    Reservas reserva = reservasRepositorio.findById(id);
+    if (reserva == null) {
+        return Response.status(Response.Status.NOT_FOUND).entity("Reserva no encontrada").build();
     }
+    
+    // Suponiendo que tienes un estado de reserva que indica la cancelación
+    reserva.setEstadoReserva("Cancelada");
+    reservasRepositorio.persist(reserva);
+    
+    log.infof("Reserva con ID: %s ha sido cancelada", id);
+    return Response.ok().entity("Reserva cancelada con éxito").build();
+}
+
+
 }
