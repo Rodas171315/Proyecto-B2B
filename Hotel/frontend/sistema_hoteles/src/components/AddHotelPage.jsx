@@ -3,7 +3,7 @@ import { Container, Form, Button, Alert, Row, Col, Table } from 'react-bootstrap
 
 const AddHotelPage = () => {
   const [hotelData, setHotelData] = useState({
-    id_cadena: 100, // Suponiendo un valor predeterminado para el ejemplo
+    id_cadena: 100,
     nombre: '',
     pais: '',
     ciudad: '',
@@ -15,18 +15,22 @@ const AddHotelPage = () => {
   const [hoteles, setHoteles] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [editandoId, setEditandoId] = useState(null);
+  const [hotelEditado, setHotelEditado] = useState({});
+
+  // Definición de la función fetchHoteles dentro del componente para evitar el problema de referencia
+  const fetchHoteles = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/hoteles');
+      if (!response.ok) throw new Error('No se pudieron cargar los hoteles');
+      const data = await response.json();
+      setHoteles(data);
+    } catch (error) {
+      setErrorMessage('Error al cargar hoteles: ' + error.message);
+    }
+  };
 
   useEffect(() => {
-    const fetchHoteles = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/hoteles');
-        if (!response.ok) throw new Error('No se pudieron cargar los hoteles');
-        const data = await response.json();
-        setHoteles(data);
-      } catch (error) {
-        setErrorMessage('Error al cargar hoteles: ' + error.message);
-      }
-    };
     fetchHoteles();
   }, []);
 
@@ -44,7 +48,48 @@ const AddHotelPage = () => {
       });
       if (!response.ok) throw new Error('Error al crear hotel');
       setSuccessMessage('Hotel creado exitosamente');
-      // Opcional: Resetear el formulario aquí
+      fetchHoteles();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
+  const iniciarEdicion = (hotel) => {
+    setEditandoId(hotel.id_hotel);
+    setHotelEditado({ ...hotel });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setHotelEditado(prev => ({ ...prev, [name]: value }));
+  };
+
+  const guardarEdicion = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/hoteles/${editandoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(hotelEditado),
+      });
+
+      if (!response.ok) throw new Error('Error al editar hotel');
+      setEditandoId(null);
+      setSuccessMessage('Hotel editado exitosamente');
+      fetchHoteles();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+
+  const eliminarHotel = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/hoteles/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Error al eliminar hotel');
+      setSuccessMessage('Hotel eliminado exitosamente');
+      fetchHoteles();
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -113,23 +158,47 @@ const AddHotelPage = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
+            <th>ID</th>
             <th>Nombre</th>
             <th>País</th>
             <th>Ciudad</th>
             <th>Dirección</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {hoteles.map((hotel) => (
             <tr key={hotel.id_hotel}>
-              <td>{hotel.nombre}</td>
-              <td>{hotel.pais}</td>
-              <td>{hotel.ciudad}</td>
-              <td>{hotel.direccion}</td>
+              {editandoId === hotel.id_hotel ? (
+                <>
+                  <td>{hotel.id_hotel}</td>
+                  <td><Form.Control type="text" name="nombre" value={hotelEditado.nombre} onChange={handleEditChange} /></td>
+                  <td><Form.Control type="text" name="pais" value={hotelEditado.pais} onChange={handleEditChange} /></td>
+                  <td><Form.Control type="text" name="ciudad" value={hotelEditado.ciudad} onChange={handleEditChange} /></td>
+                  <td><Form.Control type="text" name="direccion" value={hotelEditado.direccion} onChange={handleEditChange} /></td>
+                  <td>
+                    <Button variant="success" onClick={guardarEdicion}>Guardar</Button>
+                    <Button variant="danger" onClick={() => setEditandoId(null)} style={{marginLeft: '5px'}}>Cancelar</Button>
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>{hotel.id_hotel}</td>
+                  <td>{hotel.nombre}</td>
+                  <td>{hotel.pais}</td>
+                  <td>{hotel.ciudad}</td>
+                  <td>{hotel.direccion}</td>
+                  <td>
+                    <Button variant="secondary" onClick={() => iniciarEdicion(hotel)}>Editar</Button>
+                    <Button variant="danger" onClick={() => eliminarHotel(hotel.id_hotel)} style={{marginLeft: '5px'}}>Eliminar</Button>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>
       </Table>
+      
       {/* Mensajes de éxito o error, si existen */}
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
       {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
