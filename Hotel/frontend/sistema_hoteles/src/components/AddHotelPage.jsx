@@ -1,98 +1,140 @@
-import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Card, CloseButton } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Alert, Row, Col, Table } from 'react-bootstrap';
 
 const AddHotelPage = () => {
-    const [hotel, setHotel] = useState({
-        name: '',
-        address: '',
-        description: '',
-        rooms: [{ type: '', price: '', maxGuests: '' }],
-    });
-    const [showSuccess, setShowSuccess] = useState(false);
+  const [hotelData, setHotelData] = useState({
+    id_cadena: 100, // Suponiendo un valor predeterminado para el ejemplo
+    nombre: '',
+    pais: '',
+    ciudad: '',
+    direccion: '',
+    checkin: '15:00:00',
+    checkout: '11:00:00',
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setHotel({ ...hotel, [name]: value });
+  const [hoteles, setHoteles] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const fetchHoteles = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/hoteles');
+        if (!response.ok) throw new Error('No se pudieron cargar los hoteles');
+        const data = await response.json();
+        setHoteles(data);
+      } catch (error) {
+        setErrorMessage('Error al cargar hoteles: ' + error.message);
+      }
     };
+    fetchHoteles();
+  }, []);
 
-    const handleRoomChange = (index, event) => {
-        const updatedRooms = [...hotel.rooms];
-        updatedRooms[index][event.target.name] = event.target.value;
-        setHotel({ ...hotel, rooms: updatedRooms });
-    };
+  const handleHotelChange = (e) => {
+    const { name, value } = e.target;
+    setHotelData(prev => ({ ...prev, [name]: value }));
+  };
 
-    const addRoom = () => {
-        setHotel({
-            ...hotel,
-            rooms: [...hotel.rooms, { type: '', price: '', maxGuests: '' }],
-        });
-    };
+  const submitHotel = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/hoteles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(hotelData),
+      });
+      if (!response.ok) throw new Error('Error al crear hotel');
+      setSuccessMessage('Hotel creado exitosamente');
+      // Opcional: Resetear el formulario aquí
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
 
-    const removeRoom = (index) => {
-        const updatedRooms = [...hotel.rooms];
-        updatedRooms.splice(index, 1);
-        setHotel({ ...hotel, rooms: updatedRooms });
-    };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Obtener la lista actual de hoteles
-        const existingHotels = JSON.parse(localStorage.getItem('hotels')) || [];
-        // Agregar el nuevo hotel
-        const updatedHotels = [...existingHotels, hotel];
-        localStorage.setItem('hotels', JSON.stringify(updatedHotels));
-        setShowSuccess(true);
-        // Resetear el formulario o redirigir al usuario
-    };
-    
-
-    return (
-        <Container>
-            <h2>Agregar Nuevo Hotel</h2>
-            {showSuccess && <Alert variant="success">Hotel agregado con éxito.</Alert>}
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                    <Form.Label>Nombre del Hotel</Form.Label>
-                    <Form.Control type="text" placeholder="Nombre" name="name" value={hotel.name} onChange={handleChange} required />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label>Dirección</Form.Label>
-                    <Form.Control type="text" placeholder="Dirección" name="address" value={hotel.address} onChange={handleChange} required />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label>Descripción</Form.Label>
-                    <Form.Control as="textarea" rows={3} placeholder="Descripción del hotel" name="description" value={hotel.description} onChange={handleChange} required />
-                </Form.Group>
-
-                {hotel.rooms.map((room, index) => (
-                    <Card className="mb-3" key={index}>
-                        <Card.Body>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Tipo de Habitación</Form.Label>
-                                <Form.Control type="text" placeholder="Ej. Doble, Suite" name="type" value={room.type} onChange={e => handleRoomChange(index, e)} required />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Precio por Noche</Form.Label>
-                                <Form.Control type="number" placeholder="Precio" name="price" value={room.price} onChange={e => handleRoomChange(index, e)} required />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Máximo de Huéspedes</Form.Label>
-                                <Form.Control type="number" placeholder="Máximo de huéspedes" name="maxGuests" value={room.maxGuests} onChange={e => handleRoomChange(index, e)} required />
-                            </Form.Group>
-                            <CloseButton onClick={() => removeRoom(index)} />
-                        </Card.Body>
-                    </Card>
-                ))}
-                <Button variant="secondary" onClick={addRoom} className="mb-3">Añadir Habitación</Button>
-
-                <Button variant="primary" type="submit">
-                    Agregar Hotel
-                </Button>
-            </Form>
-        </Container>
-    );
+  return (
+    <Container>
+      <h1>Agregar Nuevo Hotel</h1>
+      <Form>
+        <Row>
+          <Col>
+            <Form.Group controlId="formHotelNombre">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Nombre del hotel"
+                name="nombre"
+                value={hotelData.nombre}
+                onChange={handleHotelChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formHotelPais">
+              <Form.Label>País</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="País"
+                name="pais"
+                value={hotelData.pais}
+                onChange={handleHotelChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group controlId="formHotelCiudad">
+              <Form.Label>Ciudad</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ciudad"
+                name="ciudad"
+                value={hotelData.ciudad}
+                onChange={handleHotelChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formHotelDireccion">
+              <Form.Label>Dirección</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Dirección"
+                name="direccion"
+                value={hotelData.direccion}
+                onChange={handleHotelChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Button variant="primary" onClick={submitHotel}>Crear Hotel</Button>
+      </Form>
+      <h2 className="mt-5">Hoteles Disponibles</h2>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>País</th>
+            <th>Ciudad</th>
+            <th>Dirección</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hoteles.map((hotel) => (
+            <tr key={hotel.id_hotel}>
+              <td>{hotel.nombre}</td>
+              <td>{hotel.pais}</td>
+              <td>{hotel.ciudad}</td>
+              <td>{hotel.direccion}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      {/* Mensajes de éxito o error, si existen */}
+      {successMessage && <Alert variant="success">{successMessage}</Alert>}
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+    </Container>
+  );
 };
 
 export default AddHotelPage;

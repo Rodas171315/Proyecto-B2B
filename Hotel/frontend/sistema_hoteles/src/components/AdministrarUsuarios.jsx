@@ -266,9 +266,7 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
 ) : (
 <Button variant="secondary" size="sm" onClick={() => {
   setEditandoId(usuario.id);
-  // Asegúrate de que aquí conviertes el nombre del rol a su valor numérico correspondiente.
-  // Este paso depende de cómo estás manejando los roles en tu estado o contexto.
-  // Por ejemplo, si tienes un mapeo de nombres de roles a sus IDs, úsalo aquí.
+
   const rolActual = roles.find(rol => rol.name === usuario.rolNombre)?.id;
   setRolSeleccionado(String(rolActual)); // Actualiza esto para que coincida con tu estructura de datos.
 }}>Editar</Button>
