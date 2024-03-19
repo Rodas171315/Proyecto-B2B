@@ -26,13 +26,20 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
   "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
   "Zambia", "Zimbabwe"]; 
   
-  const roles = [ { id: 1, name: 'Admin' }, { id: 2, name: 'Usuario' } ]; // Ejemplo, reemplaza según corresponda
+  const roles = [
+    { id: 1, name: 'Admin' },
+    { id: 2, name: 'VisitanteRegistrado' },
+    { id: 3, name: 'Webservice' },
+  ];
 
   function AdministrarUsuarios() {
+    const [editandoId, setEditandoId] = useState(null);
+    const [rolSeleccionado, setRolSeleccionado] = useState('');
     const [usuarios, setUsuarios] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
     const [usuarioForm, setUsuarioForm] = useState({
+
       email: '',
       password: '',
       primer_nombre: '',
@@ -121,6 +128,44 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
       }
     };
     
+    const eliminarUsuario = async (id) => {
+      try {
+        const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
+          method: 'DELETE',
+        });
+  
+        if (!response.ok) throw new Error('Error al eliminar el usuario');
+  
+        console.log("Usuario eliminado con éxito:", id);
+        fetchUsuarios(); // Refrescar la lista de usuarios después de eliminar uno
+      } catch (error) {
+        console.error("Error al eliminar el usuario:", error);
+        setError(error.message);
+      }
+    };
+
+
+    const actualizarRolUsuario = async (id, nuevoRol) => {
+      const formData = { rol: nuevoRol };
+      
+      try {
+        const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+  
+        if (!response.ok) throw new Error('Error al actualizar el usuario');
+  
+        console.log("Usuario actualizado con éxito:", await response.json());
+        setEditandoId(null); // Desactivar modo edición
+        fetchUsuarios();
+      } catch (error) {
+        console.error("Error al actualizar el usuario:", error);
+        setError(error.message);
+      }
+    };
+    
 
     return (
       <div>
@@ -180,36 +225,66 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
         </Form>
     
         {cargando ? <p>Cargando...</p> : error ? <p>Error: {error}</p> : (
-      <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Primer Nombre</th>
-          <th>Primer Apellido</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {usuarios.map(usuario => (
-          <tr key={usuario.id}>
-            <td>{usuario.id}</td>
-            <td>{usuario.primerNombre}</td>
-            <td>{usuario.primerApellido}</td>
-            <td>{usuario.email}</td>
-            <td>{usuario.rolNombre}</td>
-            <td>
-              <Button variant="secondary" size="sm">Editar</Button>
-              <Button variant="danger" size="sm" className="ms-2">Eliminar</Button>
-            </td>
+        <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Primer Nombre</th>
+            <th>Primer Apellido</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {usuarios.map((usuario) => (
+            <tr key={usuario.id}>
+              <td>{usuario.id}</td>
+              <td>{usuario.primerNombre}</td>
+              <td>{usuario.primerApellido}</td>
+              <td>{usuario.email}</td>
+              <td>
+                {editandoId === usuario.id ? (
+                  <select
+                    value={rolSeleccionado}
+                    onChange={(e) => setRolSeleccionado(e.target.value)}
+                    onBlur={() => actualizarRolUsuario(usuario.id, rolSeleccionado)}
+                  >
+                    <option value="1">Admin</option>
+                    <option value="2">VisitanteRegistrado</option>
+                    <option value="3">Webservice</option>
+                  </select>
+                ) : (
+                  usuario.rolNombre
+                )}
+              </td>
+              <td>
+                {editandoId === usuario.id ? (
+                  <Button variant="success" size="sm" onClick={() => actualizarRolUsuario(usuario.id, parseInt(rolSeleccionado, 10))}>
+  Guardar
+</Button>
+) : (
+<Button variant="secondary" size="sm" onClick={() => {
+  setEditandoId(usuario.id);
+  // Asegúrate de que aquí conviertes el nombre del rol a su valor numérico correspondiente.
+  // Este paso depende de cómo estás manejando los roles en tu estado o contexto.
+  // Por ejemplo, si tienes un mapeo de nombres de roles a sus IDs, úsalo aquí.
+  const rolActual = roles.find(rol => rol.name === usuario.rolNombre)?.id;
+  setRolSeleccionado(String(rolActual)); // Actualiza esto para que coincida con tu estructura de datos.
+}}>Editar</Button>
+)}
+<Button variant="danger" size="sm" onClick={() => eliminarUsuario(usuario.id)}>
+  Eliminar
+</Button>
+
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     )}
   </div>
 );
-}
+};
 
 export default AdministrarUsuarios;

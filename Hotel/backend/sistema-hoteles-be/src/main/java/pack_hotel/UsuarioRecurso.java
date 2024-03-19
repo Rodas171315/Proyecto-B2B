@@ -59,14 +59,17 @@ public class UsuarioRecurso {
     }
     
     @DELETE
-    @Path("{id}")
-    public String delete(@PathParam("id") Long id) {
-        if (usuariosRepositorio.deleteById(id)) {
-            return "El usuario se ha borrado";
+    @Path("/{id}")
+    public Response eliminarUsuario(@PathParam("id") Long id) {
+        Usuarios usuario = usuariosRepositorio.findById(id);
+        if (usuario != null) {
+            usuariosRepositorio.delete(usuario);
+            return Response.ok().build(); // Respuesta exitosa sin contenido
         } else {
-            return "No se ha borrado (no existe)";
+            return Response.status(Response.Status.NOT_FOUND).build(); // Usuario no encontrado
         }
     }
+
     
     @PUT
     @Path("{id}")
@@ -162,5 +165,49 @@ public class UsuarioRecurso {
         return Response.status(Response.Status.CREATED).entity(usuarioCreadoDTO).build();
     }
     
+    @PUT
+@Path("/{id}")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public Response actualizarUsuario(@PathParam("id") Long id, UsuarioEdicionDTO dto) {
+    System.out.println("Recibida solicitud de actualización para usuario con ID: " + id + " y datos: " + dto);
+
+    if (dto.getRol() == null) {
+        // Puedes retornar un código de error específico o un mensaje que indique que el rol es requerido.
+        return Response.status(Response.Status.BAD_REQUEST).entity("El rol es requerido").build();
+    }
+
+    Usuarios usuarioExistente = usuariosRepositorio.findById(id);
+    if (usuarioExistente == null) {
+        System.out.println("Usuario no encontrado con ID: " + id);
+
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    System.out.println("Usuario actual antes de la actualización: " + usuarioExistente);
+
+
+    // Actualiza solo los campos que necesitas cambiar. En este caso, el rol.
+    usuarioExistente.setRol(dto.getRol());
+    
+    usuariosRepositorio.persist(usuarioExistente);
+
+    UsuarioDetalleDTO usuarioActualizadoDTO = new UsuarioDetalleDTO(
+        usuarioExistente.getId(),
+        rolRepositorio.obtenerNombreRolPorId(Long.valueOf(usuarioExistente.getRol())),
+        usuarioExistente.getEmail(),
+        usuarioExistente.getPrimer_nombre(),
+        usuarioExistente.getSegundo_nombre(),
+        usuarioExistente.getPrimer_apellido(),
+        usuarioExistente.getSegundo_apellido(),
+        usuarioExistente.getFecha_nacimiento(),
+        usuarioExistente.getNacionalidad(),
+        usuarioExistente.getPasaporte()
+    );
+
+    System.out.println("Usuario actualizado: " + usuarioActualizadoDTO);
+
+    return Response.ok(usuarioActualizadoDTO).build();
+}
+
 
 }
