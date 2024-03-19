@@ -14,8 +14,7 @@ import CheckoutPage from './components/CheckoutPage';
 import CartPage from './components/CartPage';
 import AddHotelPage from './components/AddHotelPage';
 import UserProfilePage from './components/UserProfilePage';
-import HotelAdminPage from './components/HotelAdminPage';
-
+import AdministrarUsuarios from './components/AdministrarUsuarios';
 import { ReservationsProvider } from './components/ReservationsContext';
 import { CartProvider } from './components/CartContext'; 
 import { HotelsProvider } from './components/HotelsContext'; 
@@ -48,7 +47,7 @@ const App = () => {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/add-hotel" element={<AddHotelPage />} />
                     <Route path="/perfil" element={<UserProfilePage />} />
-                    <Route path="/Administrar" element={<HotelAdminPage />} />
+                    <Route path="/Administrar" element={<AdministrarUsuarios />} />
                   </Routes>
                 </div>
               </main>

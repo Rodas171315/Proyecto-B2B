@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pack_hotel;
 
 import jakarta.inject.Inject;
@@ -13,26 +9,30 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author root
  */
-
 @Path("/usuarios")
 @Transactional
 public class UsuarioRecurso {
-    
-    private static final Logger log = Logger.getLogger(ReservasRecurso.class);
+
+    private static final Logger log = Logger.getLogger(UsuarioRecurso.class);
 
     @Inject
     private UsuarioRepositorio usuariosRepositorio;
-    
+
+    @Inject
+    private RolRepositorio rolRepositorio;
+
     @GET
     public List<Usuarios> index() {
         return usuariosRepositorio.listAll();
@@ -86,28 +86,34 @@ public class UsuarioRecurso {
         }
         throw new NoSuchElementException("No existe un usuario con el ID: " + id + ".");
     }
-
-
     
 
     @PUT
-@Path("{id}/rol")
-public Response actualizarRolUsuario(@PathParam("id") Long id, @QueryParam("nuevoRol") int nuevoRol) {
-    Usuarios usuario = usuariosRepositorio.findById(id);
-    if (usuario == null) {
-        log.errorf("Usuario no encontrado con ID: %s", id);
-        return Response.status(Response.Status.NOT_FOUND).entity("Usuario no encontrado").build();
+    @Path("{id}/rol")
+    public Response actualizarRolUsuario(@PathParam("id") Long id, @QueryParam("nuevoRol") int nuevoRol) {
+        Usuarios usuario = usuariosRepositorio.findByIdOptional(id).orElseThrow(() ->
+            new NoSuchElementException("Usuario no encontrado con ID: " + id + "."));
+        
+        usuario.setRol(nuevoRol);
+        usuariosRepositorio.persist(usuario);
+        return Response.ok(usuario).build();
     }
 
-    // Aquí puedes añadir cualquier lógica adicional para validar el cambio de roles,
-    // como verificar si el usuario que realiza la solicitud tiene permisos para hacerlo.
-
-    usuario.setRol(nuevoRol);
-    usuariosRepositorio.persist(usuario);
-
-    log.infof("Rol del usuario con ID: %s actualizado con éxito", id);
-    return Response.ok(usuario).build();
-}
-
+    @GET
+    @Path("/detalles")
+    public Response obtenerDetallesUsuarios() {
+        List<UsuarioDetalleDTO> detallesUsuarios = usuariosRepositorio.listAll().stream().map(usuario -> {
+            // Convierte el int a Long
+            Long rolId = Long.valueOf(usuario.getRol());
+            String nombreRol = rolRepositorio.obtenerNombreRolPorId(rolId);
+            nombreRol = nombreRol != null ? nombreRol : "Rol no encontrado";
+            return new UsuarioDetalleDTO(usuario.getId(), nombreRol, usuario.getEmail(), usuario.getPrimer_nombre(), usuario.getSegundo_nombre(),
+                    usuario.getPrimer_apellido(), usuario.getSegundo_apellido(), usuario.getFecha_nacimiento(),
+                    usuario.getNacionalidad(), usuario.getPasaporte());
+        }).collect(Collectors.toList());
+        return Response.ok(detallesUsuarios).build();
+    }
+    
+    
     
 }
