@@ -2,6 +2,8 @@ package pack_hotel;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -114,6 +116,51 @@ public class UsuarioRecurso {
         return Response.ok(detallesUsuarios).build();
     }
     
+    @POST
+    @Path("/crear")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response crearUsuario(UsuarioCreacionDTO dto) {
+        System.out.println("DTO recibido: " + dto); // Agrega un log para imprimir el DTO recibido
     
+        Usuarios nuevoUsuario = new Usuarios();
+        nuevoUsuario.setRol(dto.getRol());
+        nuevoUsuario.setEmail(dto.getEmail());
+        nuevoUsuario.setPassword(dto.getPassword()); // Considera manejar las contraseñas de manera segura
+        nuevoUsuario.setPrimer_nombre(dto.getPrimerNombre());
+        nuevoUsuario.setSegundo_nombre(dto.getSegundoNombre());
+        nuevoUsuario.setPrimer_apellido(dto.getPrimerApellido());
+        nuevoUsuario.setSegundo_apellido(dto.getSegundoApellido());
+        nuevoUsuario.setFecha_nacimiento(dto.getFechaNacimiento());
+        nuevoUsuario.setNacionalidad(dto.getNacionalidad());
+        nuevoUsuario.setPasaporte(dto.getPasaporte());
+        
+        usuariosRepositorio.persist(nuevoUsuario);
+        
+        // Asegurándose de que el ID se haya asignado automáticamente
+        if (nuevoUsuario.getId() == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("No se pudo crear el usuario.").build();
+        }
+        
+        // Obtener el nombre del rol para incluirlo en el DTO
+        String nombreRol = rolRepositorio.obtenerNombreRolPorId(Long.valueOf(nuevoUsuario.getRol()));
+        nombreRol = nombreRol != null ? nombreRol : "Rol no encontrado";
+        
+        UsuarioDetalleDTO usuarioCreadoDTO = new UsuarioDetalleDTO(
+            nuevoUsuario.getId(),
+            nombreRol,
+            nuevoUsuario.getEmail(),
+            nuevoUsuario.getPrimer_nombre(),
+            nuevoUsuario.getSegundo_nombre(),
+            nuevoUsuario.getPrimer_apellido(),
+            nuevoUsuario.getSegundo_apellido(),
+            nuevoUsuario.getFecha_nacimiento(),
+            nuevoUsuario.getNacionalidad(),
+            nuevoUsuario.getPasaporte()
+        );
     
+        return Response.status(Response.Status.CREATED).entity(usuarioCreadoDTO).build();
+    }
+    
+
 }
