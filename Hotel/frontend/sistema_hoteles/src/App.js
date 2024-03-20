@@ -15,6 +15,7 @@ import CartPage from './components/CartPage';
 import AddHotelPage from './components/AddHotelPage';
 import UserProfilePage from './components/UserProfilePage';
 import AdministrarUsuarios from './components/AdministrarUsuarios';
+import AddHabitacionPage from './components/AddHabitacionPage';
 import { ReservationsProvider } from './components/ReservationsContext';
 import { CartProvider } from './components/CartContext'; 
 import { HotelsProvider } from './components/HotelsContext'; 
@@ -46,6 +47,7 @@ const App = () => {
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/add-hotel" element={<AddHotelPage />} />
+                    <Route path="/add-habitacion" element={<AddHabitacionPage />} />
                     <Route path="/perfil" element={<UserProfilePage />} />
                     <Route path="/Administrar" element={<AdministrarUsuarios />} />
                   </Routes>

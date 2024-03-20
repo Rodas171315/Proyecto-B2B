@@ -6,12 +6,18 @@ import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Path("/habitaciones")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Transactional
 public class HabitacionRecurso {
     
@@ -19,7 +25,12 @@ public class HabitacionRecurso {
     private HabitacionRepositorio habitacionesRepositorio;
     
     @GET
-    public List<Habitaciones> index() {
+    public List<Habitaciones> index(@QueryParam("hotelId") Long hotelId) {
+        if (hotelId != null) {
+            // Filtra las habitaciones por el ID del hotel si se proporciona un hotelId
+            return habitacionesRepositorio.list("id_hotel", hotelId);
+        }
+        // Si no se proporciona hotelId, devuelve todas las habitaciones
         return habitacionesRepositorio.listAll();
     }
     
