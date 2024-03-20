@@ -49,9 +49,14 @@ const AddHabitacionPage = () => {
   
 
   const handleSelectHotel = (e) => {
-    const idHotel = e.target.value;
-    setSelectedHotel(idHotel);
-    fetchHabitaciones(idHotel);
+    const hotelId = e.target.value;
+    setSelectedHotel(hotelId);
+    if (hotelId) {
+      fetchHabitaciones(hotelId);
+    } else {
+      // Si no hay un hotel seleccionado, limpiam las habitaciones mostradas
+      setHabitaciones([]);
+    }
   };
 
   const handleChangeNuevaHabitacion = (e) => {
@@ -65,28 +70,34 @@ const AddHabitacionPage = () => {
   const handleSubmitHabitacion = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/habitaciones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...nuevaHabitacion, hotelId: selectedHotel }), // Asegúrate de que este campo coincide con lo que espera tu backend
-      });
-      if (!response.ok) throw new Error('Error al crear la habitación');
-      setSuccessMessage('Habitación creada exitosamente');
-      fetchHabitaciones(selectedHotel); // Recargar las habitaciones del hotel seleccionado
-      // Resetear formulario de nueva habitación
-      setNuevaHabitacion({
-        numero_habitacion: '',
-        capacidad_personas: '',
-        tipo_habitacion: '',
-        precioxpersona: '',
-        precioxnoche: '',
-        valuacion: '',
-      });
+        const habitacionData = { 
+            ...nuevaHabitacion, 
+            id_hotel: selectedHotel // Cambio importante aquí: asegurarse de que el nombre del campo coincida con el backend
+        };
+        const response = await fetch('http://localhost:8080/habitaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(habitacionData),
+        });
+        if (!response.ok) throw new Error('Error al crear la habitación');
+        setSuccessMessage('Habitación creada exitosamente');
+        fetchHabitaciones(selectedHotel); // Recargar las habitaciones del hotel seleccionado
+        // Resetear formulario de nueva habitación
+        setNuevaHabitacion({
+            numero_habitacion: '',
+            capacidad_personas: '',
+            tipo_habitacion: '',
+            precioxpersona: '',
+            precioxnoche: '',
+            valuacion: '',
+        });
     } catch (error) {
-      console.error('Error al crear la habitación:', error);
-      setErrorMessage('Error al crear la habitación');
+        console.error('Error al crear la habitación:', error);
+        setErrorMessage('Error al crear la habitación');
     }
-  };
+};
+
+
 
   return (
     <Container>
