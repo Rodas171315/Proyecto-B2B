@@ -13,8 +13,16 @@ const AddHabitacionPage = () => {
     precioxnoche: '',
     valuacion: '',
   });
+
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [habitacionEditando, setHabitacionEditando] = useState(null);
+  const [datosEdicion, setDatosEdicion] = useState({
+    precioxpersona: '',
+    precioxnoche: '',
+  });
+
+
 
   useEffect(() => {
     fetchHoteles();
@@ -99,7 +107,57 @@ const AddHabitacionPage = () => {
 };
 
 
+const iniciarEdicion = (habitacion) => {
+    setHabitacionEditando(habitacion.id_habitacion);
+    setDatosEdicion({ precioxpersona: habitacion.precioxpersona, precioxnoche: habitacion.precioxnoche });
+  };
+  
+  const guardarEdicion = async (idHabitacion) => {
+    try {
+      // Asegúrate de que estás incluyendo todos los campos necesarios y no anulas los que no quieres cambiar
+      const response = await fetch(`http://localhost:8080/habitaciones/${idHabitacion}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        // Aquí asumimos que tienes todos los datos necesarios de la habitación y solo modificas precio por persona y por noche
+        body: JSON.stringify({
+          ...datosEdicion, // Esto incluye precioxpersona y precioxnoche
+          id_habitacion: idHabitacion, // Esto parece ser incorrecto; asegúrate de que el backend espera `id` en la URL, no en el cuerpo
+          // Agrega cualquier otro campo que el backend espere y que no cambie
+        }),
+      });
+      if (!response.ok) throw new Error('Error al actualizar la habitación');
+      setSuccessMessage('Habitación actualizada exitosamente');
+      fetchHabitaciones(selectedHotel);
+      setHabitacionEditando(null);
+    } catch (error) {
+      console.error('Error al actualizar la habitación:', error);
+      setErrorMessage('Error al actualizar la habitación');
+    }
+  };
+  
+  
+const cancelarEdicion = () => {
+  // Limpiar el estado que maneja la habitación actualmente siendo editada
+  setHabitacionEditando(null);
+  // Resetear los datos de edición a sus valores por defecto
+  setDatosEdicion({ precioxpersona: '', precioxnoche: '' });
+};
 
+  
+const eliminarHabitacion = async (idHabitacion) => {
+    try {
+      const response = await fetch(`http://localhost:8080/habitaciones/${idHabitacion}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Error al eliminar la habitación');
+      setSuccessMessage('Habitación eliminada exitosamente');
+      fetchHabitaciones(selectedHotel); // Recargar las habitaciones para el hotel seleccionado
+    } catch (error) {
+      console.error('Error al eliminar la habitación:', error);
+      setErrorMessage('Error al eliminar la habitación');
+    }
+  };
+  
   return (
     <Container>
       <h1>Añadir Habitación a Hotel</h1>
@@ -215,22 +273,57 @@ onChange={handleChangeNuevaHabitacion}
             </tr>
           </thead>
           <tbody>
-            {habitaciones.map((habitacion) => (
-              <tr key={habitacion.id_habitacion}>
-                <td>{habitacion.numero_habitacion}</td>
-                <td>{habitacion.capacidad_personas}</td>
-                <td>{habitacion.tipo_habitacion}</td>
-                <td>${habitacion.precioxpersona}</td>
-                <td>${habitacion.precioxnoche}</td>
-                <td>{habitacion.valuacion} estrellas</td>
-              </tr>
-            ))}
-          </tbody>
+  {habitaciones.map((habitacion) => (
+    <tr key={habitacion.id_habitacion}>
+      <td>{habitacion.numero_habitacion}</td>
+      <td>{habitacion.capacidad_personas}</td>
+      <td>{habitacion.tipo_habitacion}</td>
+      <td>
+        {habitacionEditando === habitacion.id_habitacion ? (
+          <Form.Control
+            type="number"
+            value={datosEdicion.precioxpersona}
+            onChange={(e) => setDatosEdicion({ ...datosEdicion, precioxpersona: e.target.value })}
+          />
+        ) : (
+          `$${habitacion.precioxpersona}`
+        )}
+      </td>
+      <td>
+        {habitacionEditando === habitacion.id_habitacion ? (
+          <Form.Control
+            type="number"
+            value={datosEdicion.precioxnoche}
+            onChange={(e) => setDatosEdicion({ ...datosEdicion, precioxnoche: e.target.value })}
+          />
+        ) : (
+          `$${habitacion.precioxnoche}`
+        )}
+      </td>
+      <td>{habitacion.valuacion} estrellas</td>
+      <td>
+        {habitacionEditando === habitacion.id_habitacion ? (
+          <>
+            <Button variant="success" onClick={() => guardarEdicion(habitacion.id_habitacion)}>Guardar</Button>
+            <Button variant="secondary" onClick={cancelarEdicion} style={{ marginLeft: '5px' }}>Cancelar</Button>
+          </>
+        ) : (
+          <>
+            <Button variant="primary" onClick={() => iniciarEdicion(habitacion)}>Editar</Button>
+            <Button variant="danger" onClick={() => eliminarHabitacion(habitacion.id_habitacion)} style={{ marginLeft: '5px' }}>Eliminar</Button>
+          </>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </Table>
       ) : (
         <Alert variant="info">No hay habitaciones disponibles para este hotel. Puedes añadir nuevas.</Alert>
       )}
     </>
+    
   )}
 </Container>
 );

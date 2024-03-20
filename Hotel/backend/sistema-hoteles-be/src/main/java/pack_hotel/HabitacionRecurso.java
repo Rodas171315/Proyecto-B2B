@@ -66,20 +66,28 @@ public class HabitacionRecurso {
     
     @PUT
     @Path("{id}")
-    public Habitaciones update(@PathParam("id") Long id, Habitaciones habitacion) {
-        var updatedData = habitacionesRepositorio.findById(id);
-        if (updatedData != null) {
-            updatedData.setId_hotel(habitacion.getId_hotel());
-            updatedData.setDisponible(habitacion.isDisponible());
-            updatedData.setNumero_habitacion(habitacion.getNumero_habitacion());
-            updatedData.setCapacidad_personas(habitacion.getCapacidad_personas());
-            updatedData.setTipo_habitacion(habitacion.getTipo_habitacion()); // Now accepts Integer
-            updatedData.setPrecioxpersona(habitacion.getPrecioxpersona());
-            updatedData.setPrecioxnoche(habitacion.getPrecioxnoche());
-            updatedData.setValuacion(habitacion.getValuacion());
-            habitacionesRepositorio.persist(updatedData);
-            return updatedData;
+    public Habitaciones update(@PathParam("id") Long id, Habitaciones datosActualizados) {
+        Habitaciones habitacionExistente = habitacionesRepositorio.findById(id);
+        if (habitacionExistente != null) {
+            // No necesitas verificar si precioxpersona o precioxnoche son null porque son primitivos
+            habitacionExistente.setPrecioxpersona(datosActualizados.getPrecioxpersona());
+            habitacionExistente.setPrecioxnoche(datosActualizados.getPrecioxnoche());
+    
+            // Solo actualiza tipo_habitacion si no es null
+            if (datosActualizados.getTipo_habitacion() != null) {
+                habitacionExistente.setTipo_habitacion(datosActualizados.getTipo_habitacion());
+            }
+    
+            // Actualizar los demás campos como disponible, numero_habitacion, etc., si es necesario
+            
+            habitacionesRepositorio.persist(habitacionExistente);
+            return habitacionExistente;
+        } else {
+            throw new NoSuchElementException("No se encontró la habitación con el ID proporcionado.");
         }
-        throw new NoSuchElementException("No existe una habitacion con el ID: " + id + ".");
     }
+    
+    
+    
+    
 }
