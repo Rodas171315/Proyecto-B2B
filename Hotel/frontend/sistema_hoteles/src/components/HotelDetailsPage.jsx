@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
 
 const HotelDetailsPage = () => {
-  const [hotelDetails, setHotelDetails] = useState(null);
-  const [rooms, setRooms] = useState([]);
+  const [hotels, setHotels] = useState([]);
   const navigate = useNavigate();
 
   // Objeto para mapear los tipos de habitación
@@ -18,76 +17,70 @@ const HotelDetailsPage = () => {
   };
 
   useEffect(() => {
-    const fetchHotelDetails = async () => {
+    const fetchHotelsAndRooms = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/hoteles/1`);
-        const data = await response.json();
-        setHotelDetails(data);
+        const hotelsResponse = await fetch(`http://localhost:8080/hoteles`);
+        const hotelsData = await hotelsResponse.json();
+        const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
+          const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+          const roomsData = await roomsResponse.json();
+          return { ...hotel, rooms: roomsData };
+        }));
+        setHotels(hotelsWithRooms);
       } catch (error) {
-        console.error('Error fetching hotel details:', error);
+        console.error('Error fetching hotels and rooms:', error);
       }
     };
 
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/habitaciones?hotelId=1');
-        const data = await response.json();
-        setRooms(data);
-      } catch (error) {
-        console.error('Error fetching rooms:', error);
-      }
-    };
-
-    fetchHotelDetails();
-    fetchRooms();
+    fetchHotelsAndRooms();
   }, []);
 
   return (
     <Container className="my-5">
-      <Row>
-        <Col md={12}>
-          <h2>Detalles del Hotel: {hotelDetails?.nombre}</h2>
-          <p>{hotelDetails?.ciudad}, {hotelDetails?.pais}</p>
-          <p>Dirección: {hotelDetails?.direccion}</p>
-        </Col>
-      </Row>
-      <Row>
-        {rooms.map(room => (
-          <Col key={room.id_habitacion} md={4}>
-            <Card className="mb-3">
-              <Card.Body>
-                <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
-                <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
-                <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
-                <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
-                <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
-                <Card.Img variant="top" src={defaultRoomImage} />
-                <Button variant="primary" onClick={() => {
-  console.log("Navigating with hotelDetails:", hotelDetails);
-  navigate('/checkout', {
-    state: {
-      hotelDetails: {
-        ...hotelDetails,
-      },
-      roomDetails: {
-        ...room,
-        idHabitacion: room.id_habitacion,
-        roomType: tiposHabitacion[room.tipo_habitacion],
-        roomPrice: room.precioxnoche,
-        capacidadPersonas: room.capacidad_personas
-      }
-    }
-  });
-}}>
-  Reservar
-</Button>
-
-
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      {hotels.map((hotel) => (
+        <React.Fragment key={hotel.id_hotel}>
+          <Row>
+            <Col md={12}>
+              <h2>Hotel: {hotel.nombre}</h2>
+              <p>{hotel.ciudad}, {hotel.pais}</p>
+              <p>Dirección: {hotel.direccion}</p>
+            </Col>
+          </Row>
+          <Row>
+            {hotel.rooms.map((room) => (
+              <Col key={room.id_habitacion} md={4}>
+                <Card className="mb-3">
+                  <Card.Body>
+                    <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
+                    <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
+                    <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
+                    <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
+                    <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
+                    <Card.Img variant="top" src={defaultRoomImage} />
+                    <Button variant="primary" onClick={() => {
+                      console.log("Navigating with hotelDetails:", hotel);
+                      navigate('/checkout', {
+                        state: {
+                          hotelDetails: { ...hotel },
+                          roomDetails: {
+                            ...room,
+                            idHabitacion: room.id_habitacion,
+                            roomType: tiposHabitacion[room.tipo_habitacion],
+                            roomPrice: room.precioxnoche,
+                            capacidadPersonas: room.capacidad_personas
+                          }
+                        }
+                      });
+                    }}>
+                      Reservar
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </React.Fragment>
+      ))}
     </Container>
   );
 };

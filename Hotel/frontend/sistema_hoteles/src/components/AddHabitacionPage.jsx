@@ -69,6 +69,8 @@ const AddHabitacionPage = () => {
 
   const handleSubmitHabitacion = async (e) => {
     e.preventDefault();
+    const habitacionConValuacion = { ...nuevaHabitacion, valuacion: 0, hotelId: selectedHotel };
+
     try {
         const habitacionData = { 
             ...nuevaHabitacion, 
@@ -89,7 +91,6 @@ const AddHabitacionPage = () => {
             tipo_habitacion: '',
             precioxpersona: '',
             precioxnoche: '',
-            valuacion: '',
         });
     } catch (error) {
         console.error('Error al crear la habitación:', error);
@@ -195,16 +196,7 @@ onChange={handleChangeNuevaHabitacion}
 </Form.Group>
 </Col>
 <Col>
-<Form.Group controlId="formValuacion">
-<Form.Label>Valoración</Form.Label>
-<Form.Control
-type="number"
-placeholder="Valoración de la habitación"
-name="valuacion"
-value={nuevaHabitacion.valuacion}
-onChange={handleChangeNuevaHabitacion}
-/>
-</Form.Group>
+
 </Col>
 </Row>
 <Button variant="primary" type="submit">Añadir Habitación</Button>
