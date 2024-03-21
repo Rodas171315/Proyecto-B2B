@@ -5,18 +5,17 @@ import { useNavigate } from 'react-router-dom';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
-
     return (
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`tabpanel-${index}`}
-            aria-labelledby={`tab-${index}`}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
             {...other}
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    {children}
+                    <Typography>{children}</Typography>
                 </Box>
             )}
         </div>
@@ -34,6 +33,9 @@ const SearchForm = () => {
     const [destino, setDestino] = useState('');
     const [tipoViaje, setTipoViaje] = useState('redondo');
     const [claseVuelo, setClaseVuelo] = useState('economica');
+    const [mostrarCampoHotel, setMostrarCampoHotel] = useState(false);
+    const [mostrarCampoVuelo, setMostrarCampoVuelo] = useState(false);
+
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -134,7 +136,19 @@ const SearchForm = () => {
                                 <Button onClick={handleCloseHuéspedes} color="primary">Aceptar</Button>
                             </Dialog>
                         </Grid>
-                    </Grid>
+                        </Grid>
+                            <Button onClick={() => setMostrarCampoVuelo(!mostrarCampoVuelo)}>
+                                {mostrarCampoVuelo ? "Ocultar Vuelo" : "Agregar Vuelo"}
+                            </Button>
+                            {mostrarCampoVuelo && (
+                                <TextField
+                                    fullWidth
+                                    label="Información del Vuelo"
+                                    variant="outlined"
+                                    placeholder="Detalles del vuelo"
+                                    margin="normal"
+                                />
+                            )}
                     <Button variant="contained" color="primary" fullWidth onClick={handleBuscarHospedaje}>Buscar Hospedaje</Button>
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
@@ -197,8 +211,19 @@ const SearchForm = () => {
                             </RadioGroup>
                         </FormControl>
                     </Grid>
-                </Grid>
-                
+                    </Grid>
+                        <Button onClick={() => setMostrarCampoHotel(!mostrarCampoHotel)}>
+                            {mostrarCampoHotel ? "Ocultar Hotel" : "Agregar Hotel"}
+                        </Button>
+                        {mostrarCampoHotel && (
+                            <TextField
+                                fullWidth
+                                label="Información del Hotel"
+                                variant="outlined"
+                                placeholder="Detalles del hotel"
+                                margin="normal"
+                            />
+                        )}
                 
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
             </TabPanel>

@@ -10,10 +10,12 @@ import UserAdministration from './UserAdministration';
 import HospedajesDisponibles from './HospedajesDisponibles';
 import VuelosDisponibles from './VuelosDisponibles';
 import DetallesHospedaje from './DetallesHospedaje';
+import { UserProvider } from './UserContext'; 
 
 function App() {
   return (
     <Router>
+      <UserProvider>
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -25,9 +27,13 @@ function App() {
           <Route path="/hospedajes-disponibles" element={<HospedajesDisponibles />} />
           <Route path="/vuelos-disponibles" element={<VuelosDisponibles />} />
           <Route path="/hospedajes/:id" element={<DetallesHospedaje />} />
+          
         </Routes>
       </div>
+      </UserProvider> 
     </Router>
+    
+    
   );
 }
 

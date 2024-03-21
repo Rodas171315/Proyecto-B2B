@@ -1,25 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, TextField, Button, Grid } from '@mui/material';
-
-// Simulando comentarios existentes
-const comentariosIniciales = [
-  { id: 1, autor: "Juan Pérez", texto: "¡Experiencia increíble! Recomiendo esta agencia a todos." },
-  { id: 2, autor: "Ana Gómez", texto: "Gran servicio y atención. Los viajes son siempre bien organizados." },
-];
+import { useUser } from './UserContext'; 
 
 const Comentarios = () => {
-  const [comentarios, setComentarios] = useState(comentariosIniciales);
+  const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
+  const [cargando, setCargando] = useState(true);
+  const { user } = useUser(); 
 
-  const agregarComentario = () => {
-    const comentario = {
-      id: comentarios.length + 1,
-      autor: "Usuario Anónimo", 
-      texto: nuevoComentario,
-    };
-    setComentarios([...comentarios, comentario]);
-    setNuevoComentario(""); // Limpiar el campo de texto después de agregar el comentario
+  const cargarComentarios = async () => {
+    try {
+      const respuesta = await fetch('http://localhost:8080/comentarios');
+      if (!respuesta.ok) throw new Error('Error al obtener los comentarios');
+      const data = await respuesta.json();
+      setComentarios(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCargando(false);
+    }
   };
+  useEffect(() => {
+    
+
+    cargarComentarios();
+  }, []);
+
+  const agregarComentario = async () => {
+    if (!user) {
+      console.error("No hay usuario autenticado");
+      return;
+    }
+
+    const comentarioData = {
+      usuario: { id: user.id }, 
+      comentario: nuevoComentario,
+      
+    };
+
+    try {
+      const respuesta = await fetch('http://localhost:8080/comentarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(comentarioData),
+      });
+      if (!respuesta.ok) throw new Error('Error al agregar el comentario');
+      await cargarComentarios(); 
+      setNuevoComentario(""); 
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+
+  if (cargando) return <p>Cargando comentarios...</p>;
 
   return (
     <div>

@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Box, TextField, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext'; 
 import UserAdministration from './UserAdministration';
 
 const UserProfile = () => {
     const navigate = useNavigate();
+    const { user, logout } = useUser(); 
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login'); 
+        }
+    }, [user, navigate]);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     
-    const [name, setName] = useState('John Doe');
-    const [email, setEmail] = useState('john.doe@example.com');
-    const [bio, setBio] = useState('Amante de los viajes y la aventura.');
-
-    const handleSave = () => {
-        // Lógica para guardar los cambios
-        alert('Perfil actualizado');
-    };
 
     return (
         <div>
@@ -25,62 +30,85 @@ const UserProfile = () => {
                     </Typography>
                     <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
                     <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
+                    <Button color="inherit" onClick={handleLogout}>Cerrar Sesión</Button>
                 </Toolbar>
             </AppBar>
-            
-            <Container component="main" maxWidth="md">
-                <Box sx={{ mt: 8, mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography component="h1" variant="h4">
-                        Perfil de Usuario
-                    </Typography>
-                    <Paper elevation={3} sx={{ mt: 3, mb: 3, p: 3, width: '100%' }}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Nombre"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Correo Electrónico"
-                                    value={email}
-                                    disabled
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Biografía"
-                                    multiline
-                                    rows={4}
-                                    value={bio}
-                                    onChange={(e) => setBio(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Button variant="contained" color="primary" onClick={handleSave}>
-                                    Guardar Cambios
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Paper>
-                </Box>
-            </Container>
             <Box mt={4}> 
                 <UserAdministration />
             </Box>
-            <footer style={{ marginTop: '20px', padding: '20px', textAlign: 'center', backgroundColor: '#f0f0f0' }}>
-                <Typography variant="h6">Agencia de Viajes</Typography>
-                <Typography variant="subtitle1">
-                    Conectando el mundo con las maravillas del viaje.
+            {user ? ( 
+                <Container component="main" maxWidth="md">
+                    <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Typography component="h1" variant="h4" sx={{ mb: 2 }}>
+                            Perfil de Usuario
+                        </Typography>
+                        <Paper elevation={3} sx={{ p: 3, width: '100%', mb: 2 }}>
+                            <Grid container spacing={2}>
+                                
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Correo Electrónico"
+                                        value={user.email || ''}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Primer Nombre"
+                                        value={user.primer_nombre || ''}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Segundo Nombre"
+                                        value={user.segundo_nombre || ''}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Primer Apellido"
+                                        value={user.primer_apellido || ''}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Segundo Apellido"
+                                        value={user.segundo_apellido || ''}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                </Grid>
+                                
+                            </Grid>
+                        </Paper>
+                    </Box>
+                </Container>
+                
+            ) : (
+                <Typography variant="body1" sx={{ mt: 2, textAlign: 'center' }}>
+                    Cargando información del usuario...
                 </Typography>
-            </footer>
+            )}
         </div>
     );
 };
 
 export default UserProfile;
+
