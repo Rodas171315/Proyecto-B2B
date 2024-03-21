@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, TextField, Button, Grid } from '@mui/material';
-import { useUser } from './UserContext'; 
+import { Card, CardContent, Typography, TextField, Button, Grid, Container } from '@mui/material';
+import { useUser } from './UserContext';
 
 const Comentarios = () => {
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
+  const [comentarioRespuestaId, setComentarioRespuestaId] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const { user } = useUser(); 
+  const { user } = useUser();
+
 
   const cargarComentarios = async () => {
+    setCargando(true);
     try {
       const respuesta = await fetch('http://localhost:8080/comentarios');
-      if (!respuesta.ok) throw new Error('Error al obtener los comentarios');
-      const data = await respuesta.json();
-      setComentarios(data);
+      const textoRespuesta = await respuesta.text();
+      try {
+        const data = JSON.parse(textoRespuesta);
+        setComentarios(data);
+      } catch (parseError) {
+        console.error("Error al analizar la respuesta JSON:", parseError);
+        
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setCargando(false);
     }
   };
-  useEffect(() => {
-    
 
+  useEffect(() => {
+    cargarComentarios();
+  }, []);
+  useEffect(() => {
     cargarComentarios();
   }, []);
 
@@ -31,13 +41,17 @@ const Comentarios = () => {
       console.error("No hay usuario autenticado");
       return;
     }
-
-    const comentarioData = {
+  
+    
+    const comentarioData = comentarioRespuestaId ? {
       usuario: { id: user.id }, 
       comentario: nuevoComentario,
-      
+      parent: { id: comentarioRespuestaId }, 
+    } : {
+      usuario: { id: user.id },
+      comentario: nuevoComentario,
     };
-
+  
     try {
       const respuesta = await fetch('http://localhost:8080/comentarios', {
         method: 'POST',
@@ -45,26 +59,27 @@ const Comentarios = () => {
         body: JSON.stringify(comentarioData),
       });
       if (!respuesta.ok) throw new Error('Error al agregar el comentario');
-      await cargarComentarios(); 
+      cargarComentarios(); 
       setNuevoComentario(""); 
+      setComentarioRespuestaId(null); 
     } catch (error) {
       console.error(error.message);
     }
   };
 
-
   if (cargando) return <p>Cargando comentarios...</p>;
 
   return (
-    <div>
+    <Container maxWidth="md">
       <Typography variant="h5" sx={{ mb: 2 }}>Comentarios de nuestros clientes</Typography>
       <Grid container spacing={2}>
         {comentarios.map((comentario) => (
           <Grid item xs={12} key={comentario.id}>
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="h6">{comentario.autor}</Typography>
-                <Typography variant="body2">{comentario.texto}</Typography>
+                <Typography variant="h6">{comentario.usuario ? comentario.usuario.nombre : 'Anónimo'}</Typography>
+                <Typography variant="body2">{comentario.comentario}</Typography>
+                <Button size="small" onClick={() => setComentarioRespuestaId(comentario.id)}>Responder</Button>
               </CardContent>
             </Card>
           </Grid>
@@ -81,8 +96,9 @@ const Comentarios = () => {
         onChange={(e) => setNuevoComentario(e.target.value)}
         sx={{ mb: 2 }}
       />
+      {comentarioRespuestaId && <Typography>Respondiendo al comentario ID: {comentarioRespuestaId}</Typography>}
       <Button variant="contained" onClick={agregarComentario}>Publicar Comentario</Button>
-    </div>
+    </Container>
   );
 };
 
