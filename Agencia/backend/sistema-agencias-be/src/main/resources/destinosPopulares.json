@@ -1,0 +1,17 @@
+[
+    {
+      "id": 1,
+      "ciudad": "Cancún",
+      "pais": "México",
+      "imagen": "https://source.unsplash.com/random?cancun",
+      "descripcion": "Cancún es conocido por sus playas de aguas cristalinas, vida nocturna y como puerta a la Riviera Maya."
+    },
+    {
+      "id": 2,
+      "ciudad": "París",
+      "pais": "Francia",
+      "imagen": "https://source.unsplash.com/random?paris",
+      "descripcion": "La ciudad luz, famosa por la Torre Eiffel, magníficos museos y su rica historia."
+    }
+  ]
+  

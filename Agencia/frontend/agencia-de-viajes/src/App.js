@@ -13,6 +13,8 @@ import DetallesHospedaje from './DetallesHospedaje';
 import { UserProvider } from './UserContext'; 
 import CompraVuelo from './CompraVuelo';
 import CompraHospedaje from './CompraHospedaje';
+import DestinoPopular from './DestinoPopular';
+import CompraDestino from './CompraDestino';
 
 function App() {
   return (
@@ -31,6 +33,10 @@ function App() {
           <Route path="/hospedajes/:id" element={<DetallesHospedaje />} />
           <Route path="/compra-vuelo" element={<CompraVuelo />} />
           <Route path="/comprahospedaje" element={<CompraHospedaje />} />
+          <Route path="/destinos-populares/:id" element={<DestinoPopular />} />
+          <Route path="/compra-destino/:id" element={<CompraDestino />} />
+
+
         </Routes>
       </div>
       </UserProvider> 

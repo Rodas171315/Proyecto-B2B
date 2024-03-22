@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "paquete": "Explora Barcelona",
+    "precio": 1300,
+    "incluye": ["Vuelo redondo", "Hospedaje 5 noches", "Tour por la Sagrada Familia"],
+    "imagen": "https://source.unsplash.com/random?barcelona",
+    "descripcion": "Vive la vibrante cultura y arquitectura de Barcelona con este paquete exclusivo."
+  },
+  {
+    "id": 2,
+    "paquete": "Aventura Cultural en Berlín",
+    "precio": 1400,
+    "incluye": ["Vuelo redondo", "Hospedaje 4 noches", "Entrada al Muro de Berlín"],
+    "imagen": "https://source.unsplash.com/random?berlin",
+    "descripcion": "Sumérgete en la rica historia y modernidad de Berlín con actividades culturales incluidas."
+  }
+]
+
+  
