@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardActions, CardMedia } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
-const hospedajes = [
-    { id: 1, nombre: "Hotel Sunset", descripcion: "Cerca de la playa, con vista al mar.", precio: "150 USD por noche" },
-    { id: 2, nombre: "Montaña Mágica", descripcion: "Rodeado de naturaleza y tranquilidad.", precio: "100 USD por noche" },
-    // Agrega más hospedajes aquí
-];
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const HospedajesDisponibles = () => {
+    const [hospedajes, setHospedajes] = useState([]); 
     const navigate = useNavigate();
+    const location = useLocation(); 
+
+    useEffect(() => {
+        
+        if(location.state && location.state.hospedajes){
+            setHospedajes(location.state.hospedajes);
+        } else {
+            
+            console.error("No se proporcionaron datos de hospedajes");
+        }
+    }, [location.state]); 
 
     const verDetalles = (id) => {
-        navigate(`/hospedajes/${id}`); // Navegar a la ruta de detalles del hospedaje
+        navigate(`/hospedajes/${id}`); 
     };
 
     return (

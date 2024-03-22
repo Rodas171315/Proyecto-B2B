@@ -1,16 +1,11 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-
-const vuelos = [
-    { id: 1, origen: "Ciudad de México", destino: "Tokio", hora: "10:00 AM", aerolinea: "Aeroméxico", precio: "800 USD" },
-    { id: 2, origen: "Bogotá", destino: "París", hora: "4:00 PM", aerolinea: "Air France", precio: "500 USD" },
-    
-    // Agrega más vuelos aquí
-];
+import { useLocation, useNavigate } from 'react-router-dom'; 
+import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia } from '@mui/material';
 
 const VuelosDisponibles = () => {
-    const navigate = useNavigate();
+    const location = useLocation(); 
+    const { vuelos } = location.state || { vuelos: [] }; 
+    const navigate = useNavigate(); 
 
     return (
         <div>
@@ -29,9 +24,15 @@ const VuelosDisponibles = () => {
                     Vuelos Disponibles
                 </Typography>
                 <Grid container spacing={4}>
-                    {vuelos.map((vuelo) => (
+                    {vuelos.map((vuelo, index) => (
                         <Grid item key={vuelo.id} xs={12} sm={6} md={4}>
                             <Card>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    image={`https://source.unsplash.com/random?airport&sig=${index}`}
+                                    alt="Imagen del aeropuerto"
+                                />
                                 <CardContent>
                                     <Typography variant="h5" component="div">{`${vuelo.origen} - ${vuelo.destino}`}</Typography>
                                     <Typography>{`Hora: ${vuelo.hora}`}</Typography>
@@ -48,3 +49,5 @@ const VuelosDisponibles = () => {
 };
 
 export default VuelosDisponibles;
+
+

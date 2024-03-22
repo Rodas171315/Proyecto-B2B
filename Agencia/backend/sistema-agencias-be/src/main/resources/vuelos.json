@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "origen": "Ciudad de México",
+    "destino": "Tokio",
+    "fecha": "2024-04-15",
+    "hora": "10:00 AM",
+    "aerolinea": "Aeroméxico",
+    "precio": "800 USD",
+    "clasesDisponibles": ["económica", "ejecutiva"]
+  },
+  {
+    "id": 2,
+    "origen": "Bogotá",
+    "destino": "París",
+    "fecha": "2024-05-20",
+    "hora": "4:00 PM",
+    "aerolinea": "Air France",
+    "precio": "500 USD",
+    "clasesDisponibles": ["económica"]
+  }
+]

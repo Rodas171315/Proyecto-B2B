@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "ciudad": "Cancún, México",
+    "nombre": "Hotel Sunset",
+    "descripcion": "Cerca de la playa, con vista al mar.",
+    "precio": "150 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-01-01",
+      "fin": "2024-12-31"
+    },
+    "capacidadMax": 4
+  },
+  {
+    "id": 2,
+    "ciudad": "Cancún, México",
+    "nombre": "Montaña Mágica",
+    "descripcion": "Rodeado de naturaleza y tranquilidad.",
+    "precio": "100 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-03-01",
+      "fin": "2024-10-31"
+    },
+    "capacidadMax": 2
+  }
+]
+
+  

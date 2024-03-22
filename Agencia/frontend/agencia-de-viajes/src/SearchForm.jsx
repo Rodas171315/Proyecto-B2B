@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, List, ListItem, ListItemText, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -35,6 +35,12 @@ const SearchForm = () => {
     const [claseVuelo, setClaseVuelo] = useState('economica');
     const [mostrarCampoHotel, setMostrarCampoHotel] = useState(false);
     const [mostrarCampoVuelo, setMostrarCampoVuelo] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [origen, setOrigen] = useState('');
+
+
+
 
 
     const handleTabChange = (event, newValue) => {
@@ -60,13 +66,83 @@ const SearchForm = () => {
     const navigate = useNavigate(); 
 
     
-    const handleBuscarHospedaje = () => {
-        navigate('/hospedajes-disponibles'); 
-    };
+    const handleBuscarHospedaje = async () => {
+        const criteriosBusqueda = {
+            ciudad: destino, 
+            fechaInicio: fechaIda,
+            fechaFin: fechaVuelta,
+            adultos,
+            niños, 
+        };
+    
+        try {
+            const response = await fetch('http://localhost:8080/static/hospedajes', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(criteriosBusqueda),
+            });
+    
+            if (!response.ok) throw new Error('Error al buscar hospedajes');
+            const hospedajesEncontrados = await response.json();
+            
+            if (hospedajesEncontrados.length === 0) {
+                
+                setDialogMessage('No se encontraron hospedajes disponibles con los criterios proporcionados.');
+                setOpenDialog(true);
+            } else {
+                
+                navigate('/hospedajes-disponibles', { state: { hospedajes: hospedajesEncontrados } });
 
-    const handleBuscarVuelos = () => {
-        navigate('/vuelos-disponibles'); 
+            }
+
+            console.log(hospedajesEncontrados);
+        } catch (error) {
+            console.error('Error al buscar hospedajes:', error);
+        }
     };
+    
+    const handleBuscarVuelos = async () => {
+        const criteriosBusqueda = {
+            origen, 
+            destino,
+            fechaIda,
+            fechaVuelta,
+            tipoViaje,
+            claseVuelo,
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/static/vuelos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(criteriosBusqueda),
+            });
+
+            if (!response.ok) throw new Error('No se pudieron encontrar vuelos con los criterios proporcionados.');
+            const vuelosEncontrados = await response.json();
+            
+            if (vuelosEncontrados.length === 0) {
+                
+                setDialogMessage('No se encontraron vuelos disponibles con los criterios proporcionados.');
+                setOpenDialog(true);
+            } else {
+                
+                navigate('/vuelos-disponibles', { state: { vuelos: vuelosEncontrados } });
+            }
+        } catch (error) {
+            console.error(error);
+            
+            setDialogMessage('Ocurrió un error al buscar vuelos.');
+            setOpenDialog(true);
+        }
+    };
+    
+    
+      
 
     return (
         <Container>
@@ -153,12 +229,23 @@ const SearchForm = () => {
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Origen" variant="outlined" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Destino" variant="outlined" />
-                    </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        fullWidth 
+                        label="Origen" 
+                        variant="outlined"
+                        value={origen}
+                        onChange={(e) => setOrigen(e.target.value)} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        fullWidth 
+                        label="Destino" 
+                        variant="outlined"
+                        value={destino}
+                        onChange={(e) => setDestino(e.target.value)} />
+                </Grid>
+
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Fecha de Ida"
@@ -224,10 +311,20 @@ const SearchForm = () => {
                                 margin="normal"
                             />
                         )}
-                
+                <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                    <DialogTitle>No se encontraron vuelos</DialogTitle>
+                    <DialogContent>
+                        <Typography>{dialogMessage}</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenDialog(false)}>Cerrar</Button>
+                    </DialogActions>
+                </Dialog>
+
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
             </TabPanel>
         </Container>
+        
     );
 };
 
