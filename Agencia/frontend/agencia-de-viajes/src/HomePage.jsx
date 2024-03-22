@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardMedia, CardContent, Box, CardActions } from '@mui/material';
+import { Typography, Button, Container, Grid, Card, CardMedia, CardContent, Box, CardActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchForm from './SearchForm';
+import Header from './Header'; 
+import Footer from './Footer'; 
+
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -31,17 +34,7 @@ const HomePage = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                    <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
-                    <Button color="inherit" onClick={() => navigate('/userprofile')}>Perfil</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             
             <Box mt={4}> 
                 <SearchForm />
@@ -135,12 +128,7 @@ const HomePage = () => {
                 </Grid>
             </Container>
 
-            <footer style={{ marginTop: '20px', padding: '20px', textAlign: 'center', backgroundColor: '#f0f0f0' }}>
-                <Typography variant="h6">Agencia de Viajes</Typography>
-                <Typography variant="subtitle1">
-                    Conectando el mundo con las maravillas del viaje.
-                </Typography>
-            </footer>
+            <Footer />
         </div>
     );
 

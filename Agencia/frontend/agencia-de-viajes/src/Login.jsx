@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './UserContext';
 import { Container, Button, TextField, Box, Typography, Alert } from '@mui/material';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -42,7 +44,8 @@ const Login = () => {
   };
 
   return (
-    
+    <div>
+    <Header />
     <Container component="main" maxWidth="xs">
       {showAlert && <Alert severity="error">{loginMessage}</Alert>}
       <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -84,7 +87,10 @@ const Login = () => {
           </Button>
         </Box>
       </Box>
+      
     </Container>
+    <Footer />
+    </div>
   );
 };
 

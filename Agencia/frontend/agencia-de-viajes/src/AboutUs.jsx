@@ -1,22 +1,14 @@
 import React from 'react';
-import { Container, Typography, Box, Paper, Grid, AppBar, Toolbar, Button, Card, CardContent, CardMedia } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Paper, Grid, Card, CardContent} from '@mui/material';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const AboutUs = () => {
-    const navigate = useNavigate();
+    
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
         <Container component="main" maxWidth="md">
             <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Paper elevation={3} sx={{ padding: 2,  marginBottom: 4, width: '100%' }}>
@@ -98,7 +90,7 @@ const AboutUs = () => {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        {/* Añadir más testimonios según sea necesario */}
+                        
                     </Grid>
                 </Box>
 
@@ -112,12 +104,7 @@ const AboutUs = () => {
                     </Typography>
                 </Box>
         </Container>
-            <footer style={{ marginTop: '20px', padding: '20px', textAlign: 'center', backgroundColor: '#f0f0f0' }}>
-                <Typography variant="h6">Agencia de Viajes</Typography>
-                <Typography variant="subtitle1">
-                    Conectando el mundo con las maravillas del viaje.
-                </Typography>
-            </footer>
+        <Footer />
         </div>    
     );
 };

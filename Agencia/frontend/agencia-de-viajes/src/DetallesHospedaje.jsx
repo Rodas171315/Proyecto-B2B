@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Container, Card, CardContent, CardMedia, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Typography, Container, Card, CardContent, Box } from '@mui/material';
+
 import Comentarios from './Comentarios';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import Header from './Header'; 
+import Footer from './Footer';
+
 
 const DetallesHospedaje = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
+    
     const [habitaciones, setHabitaciones] = useState([]);
 
     const settings = {
@@ -39,16 +42,7 @@ const DetallesHospedaje = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
             {habitaciones.length > 0 ? (
                     habitaciones.map((habitacion, index) => (
@@ -74,6 +68,7 @@ const DetallesHospedaje = () => {
             <Box mt={4}>
                 <Comentarios />
             </Box>
+            <Footer />
         </div>
     );
 };

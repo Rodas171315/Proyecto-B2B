@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Container, TextField, Button, Card, CardContent, Dialog, CardMedia, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Typography, Container, TextField, Button, Card, CardContent, Dialog, CardMedia, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const CompraDestino = () => {
     const { id } = useParams();
@@ -35,14 +37,7 @@ const CompraDestino = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes - Compra de Destino
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="sm" sx={{ mt: 4 }}>
                 <Card>
                 <CardMedia
@@ -54,6 +49,7 @@ const CompraDestino = () => {
                     <CardContent>
                         <Typography variant="h5" component="h2"> {destino.ciudad}</Typography>
                         <Typography variant="h5" component="h2"> {destino.descripcion}</Typography>
+                        <Typography variant="h5" component="h2"> ${destino.precio}</Typography>
                         <TextField fullWidth label="Nombre" margin="normal" value={nombre} onChange={(e) => setNombre(e.target.value)} />
                         <TextField fullWidth label="Email" margin="normal" value={email} onChange={(e) => setEmail(e.target.value)} />
                         <TextField fullWidth label="Teléfono" margin="normal" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
@@ -75,6 +71,7 @@ const CompraDestino = () => {
                     <Button onClick={() => navigate('/')} color="primary">Volver al Inicio</Button>
                 </DialogActions>
             </Dialog>
+            <Footer />
         </div>
     );
 };

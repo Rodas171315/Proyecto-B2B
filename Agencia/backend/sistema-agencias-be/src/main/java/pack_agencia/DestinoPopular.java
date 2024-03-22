@@ -6,18 +6,20 @@ public class DestinoPopular {
     private String pais;
     private String imagen;
     private String descripcion;
+    private double precio;
 
     
     public DestinoPopular() {
     }
 
    
-    public DestinoPopular(int id, String ciudad, String pais, String imagen, String descripcion) {
+    public DestinoPopular(int id, String ciudad, String pais, String imagen, String descripcion, double precio) {
         this.id = id;
         this.ciudad = ciudad;
         this.pais = pais;
         this.imagen = imagen;
         this.descripcion = descripcion;
+        this.precio = precio;
     }
 
     
@@ -41,6 +43,9 @@ public class DestinoPopular {
         return descripcion;
     }
 
+    public double getPrecio() {
+        return precio;
+    }
     
     public void setId(int id) {
         this.id = id;
@@ -60,6 +65,10 @@ public class DestinoPopular {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
 }
 

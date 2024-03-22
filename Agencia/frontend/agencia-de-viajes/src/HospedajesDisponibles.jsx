@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardActions, CardMedia } from '@mui/material';
+import { Typography, Button, Container, Grid, Card, CardContent, CardActions, CardMedia } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Header from './Header'; 
+import Footer from './Footer'; 
+
 
 const HospedajesDisponibles = () => {
     const [hospedajes, setHospedajes] = useState([]); 
@@ -23,16 +26,7 @@ const HospedajesDisponibles = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Hospedajes Disponibles
@@ -61,6 +55,7 @@ const HospedajesDisponibles = () => {
                     ))}
                 </Grid>
             </Container>
+            <Footer />
         </div>
     );
 };

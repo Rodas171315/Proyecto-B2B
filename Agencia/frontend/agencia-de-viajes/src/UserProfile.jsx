@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Box, TextField, Paper, Grid } from '@mui/material';
+import { Typography, Button, Container, Box, TextField, Paper, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './UserContext'; 
 import UserAdministration from './UserAdministration';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -23,16 +25,7 @@ const UserProfile = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
-                    <Button color="inherit" onClick={handleLogout}>Cerrar Sesión</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Box mt={4}> 
                 <UserAdministration />
             </Box>
@@ -106,6 +99,7 @@ const UserProfile = () => {
                     Cargando información del usuario...
                 </Typography>
             )}
+            <Footer />
         </div>
     );
 };

@@ -4,14 +4,16 @@
       "ciudad": "Cancún",
       "pais": "México",
       "imagen": "https://source.unsplash.com/random?cancun",
-      "descripcion": "Cancún es conocido por sus playas de aguas cristalinas, vida nocturna y como puerta a la Riviera Maya."
+      "descripcion": "Cancún es conocido por sus playas de aguas cristalinas, vida nocturna y como puerta a la Riviera Maya.",
+      "precio": "925"
     },
     {
       "id": 2,
       "ciudad": "París",
       "pais": "Francia",
       "imagen": "https://source.unsplash.com/random?paris",
-      "descripcion": "La ciudad luz, famosa por la Torre Eiffel, magníficos museos y su rica historia."
+      "descripcion": "La ciudad luz, famosa por la Torre Eiffel, magníficos museos y su rica historia.",
+      "precio": "1250"
     }
   ]
   

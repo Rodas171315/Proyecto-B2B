@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import { Typography, Button, Container, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const VuelosDisponibles = () => {
     const location = useLocation(); 
@@ -13,16 +15,7 @@ const VuelosDisponibles = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Vuelos Disponibles
@@ -53,6 +46,7 @@ const VuelosDisponibles = () => {
                     ))}
                 </Grid>
             </Container>
+            <Footer />
         </div>
     );
 };

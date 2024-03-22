@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Container, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Typography, Button, Container, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import Header from './Header'; 
+import Footer from './Footer'; 
 
 const CompraHospedaje = () => {
     const location = useLocation();
@@ -21,16 +23,7 @@ const CompraHospedaje = () => {
 
     return (
         <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Agencia de Viajes
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Inicio</Button>
-                    <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>
-                </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="sm" sx={{ mt: 4 }}>
                 <Card>
                     <CardContent>
@@ -57,6 +50,7 @@ const CompraHospedaje = () => {
                     <Button onClick={() => navigate('/')} color="primary">Volver al inicio</Button>
                 </DialogActions>
             </Dialog>
+            <Footer />
         </div>
     );
 };
