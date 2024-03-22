@@ -12,6 +12,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.Produces;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -77,5 +79,19 @@ public class HotelRecurso {
         }
         throw new NoSuchElementException("No existe un hotel con el ID: " + id + ".");
     }
+
+    @GET
+    @Path("/por-pais/{pais}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Hoteles> obtenerHotelesPorPais(@PathParam("pais") String pais) {
+        return hotelesRepositorio.findByPais(pais);
+    }
+    
+    @GET
+    @Path("/pais")
+    public List<String> obtenerPaisesUnicos() {
+        return hotelesRepositorio.listarPaisesUnicos();
+    }
+
     
 }

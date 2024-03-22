@@ -1,123 +1,124 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap';
-import Rating from './Rating'; 
-import image1 from './image1.jpeg';
-import { useCart } from './CartContext'; 
-import HotelList from './HotelList'; 
-import { useHotels } from './HotelsContext'; 
-
-// Datos ficticios para la galería de imágenes
-const galleryImages = [image1, image1, image1];
-
-
-// Datos ficticios para las habitaciones
-const roomTypes = [
-  { type: "Doble", price: 120, maxPeople: 2, bedSize: "Queen", size: 20 },
-  { type: "Junior Suite", price: 200, maxPeople: 4, bedSize: "King", size: 35 },
-
-];
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button, Form, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import defaultRoomImage from './roomImage.jpg';
 
 const HomePage = () => {
-  const [comments, setComments] = useState(["Buena atención", "Excelente vista", "Perfecto para familias"]);
-  const [rating, setRating] = useState(4.5); // Ejemplo de un rating por defecto
-  const { addToCart } = useCart();
-  const { hotels } = useHotels();
+  const [hotels, setHotels] = useState([]);
+  const [paises, setPaises] = useState([]);
+  const [paisSeleccionado, setPaisSeleccionado] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-
-  const handleAddToCart = (room) => {
-    addToCart({ ...room, roomType: room.type });
-    alert(`Has añadido la habitación ${room.type} al carrito.`);
+  const tiposHabitacion = {
+    1: 'Doble',
+    2: 'Junior Suite',
+    3: 'Suite',
+    4: 'Gran Suite'
   };
 
-  // Función para manejar el envío de un nuevo comentario
-  const handleCommentSubmit = (event) => {
-    event.preventDefault();
-    const comment = event.target.elements.comment.value;
-    setComments([...comments, comment]);
-    event.target.reset();
+
+  useEffect(() => {
+    fetchPaises();
+    fetchHotelsAndRooms(paisSeleccionado);
+  }, []);
+
+  const fetchPaises = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/hoteles/pais');
+      if (!response.ok) throw new Error('Error al cargar los países');
+      const data = await response.json();
+      setPaises(data);
+    } catch (error) {
+      setError('Error al cargar los países: ' + error.message);
+    }
   };
+
+  const fetchHotelsAndRooms = async (pais = '') => {
+    let url = pais ? `http://localhost:8080/hoteles/por-pais/${pais}` : `http://localhost:8080/hoteles`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Error al cargar hoteles');
+      const hotelsData = await response.json();
+  
+      const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
+        try {
+          const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+          if (!roomsResponse.ok) throw new Error('Failed to load rooms');
+          const roomsData = await roomsResponse.json();
+          return { ...hotel, rooms: roomsData.map(room => ({...room, tipo_habitacion: tiposHabitacion[room.tipo_habitacion]})) };
+        } catch (error) {
+          console.error('Error fetching rooms for hotel:', hotel.id_hotel, error);
+          return { ...hotel, rooms: [] }; // Return the hotel with no rooms in case of error.
+        }
+      }));
+  
+      setHotels(hotelsWithRooms);
+    } catch (error) {
+      console.error('Error fetching hotels:', error);
+    }
+  };
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchHotelsAndRooms(paisSeleccionado);
+  };
+  
 
   return (
     <Container className="my-5">
-                  <h1>Hoteles Disponibles</h1>
-
-                  <Row>
-                {hotels.map((hotel, index) => (
-                    <Col key={index} sm={12} md={6} lg={4} className="mb-4">
-                        <Card>
-                            <Card.Img variant="top" src={hotel.imageUrl || "placeholder.jpg"} /> {/* imagen por defecto */}
-                            <Card.Body>
-                                <Card.Title>{hotel.name}</Card.Title>
-                                <Card.Text>
-                                    {hotel.description}
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => {/* acción al seleccionar el hotel */}}>
-                                    Ver Detalles
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-
       <Row>
-        <Col md={6}>
-          {/* Muestra la imagen principal del hotel */}
-          <Image src={image1} alt="Hotel" fluid className="mb-3 main-hotel-image" />
-          
-          {/* Muestra la galería de imágenes */}
-          <Row>
-            {galleryImages.map((img, idx) => (
-              <Col xs={6} md={4} key={idx} className="mb-3">
-                <Image src={img} alt={`Hotel View ${idx + 1}`} fluid className="gallery-image" />
-              </Col>
-            ))}
-          </Row>
+        <Col md={12}>
+          <h2>Buscar Hoteles Disponibles</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSearch}>
+            <Form.Group controlId="pais">
+              <Form.Label>País</Form.Label>
+              <Form.Control as="select" value={paisSeleccionado} onChange={(e) => setPaisSeleccionado(e.target.value)}>
+                <option value="">Seleccione un país</option>
+                {paises.map((pais, index) => (
+                  <option key={index} value={pais}>{pais}</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+            <Button variant="primary" type="submit">Buscar</Button>
+          </Form>
         </Col>
-
-        <Col md={6}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <h3>Hyatt Hotel</h3>
-              <Rating value={rating} text={`${comments.length} reviews`} />
-              {/* Lista de comentarios */}
-              {comments.map((comment, idx) => (
-                <Card key={idx} className="my-3">
-                  <Card.Body>{comment}</Card.Body>
-                </Card>
-              ))}
-              {/* Formulario para nuevos comentarios */}
-              <h4>Agregar Comentario</h4>
-              <Form onSubmit={handleCommentSubmit}>
-                <Form.Group controlId="comment">
-                  <Form.Label>Comentario</Form.Label>
-                  <Form.Control as="textarea" rows={3} />
-                </Form.Group>
-                <Button type="submit" variant="primary" className="mt-2">
-                  Enviar
-                </Button> 
-              </Form>
-            </ListGroup.Item>
-            {/* Información sobre habitaciones */}
-            {roomTypes.map((room, idx) => (
-              <ListGroup.Item key={idx}>
-                <h5>{room.type}</h5>
-                <p>Precio: ${room.price} por noche</p>
-                <p>Capacidad: Hasta {room.maxPeople} personas</p>
-                <p>Tamaño de cama: {room.bedSize}</p>
-                <p>Tamaño de habitación: {room.size} m²</p>
-                <Button variant="success" className="mt-2" onClick={() => handleAddToCart(room)}>Agregar al Carrito</Button>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </Col>
-
-
-        
       </Row>
-
-
-      
+      <Row>
+        {hotels.length > 0 ? (
+          hotels.map((hotel) => (
+            <React.Fragment key={hotel.id_hotel}>
+              <Col md={12} className="mt-4">
+                <h3>Hotel: {hotel.nombre}</h3>
+                <p>{hotel.ciudad}, {hotel.pais}</p>
+                <p>Dirección: {hotel.direccion}</p>
+              </Col>
+              {hotel.rooms && hotel.rooms.map((room) => (
+                <Col key={room.id_habitacion} md={4}>
+                  <Card className="mb-3">
+                    <Card.Img variant="top" src={defaultRoomImage} />
+                    <Card.Body>
+                      <Card.Title>Habitación: {room.tipo_habitacion}</Card.Title>
+                      <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
+                      <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
+                      <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
+                      <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
+                      <Button variant="primary" onClick={() => navigate('/checkout', { state: { hotelDetails: hotel, roomDetails: room } })}>
+                        Reservar
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </React.Fragment>
+          ))
+        ) : (
+          <Col>
+            <p className="mt-4">No se encontraron hoteles. Por favor, intenta nuevamente con diferentes criterios de búsqueda.</p>
+          </Col>
+        )}
+      </Row>
     </Container>
   );
 };

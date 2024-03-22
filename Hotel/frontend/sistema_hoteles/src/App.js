@@ -5,7 +5,6 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './components/HomePage';
-import HotelSearchForm from './components/HotelSearchForm';
 import RegisterPage from './components/RegisterPage';
 import LoginPage from './components/LoginPage';
 import BookingHistoryPage from './components/BookingHistoryPage';
@@ -36,7 +35,6 @@ const App = () => {
                     <Route path="/" element={
                       <>
                         <h1 className="mt-5 elegant-header">Siempre más pasión por viajar. Elija entre hoteles en los mejores destinos.</h1>
-                        <HotelSearchForm />
                         <HomePage />
                       </>
                     } />
