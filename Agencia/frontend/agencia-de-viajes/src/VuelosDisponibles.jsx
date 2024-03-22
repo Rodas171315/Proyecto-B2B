@@ -1,11 +1,15 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
 
 const VuelosDisponibles = () => {
     const location = useLocation(); 
     const { vuelos } = location.state || { vuelos: [] }; 
     const navigate = useNavigate(); 
+
+    const comprarVuelo = (vuelo) => {
+        navigate('/compra-vuelo', { state: { vuelo } });
+    };
 
     return (
         <div>
@@ -39,6 +43,11 @@ const VuelosDisponibles = () => {
                                     <Typography>{`Aerolínea: ${vuelo.aerolinea}`}</Typography>
                                     <Typography>{`Precio: ${vuelo.precio}`}</Typography>
                                 </CardContent>
+                                <CardActions>
+                                    <Button size="small" color="primary" onClick={() => comprarVuelo(vuelo)}>
+                                        Comprar
+                                    </Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                     ))}

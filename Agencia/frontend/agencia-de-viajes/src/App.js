@@ -11,6 +11,8 @@ import HospedajesDisponibles from './HospedajesDisponibles';
 import VuelosDisponibles from './VuelosDisponibles';
 import DetallesHospedaje from './DetallesHospedaje';
 import { UserProvider } from './UserContext'; 
+import CompraVuelo from './CompraVuelo';
+import CompraHospedaje from './CompraHospedaje';
 
 function App() {
   return (
@@ -27,7 +29,8 @@ function App() {
           <Route path="/hospedajes-disponibles" element={<HospedajesDisponibles />} />
           <Route path="/vuelos-disponibles" element={<VuelosDisponibles />} />
           <Route path="/hospedajes/:id" element={<DetallesHospedaje />} />
-          
+          <Route path="/compra-vuelo" element={<CompraVuelo />} />
+          <Route path="/comprahospedaje" element={<CompraHospedaje />} />
         </Routes>
       </div>
       </UserProvider> 

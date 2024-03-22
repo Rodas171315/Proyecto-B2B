@@ -65,7 +65,7 @@ const HomePage = () => {
                     ))}
                 </Grid>
 
-                {/* Ofertas Especiales y Promociones */}
+                
                 <Typography variant="h4" component="h2" gutterBottom style={{ marginTop: '20px' }}>
                     Ofertas Especiales y Promociones
                 </Typography>
@@ -88,7 +88,7 @@ const HomePage = () => {
                                     </Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small">Ver Oferta</Button>
+                                    
                                 </CardActions>
                             </Card>
                         </Grid>
@@ -120,8 +120,7 @@ const HomePage = () => {
                                     </Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small">Ver Más</Button>
-                                    <Button size="small">Reservar Ahora</Button>
+                                    
                                 </CardActions>
                             </Card>
                         </Grid>

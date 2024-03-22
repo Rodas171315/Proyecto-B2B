@@ -54,6 +54,7 @@ const HospedajesDisponibles = () => {
                                 </CardContent>
                                 <CardActions>
                                     <Button size="small" onClick={() => verDetalles(hospedaje.id)}>Ver Detalles</Button>
+                                    <Button size="small" color="primary" onClick={() => navigate('/comprahospedaje', { state: { hospedaje } })}>Comprar</Button>
                                 </CardActions>
                             </Card>
                         </Grid>
