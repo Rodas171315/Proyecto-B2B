@@ -100,6 +100,9 @@ const HomePage = () => {
                                         {oferta.descripcion}
                                     </Typography>
                                 </CardContent>
+                                <CardActions>
+                                    <Button size="small" onClick={() => navigate(`/promocion/${oferta.id}`)}>Ver Detalles</Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                     ))}

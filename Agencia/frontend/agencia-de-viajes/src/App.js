@@ -15,6 +15,8 @@ import CompraVuelo from './CompraVuelo';
 import CompraHospedaje from './CompraHospedaje';
 import DestinoPopular from './DestinoPopular';
 import CompraDestino from './CompraDestino';
+import PromocionOfertaEspecialDetalles from './PromocionOfertaEspecialDetalles';
+import CompraPromocion from './CompraPromocion';
 
 function App() {
   return (
@@ -35,6 +37,8 @@ function App() {
           <Route path="/comprahospedaje" element={<CompraHospedaje />} />
           <Route path="/destinos-populares/:id" element={<DestinoPopular />} />
           <Route path="/compra-destino/:id" element={<CompraDestino />} />
+          <Route path="/promocion/:id" element={<PromocionOfertaEspecialDetalles />} />
+          <Route path="/compra-promocion/:id" element={<CompraPromocion />} />
 
 
         </Routes>

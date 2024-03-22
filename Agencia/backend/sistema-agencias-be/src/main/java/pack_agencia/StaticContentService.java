@@ -48,6 +48,20 @@ public class StaticContentService {
     }
 
     @GET
+    @Path("/promociones-ofertas-especiales/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PromocionOfertaEspecial obtenerPromocionOfertaEspecialPorId(@PathParam("id") int id) throws Exception {
+        InputStream is = getClass().getResourceAsStream("/promocionesOfertasEspeciales.json");
+        List<PromocionOfertaEspecial> ofertas = objectMapper.readValue(is, new TypeReference<List<PromocionOfertaEspecial>>() {});
+
+        return ofertas.stream()
+                    .filter(oferta -> oferta.getId() == id)
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Oferta no encontrada"));
+    }
+
+
+    @GET
     @Path("/descubre-hospedaje")
     @Produces(MediaType.APPLICATION_JSON)
     public List<HospedajeFavorito> obtenerHospedajesFavoritos() throws Exception {
