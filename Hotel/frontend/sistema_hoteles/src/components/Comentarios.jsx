@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Card, Container, Row } from 'react-bootstrap';
+import { useUser } from './UserContext'; // Asegúrate de que la ruta es correcta
 
 function Comentarios({ idHabitacion }) {
   const [comentarios, setComentarios] = useState([]);
   const [textoComentario, setTextoComentario] = useState('');
   const [rating, setRating] = useState(1);
+  const { user } = useUser(); 
 
   useEffect(() => {
     fetchComentarios();
@@ -23,8 +25,22 @@ function Comentarios({ idHabitacion }) {
 
   const crearComentario = async (e) => {
     e.preventDefault();
-    // Asumiendo que idUsuario puede obtenerse de la sesión o contexto de autenticación
-    const comentario = { idHabitacion, textoComentario, rating, idUsuario: 1 };
+
+    // Asegúrate de que tienes un usuario logueado antes de intentar postear un comentario
+    if (!user || !user.id) {
+        alert('Debes estar registrado y haber iniciado sesión para realizar un comentario.');
+
+      console.error('No hay un usuario logueado para crear un comentario');
+      return;
+    }
+
+    const comentario = {
+      idHabitacion,
+      textoComentario,
+      rating,
+      idUsuario: user.id, // Usa el ID del usuario logueado obtenido del contexto
+    };
+
     const response = await fetch('http://localhost:8080/comentarios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,7 +50,7 @@ function Comentarios({ idHabitacion }) {
     if (response.ok) {
       setTextoComentario('');
       setRating(1);
-      fetchComentarios(); // Recarga comentarios para mostrar el nuevo
+      fetchComentarios(); // Recarga los comentarios para mostrar el nuevo
     } else {
       console.error('Error al crear el comentario');
     }

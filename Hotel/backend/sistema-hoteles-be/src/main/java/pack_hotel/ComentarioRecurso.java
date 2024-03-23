@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,14 +39,16 @@ public class ComentarioRecurso {
         return Response.ok(comentario).build();
     }
 
-    @POST
-    public Response crearComentario(Comentario comentario) {
-        if (comentario.getIdHabitacion() == null || comentario.getIdUsuario() == null || comentario.getTextoComentario() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Los campos idHabitacion, idUsuario y textoComentario son obligatorios").build();
-        }
-        comentarioRepositorio.persist(comentario);
-        return Response.status(Response.Status.CREATED).entity(comentario).build();
+@POST
+public Response crearComentario(Comentario comentario) {
+    if (comentario.getIdHabitacion() == null || comentario.getIdUsuario() == null || comentario.getTextoComentario() == null) {
+        return Response.status(Response.Status.BAD_REQUEST).entity("Los campos idHabitacion, idUsuario y textoComentario son obligatorios").build();
     }
+    comentario.setFechaComentario(LocalDateTime.now()); // Asegúrate de establecer la fecha actual aquí
+    comentarioRepositorio.persist(comentario);
+    return Response.status(Response.Status.CREATED).entity(comentario).build();
+}
+
     
     
 
