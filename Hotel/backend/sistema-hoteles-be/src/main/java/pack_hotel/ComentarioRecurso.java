@@ -22,6 +22,9 @@ public class ComentarioRecurso {
     @Inject
     private UsuarioRepositorio UsuarioRepositorio;
 
+    @Inject
+    private HabitacionRepositorio HabitacionRepositorio;
+
     @GET
     public List<Comentario> obtenerComentarios() {
         return comentarioRepositorio.listAll();
@@ -38,17 +41,6 @@ public class ComentarioRecurso {
         }
         return Response.ok(comentario).build();
     }
-
-@POST
-public Response crearComentario(Comentario comentario) {
-    if (comentario.getIdHabitacion() == null || comentario.getIdUsuario() == null || comentario.getTextoComentario() == null) {
-        return Response.status(Response.Status.BAD_REQUEST).entity("Los campos idHabitacion, idUsuario y textoComentario son obligatorios").build();
-    }
-    comentario.setFechaComentario(LocalDateTime.now()); // Asegúrate de establecer la fecha actual aquí
-    comentarioRepositorio.persist(comentario);
-    return Response.status(Response.Status.CREATED).entity(comentario).build();
-}
-
     
     
 
@@ -101,6 +93,37 @@ public Response crearComentario(Comentario comentario) {
 
         return Response.ok(dtos).build();
     }
+
+
+    @POST
+    public Response crearComentario(ComentarioDTO comentarioDto) {
+        Comentario comentario = new Comentario();
+        comentario.setIdHabitacion(comentarioDto.getIdHabitacion());
+        comentario.setIdUsuario(comentarioDto.getIdUsuario());
+        comentario.setTextoComentario(comentarioDto.getTextoComentario());
+        comentario.setRating(comentarioDto.getRating());
+        comentario.setFechaComentario(LocalDateTime.now()); // Asume la fecha actual para el comentario
+        comentarioRepositorio.persist(comentario);
+        
+        // Calcula el promedio de los ratings para la habitación y actualiza la valuación
+        actualizarValuacionHabitacion(comentario.getIdHabitacion());
+
+        return Response.status(Response.Status.CREATED).entity(comentario).build();
+    }
+
+    private void actualizarValuacionHabitacion(Long idHabitacion) {
+        List<Comentario> comentarios = comentarioRepositorio.findByHabitacionId(idHabitacion);
+        double promedio = comentarios.stream()
+                                      .mapToInt(Comentario::getRating)
+                                      .average()
+                                      .orElse(0.0);
+        Habitaciones habitacion = HabitacionRepositorio.findById(idHabitacion);
+        if (habitacion != null) {
+            habitacion.setValuacion((int) Math.round(promedio)); // Actualiza la valuación con el promedio
+            HabitacionRepositorio.persist(habitacion);
+        }
+    }
+
 
 
 }
