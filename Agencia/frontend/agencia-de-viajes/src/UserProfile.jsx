@@ -26,9 +26,11 @@ const UserProfile = () => {
     return (
         <div>
             <Header />
-            <Box mt={4}> 
-                <UserAdministration />
-            </Box>
+            {user && user.rol === 2 && (
+                <Box mt={4}> 
+                    <UserAdministration />
+                </Box>
+            )}
             {user ? ( 
                 <Container component="main" maxWidth="md">
                     <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
