@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Typography, Button, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const UserAdministration = () => {
-    const navigate = useNavigate();
+
     const [users, setUsers] = useState([]);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [userId, setUserId] = useState(null);

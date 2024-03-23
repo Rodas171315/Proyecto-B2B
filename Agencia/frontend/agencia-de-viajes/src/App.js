@@ -29,7 +29,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/aboutus" element={<AboutUs />} />
-            
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             <Route path="/useradministration" element={<PrivateRoute><UserAdministration /></PrivateRoute>} />
             <Route path="/hospedajes-disponibles" element={<PrivateRoute><HospedajesDisponibles /></PrivateRoute>} />
