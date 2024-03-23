@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
+import Comentarios from './Comentarios';
 
 const HomePage = () => {
   const [hotels, setHotels] = useState([]);
@@ -125,6 +126,7 @@ const HomePage = () => {
                       Reservar
                     </Button>
 
+                    <Comentarios idHabitacion={room.id_habitacion} />
 
 
                     </Card.Body>

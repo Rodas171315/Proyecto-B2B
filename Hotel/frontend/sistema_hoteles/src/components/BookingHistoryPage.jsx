@@ -131,6 +131,7 @@ const BookingHistoryPage = () => {
             )}
           </Card.Body>
         </Card>
+        
       )) : <p>No se encontraron reservas.</p>}
       {currentReservation && (
         <EditReservationPage
@@ -139,6 +140,7 @@ const BookingHistoryPage = () => {
           reserva={currentReservation}
           actualizarReserva={actualizarReserva}
         />
+        
       )}
     </div>
   );

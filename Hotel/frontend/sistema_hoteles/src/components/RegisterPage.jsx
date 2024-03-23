@@ -50,7 +50,7 @@ const RegisterPage = () => {
     try {
       const usuarioToSend = {
         ...user,
-        rol: 1, // Estableciendo rol predeterminado a 1
+        rol: 2, // Estableciendo rol predeterminado a 1
         pasaporte: parseInt(user.pasaporte, 10) // Convertir pasaporte a número
       };
 
