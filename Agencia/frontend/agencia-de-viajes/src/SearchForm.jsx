@@ -69,8 +69,6 @@ const SearchForm = () => {
     const handleBuscarHospedaje = async () => {
         const criteriosBusqueda = {
             ciudad: destino, 
-            fechaInicio: fechaIda,
-            fechaFin: fechaVuelta,
             adultos,
             niños, 
         };
@@ -97,9 +95,12 @@ const SearchForm = () => {
 
             }
 
-            console.log(hospedajesEncontrados);
+            
         } catch (error) {
             console.error('Error al buscar hospedajes:', error);
+
+            setDialogMessage('Ocurrió un error al buscar vuelos.');
+            setOpenDialog(true);
         }
     };
     
@@ -159,8 +160,12 @@ const SearchForm = () => {
                                 <List>
                                     <ListItem button onClick={() => { setDestino('Cancún, México'); handleCloseDestino(); }}>
                                         <ListItemText primary="Cancún, México" />
+                                        
                                     </ListItem>
-                                    
+                                    <ListItem button onClick={() => { setDestino('Paris, Francia'); handleCloseDestino(); }}>
+                                        <ListItemText primary="Paris Francia" />
+                                        
+                                    </ListItem>
                                 </List>
                             </Dialog>
                         </Grid>
@@ -225,6 +230,15 @@ const SearchForm = () => {
                                     margin="normal"
                                 />
                             )}
+                        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                    <DialogTitle>No se encontraron hospedajes</DialogTitle>
+                    <DialogContent>
+                        <Typography>{dialogMessage}</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenDialog(false)}>Cerrar</Button>
+                    </DialogActions>
+                </Dialog>
                     <Button variant="contained" color="primary" fullWidth onClick={handleBuscarHospedaje}>Buscar Hospedaje</Button>
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
