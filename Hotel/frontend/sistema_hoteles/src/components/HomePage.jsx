@@ -46,7 +46,8 @@ const HomePage = () => {
           const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
           if (!roomsResponse.ok) throw new Error('Failed to load rooms');
           const roomsData = await roomsResponse.json();
-          return { ...hotel, rooms: roomsData.map(room => ({...room, tipo_habitacion: tiposHabitacion[room.tipo_habitacion]})) };
+          // No modificamos la estructura de los datos de la habitación aquí
+          return { ...hotel, rooms: roomsData };
         } catch (error) {
           console.error('Error fetching rooms for hotel:', hotel.id_hotel, error);
           return { ...hotel, rooms: [] }; // Return the hotel with no rooms in case of error.
@@ -58,6 +59,8 @@ const HomePage = () => {
       console.error('Error fetching hotels:', error);
     }
   };
+  
+  
   
   const handleSearch = (e) => {
     e.preventDefault();
@@ -99,14 +102,31 @@ const HomePage = () => {
                   <Card className="mb-3">
                     <Card.Img variant="top" src={defaultRoomImage} />
                     <Card.Body>
-                      <Card.Title>Habitación: {room.tipo_habitacion}</Card.Title>
+                    <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
                       <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
                       <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
                       <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
                       <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
-                      <Button variant="primary" onClick={() => navigate('/checkout', { state: { hotelDetails: hotel, roomDetails: room } })}>
-                        Reservar
-                      </Button>
+                      <Button variant="primary" onClick={() => {
+                      console.log("Navigating with hotelDetails:", hotel);
+                      navigate('/checkout', {
+                        state: {
+                          hotelDetails: { ...hotel },
+                          roomDetails: {
+                            ...room,
+                            idHabitacion: room.id_habitacion,
+                            roomType: tiposHabitacion[room.tipo_habitacion],
+                            roomPrice: room.precioxnoche,
+                            capacidadPersonas: room.capacidad_personas
+                          }
+                        }
+                      });
+                    }}>
+                      Reservar
+                    </Button>
+
+
+
                     </Card.Body>
                   </Card>
                 </Col>
