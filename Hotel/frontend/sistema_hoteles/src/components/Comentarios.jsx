@@ -76,7 +76,7 @@ function Comentarios({ idHabitacion }) {
         {comentarios.length > 0 ? comentarios.map((comentario) => (
           <Card key={comentario.idComentario} className="mb-3">
             <Card.Body>
-            <Card.Title>Comentario del usuario ID: {comentario.idUsuario} - Rating: {comentario.rating}</Card.Title>
+            <Card.Title>Comentario de {comentario.nombreUsuario} - Rating: {comentario.rating}</Card.Title>
               <Card.Text>{comentario.textoComentario}</Card.Text>
               <Card.Footer>Comentado el: {new Date(comentario.fechaComentario).toLocaleString()}</Card.Footer>
             </Card.Body>

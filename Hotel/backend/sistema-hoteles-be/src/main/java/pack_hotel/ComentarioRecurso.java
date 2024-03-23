@@ -6,6 +6,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/comentarios")
 @Produces(MediaType.APPLICATION_JSON)
@@ -15,6 +16,9 @@ public class ComentarioRecurso {
 
     @Inject
     private ComentarioRepositorio comentarioRepositorio;
+
+    @Inject
+    private UsuarioRepositorio UsuarioRepositorio;
 
     @GET
     public List<Comentario> obtenerComentarios() {
@@ -71,13 +75,28 @@ public class ComentarioRecurso {
     }
 
 
-@GET
-@Path("/por-habitacion/{idHabitacion}")
-public List<Comentario> obtenerComentariosPorHabitacion(@PathParam("idHabitacion") Long idHabitacion) {
-    // Implementa la lógica para filtrar comentarios por el ID de la habitación
-    // Esto puede involucrar una consulta a la base de datos que filtre por idHabitacion
-    return comentarioRepositorio.findByHabitacionId(idHabitacion);
-}
+    @GET
+    @Path("/por-habitacion/{idHabitacion}")
+    public Response obtenerComentariosPorHabitacion(@PathParam("idHabitacion") Long idHabitacion) {
+        List<Comentario> comentarios = comentarioRepositorio.findByHabitacionId(idHabitacion);
+        List<ComentarioDTO> dtos = comentarios.stream().map(comentario -> {
+            ComentarioDTO dto = new ComentarioDTO();
+            dto.setIdComentario(comentario.getIdComentario());
+            dto.setIdHabitacion(comentario.getIdHabitacion());
+            dto.setTextoComentario(comentario.getTextoComentario());
+            dto.setRating(comentario.getRating());
+            dto.setFechaComentario(comentario.getFechaComentario());
+            
+            Usuarios usuario = UsuarioRepositorio.findById(comentario.getIdUsuario());
+            if (usuario != null) {
+                dto.setNombreUsuario(usuario.getPrimer_nombre());
+            }
+            
+            return dto;
+        }).collect(Collectors.toList());
+
+        return Response.ok(dtos).build();
+    }
 
 
 }
