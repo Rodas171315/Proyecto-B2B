@@ -91,6 +91,14 @@ const UserProfile = () => {
                                 
                             </Grid>
                         </Paper>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleLogout}
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Cerrar sesión
+                        </Button>
                     </Box>
                 </Container>
                 
