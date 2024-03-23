@@ -161,6 +161,84 @@ const CheckoutPage = () => {
             </Form.Group>
           </Col>
         </Row>
+        
+
+        <Row className="mb-3">
+      <Col md={6}>
+        <Form.Group controlId="cardNumber">
+          <Form.Label>Número de Tarjeta</Form.Label>
+          <Form.Control type="text" pattern="\d{16}" placeholder="1234 5678 9012 3456" maxLength="16" required />
+          <Form.Text className="text-muted">
+            Ingrese los 16 dígitos de su tarjeta de crédito sin espacios.
+          </Form.Text>
+        </Form.Group>
+      </Col>
+      <Col md={3}>
+        <Form.Group controlId="cardExpiration">
+          <Form.Label>Fecha de Expiración</Form.Label>
+          <Form.Control type="month" required />
+        </Form.Group>
+      </Col>
+      <Col md={3}>
+        <Form.Group controlId="cardCVV">
+          <Form.Label>CVV</Form.Label>
+          <Form.Control type="text" pattern="\d{3}" placeholder="123" maxLength="3" required />
+          <Form.Text className="text-muted">
+            3 dígitos en el reverso de la tarjeta.
+          </Form.Text>
+        </Form.Group>
+      </Col>
+    </Row>
+
+    <h4 className="mb-3">Dirección de Cobro</h4>
+    <Row className="mb-3">
+      <Col md={6}>
+        <Form.Group controlId="billingAddressLine1">
+          <Form.Label>Dirección (Línea 1)</Form.Label>
+          <Form.Control type="text" placeholder="Calle y número" required />
+        </Form.Group>
+      </Col>
+      <Col md={6}>
+        <Form.Group controlId="billingAddressLine2">
+          <Form.Label>Dirección (Línea 2)</Form.Label>
+          <Form.Control type="text" placeholder="Apartamento, suite, unidad, etc. (opcional)" />
+        </Form.Group>
+      </Col>
+      <Col md={4}>
+        <Form.Group controlId="billingCity">
+          <Form.Label>Ciudad</Form.Label>
+          <Form.Control type="text" required />
+        </Form.Group>
+      </Col>
+      <Col md={4}>
+        <Form.Group controlId="billingStateProvince">
+          <Form.Label>Estado/Provincia</Form.Label>
+          <Form.Control type="text" required />
+        </Form.Group>
+      </Col>
+      <Col md={4}>
+        <Form.Group controlId="billingPostalCode">
+          <Form.Label>Código Postal</Form.Label>
+          <Form.Control type="text" required />
+        </Form.Group>
+      </Col>
+      <Col md={6}>
+        <Form.Group controlId="billingCountry">
+          <Form.Label>País</Form.Label>
+          <Form.Control as="select" defaultValue="Elija..." required>
+            {/* Opciones de países */}
+            <option>Elija...</option>
+            <option>Estados Unidos</option>
+            <option>México</option>
+            <option>Canadá</option>
+            {/* Agrega más países según sea necesario */}
+          </Form.Control>
+        </Form.Group>
+      </Col>
+    </Row>
+
+
+
 
   {
     !isRoomAvailable && (
@@ -171,6 +249,11 @@ const CheckoutPage = () => {
   }
   <Button variant="primary" type="submit" disabled={!isRoomAvailable}>Confirmar Reserva</Button>
 </Form>
+
+
+
+
+
 
       {/* Modal de éxito */}
       <Modal show={showSuccessModal} onHide={() => setShowSuccessModal(false)}>
