@@ -162,9 +162,20 @@ const SearchForm = () => {
                                         <ListItemText primary="Cancún, México" />
                                         
                                     </ListItem>
-                                    <ListItem button onClick={() => { setDestino('Paris, Francia'); handleCloseDestino(); }}>
-                                        <ListItemText primary="Paris Francia" />
-                                        
+                                    <ListItem button onClick={() => { setDestino('Kyoto, Japón'); handleCloseDestino(); }}>
+                                        <ListItemText primary="PKyoto, Japón" />
+                                    </ListItem>
+                                    <ListItem button onClick={() => { setDestino('Roma, Italia'); handleCloseDestino(); }}>
+                                        <ListItemText primary="Roma, Italia" />
+                                    </ListItem>
+                                    <ListItem button onClick={() => { setDestino('Nueva York, EE.UU.'); handleCloseDestino(); }}>
+                                        <ListItemText primary="Nueva York, EE.UU." />
+                                    </ListItem>
+                                    <ListItem button onClick={() => { setDestino('Cape Town, Sudáfrica'); handleCloseDestino(); }}>
+                                        <ListItemText primary="Cape Town, Sudáfrica" />
+                                    </ListItem>
+                                    <ListItem button onClick={() => { setDestino('Sidney, Australia'); handleCloseDestino(); }}>
+                                        <ListItemText primary="Sidney, Australia" />
                                     </ListItem>
                                 </List>
                             </Dialog>

@@ -14,6 +14,14 @@
     "incluye": ["Vuelo redondo, Hospedaje 4 noches, Entrada al Muro de Berlín"],
     "imagen": "https://source.unsplash.com/random?berlin",
     "descripcion": "Sumérgete en la rica historia y modernidad de Berlín con actividades culturales incluidas."
+  },
+  {
+    "id": 3,
+    "paquete": "Descubre la Magia de Roma",
+    "precio": 1500,
+    "incluye": ["Vuelo redondo, Hospedaje 6 noches, Paseo por el Coliseo y el Vaticano"],
+    "imagen": "https://source.unsplash.com/random?rome",
+    "descripcion": "Explora los secretos de la antigua Roma y disfruta de la exquisita gastronomía italiana con este completo paquete turístico."
   }
 ]
 

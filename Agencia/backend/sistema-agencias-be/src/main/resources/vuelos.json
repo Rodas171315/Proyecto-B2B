@@ -7,7 +7,7 @@
     "hora": "10:00 AM",
     "aerolinea": "Aeroméxico",
     "precio": "800 USD",
-    "clasesDisponibles": ["económica", "ejecutiva"]
+    "clasesDisponibles": ["economica", "ejecutiva"]
   },
   {
     "id": 2,
@@ -17,6 +17,47 @@
     "hora": "4:00 PM",
     "aerolinea": "Air France",
     "precio": "500 USD",
-    "clasesDisponibles": ["económica"]
+    "clasesDisponibles": ["economica"]
+  },
+  {
+    "id": 3,
+    "origen": "Nueva York",
+    "destino": "Londres",
+    "fecha": "2024-06-10",
+    "hora": "8:00 PM",
+    "aerolinea": "British Airways",
+    "precio": "750 USD",
+    "clasesDisponibles": ["economica", "ejecutiva", "primera clase"]
+  },
+  {
+    "id": 4,
+    "origen": "Santiago de Chile",
+    "destino": "Madrid",
+    "fecha": "2024-07-22",
+    "hora": "9:00 AM",
+    "aerolinea": "Iberia",
+    "precio": "600 USD",
+    "clasesDisponibles": ["economica", "ejecutiva"]
+  },
+  {
+    "id": 5,
+    "origen": "São Paulo",
+    "destino": "Roma",
+    "fecha": "2024-08-15",
+    "hora": "7:00 AM",
+    "aerolinea": "Alitalia",
+    "precio": "650 USD",
+    "clasesDisponibles": ["economica"]
+  },
+  {
+    "id": 6,
+    "origen": "Sydney",
+    "destino": "Singapur",
+    "fecha": "2024-09-05",
+    "hora": "2:00 PM",
+    "aerolinea": "Singapore Airlines",
+    "precio": "550 USD",
+    "clasesDisponibles": ["economica", "ejecutiva", "suites"]
   }
 ]
+

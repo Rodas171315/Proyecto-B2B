@@ -22,6 +22,66 @@
       "fin": "2024-10-31"
     },
     "capacidadMax": 2
+  },
+  {
+    "id": 3,
+    "ciudad": "Kyoto, Japón",
+    "nombre": "Ryokan Peace",
+    "descripcion": "Experiencia tradicional japonesa en un alojamiento Ryokan, con baños termales y jardines zen.",
+    "precio": "300 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-02-01",
+      "fin": "2024-11-30"
+    },
+    "capacidadMax": 2
+  },
+  {
+    "id": 4,
+    "ciudad": "Roma, Italia",
+    "nombre": "Villa Romana",
+    "descripcion": "Lujo y historia en el corazón de Roma, con vistas al Coliseo.",
+    "precio": "250 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-04-01",
+      "fin": "2024-12-20"
+    },
+    "capacidadMax": 3
+  },
+  {
+    "id": 5,
+    "ciudad": "Nueva York, EE.UU.",
+    "nombre": "Urban Retreat",
+    "descripcion": "Moderno y confortable, en el vibrante barrio de Manhattan, cerca de Central Park.",
+    "precio": "200 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-01-15",
+      "fin": "2024-11-15"
+    },
+    "capacidadMax": 2
+  },
+  {
+    "id": 6,
+    "ciudad": "Cape Town, Sudáfrica",
+    "nombre": "Safari Lodge",
+    "descripcion": "Aventura en la naturaleza, con safaris diarios y alojamiento de lujo.",
+    "precio": "450 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-05-01",
+      "fin": "2024-09-30"
+    },
+    "capacidadMax": 4
+  },
+  {
+    "id": 7,
+    "ciudad": "Sidney, Australia",
+    "nombre": "Harbor Views",
+    "descripcion": "Elegante y moderno, con impresionantes vistas al puerto y la Ópera de Sidney.",
+    "precio": "350 USD por noche",
+    "disponibilidad": {
+      "inicio": "2024-03-01",
+      "fin": "2024-10-31"
+    },
+    "capacidadMax": 3
   }
 ]
 
