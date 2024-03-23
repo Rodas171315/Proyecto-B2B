@@ -32,5 +32,6 @@ public class LoginResource {
     public static class UsuarioDTO {
         public String email;
         public String password;
+        
     }
 }

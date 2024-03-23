@@ -20,6 +20,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Attempting to log in with credentials:', credentials); // Log de intento de inicio de sesión
     try {
       const response = await fetch('http://localhost:8080/login', {
         method: 'POST',
@@ -29,15 +30,21 @@ const LoginPage = () => {
         body: JSON.stringify(credentials),
       });
       const data = await response.json();
+      console.log('Login response data:', data); // Log de la respuesta del servidor
+
       if (response.ok) {
         // Guarda los datos del usuario en el contexto global y/o en localStorage
-        login(data); // Actualiza el estado global del usuario con los datos de inicio de sesión
-        localStorage.setItem('user', JSON.stringify(data)); // Opcional, si también usas localStorage
+        login(data);
+        console.log('Login successful:', data); // Log exitoso de inicio de sesión
+
+        localStorage.setItem('user', JSON.stringify(data)); 
         navigate('/perfil'); // Redirige al usuario al perfil
       } else {
         throw new Error('Inicio de sesión fallido');
       }
     } catch (error) {
+      console.error('Login error:', error); // Log de error de inicio de sesión
+
       setLoginMessage(error.message || 'Error al conectar con el servidor.');
       setShowAlert(true);
       setAlertVariant('danger');

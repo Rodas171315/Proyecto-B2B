@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Crear el contexto
 const UserContext = createContext();
@@ -8,16 +8,27 @@ export const useUser = () => useContext(UserContext);
 
 // Proveedor del contexto
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  // Intenta cargar el usuario desde localStorage al iniciar
+  const [user, setUser] = useState(() => {
+    const userStored = localStorage.getItem('user');
+    return userStored ? JSON.parse(userStored) : null;
+  });
+
+  // Escucha cambios en el estado del usuario para actualizar localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
-    setUser(null); // Limpia el usuario del estado global
-    localStorage.removeItem('user'); // Limpia el usuario de localStorage
+    setUser(null);
   };
 
   return (
