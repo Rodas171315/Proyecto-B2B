@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Container, Card, CardContent, Button, CardMedia, CardActions } from '@mui/material';
+import Footer from './Footer'; 
+
 
 const PromocionOfertaEspecialDetalles = () => {
   const { id } = useParams();
@@ -55,6 +57,7 @@ const PromocionOfertaEspecialDetalles = () => {
           </Card>
         )}
       </Container>
+      <Footer />
     </div>
   );
 };

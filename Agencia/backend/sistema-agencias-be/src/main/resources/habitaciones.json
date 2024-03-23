@@ -20,5 +20,49 @@
             "https://source.unsplash.com/random?hotel-room&sig=3",
             "https://source.unsplash.com/random?hotel-room&sig=4"
         ]
+    },
+    {
+        "id": 3,
+        "hotelId": 2,
+        "tipo": "Individual",
+        "descripcion": "Una cama. Perfecta para viajeros solos.",
+        "precio": 80,
+        "imagenes": [
+            "https://source.unsplash.com/random?hotel-room&sig=1",
+            "https://source.unsplash.com/random?hotel-room&sig=2"
+        ]
+    },
+    {
+        "id": 4,
+        "hotelId": 2,
+        "tipo": "Doble",
+        "descripcion": "Dos camas. Ideal para parejas o amigos.",
+        "precio": 120,
+        "imagenes": [
+            "https://source.unsplash.com/random?hotel-room&sig=3",
+            "https://source.unsplash.com/random?hotel-room&sig=4"
+        ]
+    },
+    {
+        "id": 5,
+        "hotelId": 3,
+        "tipo": "Individual",
+        "descripcion": "Una cama. Perfecta para viajeros solos.",
+        "precio": 80,
+        "imagenes": [
+            "https://source.unsplash.com/random?hotel-room&sig=1",
+            "https://source.unsplash.com/random?hotel-room&sig=2"
+        ]
+    },
+    {
+        "id": 6,
+        "hotelId": 3,
+        "tipo": "Doble",
+        "descripcion": "Dos camas. Ideal para parejas o amigos.",
+        "precio": 120,
+        "imagenes": [
+            "https://source.unsplash.com/random?hotel-room&sig=3",
+            "https://source.unsplash.com/random?hotel-room&sig=4"
+        ]
     }
 ]

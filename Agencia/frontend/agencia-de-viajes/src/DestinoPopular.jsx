@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Container, Card, CardMedia, CardContent, Button, CardActions } from '@mui/material';
+import Footer from './Footer'; 
 
 const DestinoPopular = () => {
   const { id } = useParams();
@@ -61,7 +62,7 @@ const DestinoPopular = () => {
         ) : <Typography>Cargando...</Typography>}
         
       </Container>
-
+      <Footer />
     </div>
   );
 };
