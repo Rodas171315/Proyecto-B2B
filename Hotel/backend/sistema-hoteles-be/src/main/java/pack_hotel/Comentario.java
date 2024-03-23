@@ -96,6 +96,8 @@ public class Comentario {
         this.id_comentario_padre = id_comentario_padre;
     }
 
+    
+
 
     // Equals and hashCode methods
 

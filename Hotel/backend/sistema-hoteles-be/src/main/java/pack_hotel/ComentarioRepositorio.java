@@ -45,4 +45,6 @@ public class ComentarioRepositorio implements PanacheRepository<Comentario> {
     public boolean eliminarComentario(Long id) {
         return deleteById(id);
     }
+
+    
 }
