@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useUser } from './UserContext';
 import EditReservationPage from './EditReservationPage';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const BookingHistoryPage = () => {
   const [reservations, setReservations] = useState([]);
@@ -108,6 +110,35 @@ const BookingHistoryPage = () => {
   };
   
 
+
+  const downloadReservationPdf = (reserva) => {
+    const doc = new jsPDF();
+    doc.text("Detalle de Reserva", 14, 16);
+    doc.setFontSize(10);
+
+    // Información de la reserva
+    const reservationDetails = [
+      { title: "Hotel", data: reserva.nombreHotel },
+      { title: "Tipo de habitación", data: reserva.tipoHabitacion },
+      { title: "Ubicación", data: `${reserva.ciudad}, ${reserva.pais} - ${reserva.direccion}` },
+      { title: "Check-in", data: reserva.fechaIngreso },
+      { title: "Check-out", data: reserva.fechaSalida },
+      { title: "Número de noches", data: calculateNights(reserva.fechaIngreso, reserva.fechaSalida).toString() },
+      { title: "Personas", data: reserva.capacidadPersonas.toString() },
+      { title: "Total Reserva", data: `$${reserva.totalReserva}` },
+      { title: "Estado", data: reserva.estadoReserva },
+      { title: "Código de reserva", data: reserva.codigoReserva },
+    ];
+
+    doc.autoTable({
+      head: [["Detalle", "Información"]],
+      body: reservationDetails.map((item) => [item.title, item.data]),
+      startY: 20,
+    });
+
+    doc.save(`Reserva_${reserva.codigoReserva}.pdf`);
+  };
+
   return (
     <div className="booking-history-container">
       <h2>Historial de Reservas</h2>
@@ -129,6 +160,8 @@ const BookingHistoryPage = () => {
                 <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar Reserva</Button>
               </>
             )}
+                      <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar Reserva</Button>
+
           </Card.Body>
         </Card>
         
