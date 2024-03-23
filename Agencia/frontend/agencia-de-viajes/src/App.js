@@ -18,6 +18,8 @@ import CompraDestino from './CompraDestino';
 import PromocionOfertaEspecialDetalles from './PromocionOfertaEspecialDetalles';
 import CompraPromocion from './CompraPromocion';
 import PrivateRoute from './PrivateRoute';
+import PaquetesDisponibles from './PaquetesDisponibles';
+import CompraPaquete from './CompraPaquete';
 
 function App() {
   return (
@@ -33,8 +35,10 @@ function App() {
             <Route path="/useradministration" element={<PrivateRoute><UserAdministration /></PrivateRoute>} />
             <Route path="/hospedajes-disponibles" element={<PrivateRoute><HospedajesDisponibles /></PrivateRoute>} />
             <Route path="/vuelos-disponibles" element={<PrivateRoute><VuelosDisponibles /></PrivateRoute>} />
+            <Route path="/paquetes-disponibles" element={<PrivateRoute><PaquetesDisponibles /></PrivateRoute>} />
             <Route path="/hospedajes/:id" element={<PrivateRoute><DetallesHospedaje /></PrivateRoute>} />
             <Route path="/compra-vuelo" element={<PrivateRoute><CompraVuelo /></PrivateRoute>} />
+            <Route path="/compra-paquete" element={<PrivateRoute><CompraPaquete /></PrivateRoute>} />
             <Route path="/comprahospedaje" element={<PrivateRoute><CompraHospedaje /></PrivateRoute>} />
             <Route path="/destinos-populares/:id" element={<PrivateRoute><DestinoPopular /></PrivateRoute>} />
             <Route path="/compra-destino/:id" element={<PrivateRoute><CompraDestino /></PrivateRoute>} />

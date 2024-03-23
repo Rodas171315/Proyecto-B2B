@@ -33,8 +33,6 @@ const SearchForm = () => {
     const [destino, setDestino] = useState('');
     const [tipoViaje, setTipoViaje] = useState('redondo');
     const [claseVuelo, setClaseVuelo] = useState('economica');
-    const [mostrarCampoHotel, setMostrarCampoHotel] = useState(false);
-    const [mostrarCampoVuelo, setMostrarCampoVuelo] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [origen, setOrigen] = useState('');
@@ -142,7 +140,21 @@ const SearchForm = () => {
         }
     };
     
-    
+    const handleBuscarPaquetes = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/paquetes');
+            if (!response.ok) throw new Error('Error al buscar paquetes');
+            const paquetesEncontrados = await response.json();
+            
+            if (paquetesEncontrados.length === 0) {
+                console.log('No se encontraron paquetes disponibles.');
+            } else {
+                navigate('/paquetes-disponibles', { state: { paquetes: paquetesEncontrados } });
+            }
+        } catch (error) {
+            console.error('Error al buscar paquetes:', error);
+        }
+    };
       
 
     return (
@@ -150,6 +162,7 @@ const SearchForm = () => {
             <Tabs value={tabValue} onChange={handleTabChange} centered>
                 <Tab label="Hospedaje" />
                 <Tab label="Vuelos" />
+                <Tab label="Paquetes" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
             <Grid container spacing={2}>
@@ -229,18 +242,7 @@ const SearchForm = () => {
                             </Dialog>
                         </Grid>
                         </Grid>
-                            <Button onClick={() => setMostrarCampoVuelo(!mostrarCampoVuelo)}>
-                                {mostrarCampoVuelo ? "Ocultar Vuelo" : "Agregar Vuelo"}
-                            </Button>
-                            {mostrarCampoVuelo && (
-                                <TextField
-                                    fullWidth
-                                    label="Información del Vuelo"
-                                    variant="outlined"
-                                    placeholder="Detalles del vuelo"
-                                    margin="normal"
-                                />
-                            )}
+                            
                         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                     <DialogTitle>No se encontraron hospedajes</DialogTitle>
                     <DialogContent>
@@ -324,18 +326,7 @@ const SearchForm = () => {
                         </FormControl>
                     </Grid>
                     </Grid>
-                        <Button onClick={() => setMostrarCampoHotel(!mostrarCampoHotel)}>
-                            {mostrarCampoHotel ? "Ocultar Hotel" : "Agregar Hotel"}
-                        </Button>
-                        {mostrarCampoHotel && (
-                            <TextField
-                                fullWidth
-                                label="Información del Hotel"
-                                variant="outlined"
-                                placeholder="Detalles del hotel"
-                                margin="normal"
-                            />
-                        )}
+                        
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                     <DialogTitle>No se encontraron vuelos</DialogTitle>
                     <DialogContent>
@@ -347,6 +338,30 @@ const SearchForm = () => {
                 </Dialog>
 
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+                <Box sx={{ mt: 3 }}>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        fullWidth 
+                        label="Origen" 
+                        variant="outlined"
+                        value={origen}
+                        onChange={(e) => setOrigen(e.target.value)} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField 
+                        fullWidth 
+                        label="Destino" 
+                        variant="outlined"
+                        value={destino}
+                        onChange={(e) => setDestino(e.target.value)} />
+                </Grid>
+                    
+                    <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
+                        Buscar Paquetes
+                    </Button>
+                </Box>
             </TabPanel>
         </Container>
         
