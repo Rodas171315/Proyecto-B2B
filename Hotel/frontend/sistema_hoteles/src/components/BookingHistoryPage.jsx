@@ -26,8 +26,8 @@ const BookingHistoryPage = () => {
         console.log('Reservations fetched successfully:', data);
         setReservations(data.map(reserva => ({
           ...reserva,
-          // Assuming you've updated your backend to return tipoHabitacion as a number
-          tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion), // Translate tipoHabitacion to a readable format if needed
+          // como numero
+          tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion), //formto
         })));
       } else {
         console.error("Failed to fetch reservations.");
@@ -37,7 +37,7 @@ const BookingHistoryPage = () => {
     }
   };
 
-  // Function to translate tipoHabitacion number to a readable string (if necessary)
+  // a numero
   const translateTipoHabitacion = (tipoHabitacion) => {
     const tipoHabitacionMap = {
       1: "Doble",
@@ -73,7 +73,7 @@ const BookingHistoryPage = () => {
         throw new Error('No se pudo cancelar la reserva');
       }
       alert('Reserva cancelada con éxito');
-      fetchReservations(); // Aquí es donde estaba el error tipográfico.
+      fetchReservations(); //error tipográfico.
     } catch (error) {
       console.error('Error al cancelar la reserva:', error);
       alert('Error al cancelar la reserva');
@@ -91,7 +91,7 @@ const BookingHistoryPage = () => {
   
       if (!response.ok) {
         if (response.status === 409) {
-          // Conflicto encontrado, notifica al usuario
+          // Conflicto , notifica al usuario
           alert("Habitación no disponible.");
         } else {
           // Otro tipo de error HTTP

@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 public class ComentarioDTO {
     private Long idComentario;
     private Long idHabitacion;
-    private Long idUsuario; // Aunque queremos el nombre, mantenemos el ID por si acaso
+    private Long idUsuario; 
     private String textoComentario;
     private Integer rating;
-    private String nombreUsuario; // Aquí almacenaremos el primer nombre del usuario
+    private String nombreUsuario; 
     private String fechaComentario;
 
     // Constructor vacío

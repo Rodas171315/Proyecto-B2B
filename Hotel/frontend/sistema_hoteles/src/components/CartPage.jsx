@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Button, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from './CartContext'; // Asegúrate de ajustar la importación según la ubicación de tu archivo
+import { useCart } from './CartContext'; 
 
 const CartPage = () => {
     const { cartItems, emptyCart } = useCart();

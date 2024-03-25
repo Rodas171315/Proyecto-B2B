@@ -69,7 +69,6 @@ public class HabitacionRecurso {
     public Habitaciones update(@PathParam("id") Long id, Habitaciones datosActualizados) {
         Habitaciones habitacionExistente = habitacionesRepositorio.findById(id);
         if (habitacionExistente != null) {
-            // No necesitas verificar si precioxpersona o precioxnoche son null porque son primitivos
             habitacionExistente.setPrecioxpersona(datosActualizados.getPrecioxpersona());
             habitacionExistente.setPrecioxnoche(datosActualizados.getPrecioxnoche());
     
@@ -78,7 +77,6 @@ public class HabitacionRecurso {
                 habitacionExistente.setTipo_habitacion(datosActualizados.getTipo_habitacion());
             }
     
-            // Actualizar los demás campos como disponible, numero_habitacion, etc., si es necesario
             
             habitacionesRepositorio.persist(habitacionExistente);
             return habitacionExistente;

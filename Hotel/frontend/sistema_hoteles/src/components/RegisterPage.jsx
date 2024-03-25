@@ -30,12 +30,12 @@ const RegisterPage = () => {
     email: '',
     password: '',
     primer_nombre: '',
-    segundo_nombre: '', // Asumiendo que quieres capturar este dato también
+    segundo_nombre: '', 
     primer_apellido: '',
-    segundo_apellido: '', // Asumiendo que quieres capturar este dato también
-    fecha_nacimiento: '', // Asegúrate de ajustar el formato de fecha para que coincida con el esperado por el backend
+    segundo_apellido: '', 
+    fecha_nacimiento: '', 
     nacionalidad: '',
-    pasaporte: '' // Este se convertirá a número antes de enviar
+    pasaporte: '' 
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -50,7 +50,7 @@ const RegisterPage = () => {
     try {
       const usuarioToSend = {
         ...user,
-        rol: 2, // Estableciendo rol predeterminado a 1
+        rol: 2, // Estableciendo rol predeterminado a 2
         pasaporte: parseInt(user.pasaporte, 10) // Convertir pasaporte a número
       };
 
@@ -118,8 +118,8 @@ const RegisterPage = () => {
               <Form.Control 
                 type="text" 
                 placeholder="Ingrese su primer nombre" 
-                name="primer_nombre" // Cambiado a snake_case para coincidir con la clase Java
-                value={user.primer_nombre} // Asegúrate de ajustar el estado inicial
+                name="primer_nombre" 
+                value={user.primer_nombre} 
                 onChange={handleChange}
               />
             </Form.Group>
@@ -129,8 +129,8 @@ const RegisterPage = () => {
               <Form.Control 
                 type="text" 
                 placeholder="Ingrese su segundo nombre" 
-                name="segundo_nombre" // Cambiado a snake_case
-                value={user.segundo_nombre} // Asegúrate de ajustar el estado inicial
+                name="segundo_nombre"
+                value={user.segundo_nombre} 
                 onChange={handleChange}
               />
             </Form.Group>
@@ -140,8 +140,8 @@ const RegisterPage = () => {
               <Form.Control 
                 type="text" 
                 placeholder="Ingrese su primer apellido" 
-                name="primer_apellido" // Cambiado a snake_case
-                value={user.primer_apellido} // Asegúrate de ajustar el estado inicial
+                name="primer_apellido" 
+                value={user.primer_apellido} 
                 onChange={handleChange}
               />
             </Form.Group>
@@ -151,8 +151,8 @@ const RegisterPage = () => {
               <Form.Control 
                 type="text" 
                 placeholder="Ingrese su segundo apellido" 
-                name="segundo_apellido" // Cambiado a snake_case
-                value={user.segundo_apellido} // Asegúrate de ajustar el estado inicial
+                name="segundo_apellido" 
+                value={user.segundo_apellido} 
                 onChange={handleChange}
               />
             </Form.Group>
@@ -161,8 +161,8 @@ const RegisterPage = () => {
               <Form.Label>Fecha de Nacimiento</Form.Label>
               <Form.Control 
                 type="date" 
-                name="fecha_nacimiento" // Cambiado a snake_case
-                value={user.fecha_nacimiento} // Asegúrate de ajustar el estado inicial
+                name="fecha_nacimiento" 
+                value={user.fecha_nacimiento} 
                 onChange={handleChange}
               />
             </Form.Group>

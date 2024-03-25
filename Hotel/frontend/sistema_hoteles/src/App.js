@@ -26,7 +26,6 @@ import { Navigate } from 'react-router-dom';
 const ProtectedRoute = ({ children, roleRequired }) => {
   const { user } = useUser(); // Usa el contexto de usuario
 
-  // Asegura que ambos, el rol del usuario y el requerido, sean tratados como strings para la comparación
   const userHasRequiredRole = user && String(user.rol) === String(roleRequired);
 
   return userHasRequiredRole ? children : <Navigate to="/" />;

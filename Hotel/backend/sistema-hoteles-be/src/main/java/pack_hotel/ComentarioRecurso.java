@@ -102,7 +102,7 @@ public class ComentarioRecurso {
         comentario.setIdUsuario(comentarioDto.getIdUsuario());
         comentario.setTextoComentario(comentarioDto.getTextoComentario());
         comentario.setRating(comentarioDto.getRating());
-        comentario.setFechaComentario(LocalDateTime.now()); // Asume la fecha actual para el comentario
+        comentario.setFechaComentario(LocalDateTime.now()); // esto assume la fecha actual para el comentario
         comentarioRepositorio.persist(comentario);
         
         // Calcula el promedio de los ratings para la habitación y actualiza la valuación

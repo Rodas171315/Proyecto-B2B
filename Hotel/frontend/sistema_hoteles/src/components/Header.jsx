@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './logo.jpg';
 import { Link } from 'react-router-dom';
 import { useCart } from './CartContext';
-import { useUser } from './UserContext'; // Importa el hook useUser
+import { useUser } from './UserContext'; 
 
 const Header = () => {
   const { cartItems } = useCart();

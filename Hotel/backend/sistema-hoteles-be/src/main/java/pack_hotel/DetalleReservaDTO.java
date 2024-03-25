@@ -17,7 +17,7 @@ public class DetalleReservaDTO {
     private Integer totalReserva;
     private String estadoReserva;
     private Integer capacidadPersonas;
-    private Long idHabitacion; // Campo añadido
+    private Long idHabitacion; // Campo añadido, ya funciona con este
 
 
     // Constructor vacío

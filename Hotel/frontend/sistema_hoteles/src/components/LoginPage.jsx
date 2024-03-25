@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext'; // Ajusta la ruta de importación según tu estructura de archivos
+import { useUser } from './UserContext'; 
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 
 const LoginPage = () => {
@@ -12,7 +12,7 @@ const LoginPage = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertVariant, setAlertVariant] = useState('success');
   const navigate = useNavigate();
-  const { login } = useUser(); // Asumiendo que tu contexto proporciona una función 'login'
+  const { login } = useUser(); 
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -33,7 +33,6 @@ const LoginPage = () => {
       console.log('Login response data:', data); // Log de la respuesta del servidor
 
       if (response.ok) {
-        // Guarda los datos del usuario en el contexto global y/o en localStorage
         login(data);
         console.log('Login successful:', data); // Log exitoso de inicio de sesión
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Card, Container, Row } from 'react-bootstrap';
-import { useUser } from './UserContext'; // Asegúrate de que la ruta es correcta
+import { useUser } from './UserContext';
 
 function Comentarios({ idHabitacion }) {
   const [comentarios, setComentarios] = useState([]);
@@ -26,7 +26,7 @@ function Comentarios({ idHabitacion }) {
   const crearComentario = async (e) => {
     e.preventDefault();
 
-    // Asegúrate de que tienes un usuario logueado antes de intentar postear un comentario
+    //  usuario logueado antes de intentar postear un comentario
     if (!user || !user.id) {
         alert('Debes estar registrado y haber iniciado sesión para realizar un comentario.');
 
@@ -38,7 +38,7 @@ function Comentarios({ idHabitacion }) {
       idHabitacion,
       textoComentario,
       rating,
-      idUsuario: user.id, // Usa el ID del usuario logueado obtenido del contexto
+      idUsuario: user.id, // iD del usuario logueado obtenido del contexto
     };
 
     const response = await fetch('http://localhost:8080/comentarios', {

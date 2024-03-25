@@ -5,9 +5,8 @@ import java.time.LocalDate;
 public class UsuarioDetalleDTO {
 
     private Long id;
-    private String rolNombre; // Nombre legible del rol, por ejemplo: "Admin", "Usuario"
+    private String rolNombre;
     private String email;
-    // No incluimos el campo de contraseña para evitar exponerlo innecesariamente
     private String primerNombre;
     private String segundoNombre;
     private String primerApellido;

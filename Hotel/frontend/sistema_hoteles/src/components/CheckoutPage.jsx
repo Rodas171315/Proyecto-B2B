@@ -71,7 +71,7 @@ const CheckoutPage = () => {
     // Datos finales de la reserva, solo si la habitación está disponible
     const finalReservationData = {
       idHabitacion: roomDetails.idHabitacion,
-      idHotel: hotelDetails.id_hotel,  // Asegúrate de usar id_hotel aquí
+      idHotel: hotelDetails.id_hotel, 
       idUsuario: user.id,
       codigoReserva: Math.floor(Math.random() * 1000000),
       fechaIngreso: formattedCheckIn,
@@ -81,7 +81,7 @@ const CheckoutPage = () => {
     };
     
     console.log("Final reservation data being sent:", finalReservationData);
-    console.log("Hotel ID being sent:", hotelDetails.id_hotel);  // Asegúrate de usar id_hotel aquí
+    console.log("Hotel ID being sent:", hotelDetails.id_hotel);  
     console.log("Hotel details received:", hotelDetails);
     console.log("Room details received:", roomDetails);
     
@@ -231,7 +231,7 @@ const CheckoutPage = () => {
             <option>Estados Unidos</option>
             <option>México</option>
             <option>Canadá</option>
-            {/* Agrega más países según sea necesario */}
+
           </Form.Control>
         </Form.Group>
       </Col>

@@ -50,7 +50,7 @@ const AddHabitacionPage = () => {
     } catch (error) {
       console.error('Error al cargar las habitaciones:', error);
       setErrorMessage('Error al cargar las habitaciones');
-      // Si hay un error al cargar las habitaciones, asegúrate de limpiar el estado
+      // rror al cargar las habitaciones, asegúrate de limpiar el estado
       setHabitaciones([]);
     }
   };
@@ -82,7 +82,7 @@ const AddHabitacionPage = () => {
     try {
         const habitacionData = { 
             ...nuevaHabitacion, 
-            id_hotel: selectedHotel // Cambio importante aquí: asegurarse de que el nombre del campo coincida con el backend
+            id_hotel: selectedHotel //
         };
         const response = await fetch('http://localhost:8080/habitaciones', {
             method: 'POST',
@@ -114,15 +114,12 @@ const iniciarEdicion = (habitacion) => {
   
   const guardarEdicion = async (idHabitacion) => {
     try {
-      // Asegúrate de que estás incluyendo todos los campos necesarios y no anulas los que no quieres cambiar
       const response = await fetch(`http://localhost:8080/habitaciones/${idHabitacion}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        // Aquí asumimos que tienes todos los datos necesarios de la habitación y solo modificas precio por persona y por noche
         body: JSON.stringify({
           ...datosEdicion, // Esto incluye precioxpersona y precioxnoche
-          id_habitacion: idHabitacion, // Esto parece ser incorrecto; asegúrate de que el backend espera `id` en la URL, no en el cuerpo
-          // Agrega cualquier otro campo que el backend espere y que no cambie
+          id_habitacion: idHabitacion, 
         }),
       });
       if (!response.ok) throw new Error('Error al actualizar la habitación');
@@ -219,7 +216,6 @@ value={nuevaHabitacion.tipo_habitacion}
 onChange={handleChangeNuevaHabitacion}
 >
 <option value="">Seleccione el tipo de habitación</option>
-{/* Suponiendo que estos valores están disponibles. Deben ser reemplazados por la lista real obtenida desde el backend */}
 <option value="1">Doble</option>
 <option value="2">Junior suite</option>
 <option value="3">Suite</option>

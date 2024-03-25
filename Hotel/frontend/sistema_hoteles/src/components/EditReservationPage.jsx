@@ -11,12 +11,12 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Construct the updated reservation object
+        // Construct the updated reservation object, od
         const reservaActualizada = {
             ...reserva,
             fechaIngreso: checkIn,
             fechaSalida: checkOut,
-            tipoHabitacion: Number(tipoHabitacion), // Ensure tipoHabitacion is sent as a number
+            tipoHabitacion: Number(tipoHabitacion), // tipoHabitacion as a number
         };
 
         console.log('Enviando reserva actualizada:', reservaActualizada);
@@ -26,7 +26,6 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
             handleClose(); // Close the modal upon successful update
         } catch (error) {
             console.error('Error al actualizar la reserva:', error);
-            // Optionally handle errors (e.g., show a message to the user)
         }
     };
 

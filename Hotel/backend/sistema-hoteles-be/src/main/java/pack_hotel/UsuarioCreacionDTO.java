@@ -14,6 +14,7 @@ public class UsuarioCreacionDTO {
     private LocalDate fechaNacimiento;
     private String nacionalidad;
     private Long pasaporte;
+    private String recaptchaToken;
 
     // Constructor sin argumentos
     public UsuarioCreacionDTO() {
@@ -114,6 +115,14 @@ public class UsuarioCreacionDTO {
     
     public void setPasaporte(Long pasaporte) {
         this.pasaporte = pasaporte;
+    }
+
+    public String getRecaptchaToken() {
+        return recaptchaToken;
+    }
+
+    public void setRecaptchaToken(String recaptchaToken) {
+        this.recaptchaToken = recaptchaToken;
     }
     
     @Override

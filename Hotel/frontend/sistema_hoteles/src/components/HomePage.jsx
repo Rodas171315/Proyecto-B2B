@@ -47,7 +47,6 @@ const HomePage = () => {
           const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
           if (!roomsResponse.ok) throw new Error('Failed to load rooms');
           const roomsData = await roomsResponse.json();
-          // No modificamos la estructura de los datos de la habitación aquí
           return { ...hotel, rooms: roomsData };
         } catch (error) {
           console.error('Error fetching rooms for hotel:', hotel.id_hotel, error);

@@ -17,7 +17,6 @@ const HotelSearchForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí manejarías la búsqueda, posiblemente haciendo una solicitud a tu API
     console.log('Parámetros de búsqueda', searchParams);
   };
 

@@ -81,15 +81,15 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
     const handleSubmit = async (event) => {
       event.preventDefault();
       
-      // Preparar los datos para el envío, asegurando las conversiones de tipo adecuadas
+      // Preparar los datos para el envío, asegurando las conversiones
       const formData = {
         email: usuarioForm.email,
         password: usuarioForm.password,
-        primerNombre: usuarioForm.primer_nombre, // Asegúrate de que los nombres de las propiedades coincidan con tu DTO
+        primerNombre: usuarioForm.primer_nombre, // nombres de las propiedades  con el DTO
         segundoNombre: usuarioForm.segundo_nombre,
         primerApellido: usuarioForm.primer_apellido,
         segundoApellido: usuarioForm.segundo_apellido,
-        fechaNacimiento: usuarioForm.fecha_nacimiento, // Cambiado a camelCase para coincidir con el DTO
+        fechaNacimiento: usuarioForm.fecha_nacimiento,
         nacionalidad: usuarioForm.nacionalidad,
         pasaporte: parseInt(usuarioForm.pasaporte, 10),
         rol: parseInt(usuarioForm.rol, 10)

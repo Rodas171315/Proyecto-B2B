@@ -26,7 +26,6 @@ public class Reservas {
     @Column(name = "ID_HABITACION", nullable = false)
     private Long idHabitacion;
 
-    // La columna ID_TIPO_HABITACION ha sido eliminada
 
     @Column(name = "ID_USUARIO", nullable = false)
     private Long idUsuario;

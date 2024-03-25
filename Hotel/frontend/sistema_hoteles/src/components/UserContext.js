@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
     return userStored ? JSON.parse(userStored) : null;
   });
 
-  // Escucha cambios en el estado del usuario para actualizar localStorage
+  // Escucha cambios en el estado del usuario para actualizar localStorage; revisat
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
