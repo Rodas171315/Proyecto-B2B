@@ -37,10 +37,6 @@ public class UsuarioRecurso {
     @Inject
     private RolRepositorio rolRepositorio;
 
-        @Inject
-    @RestClient
-    RecaptchaService recaptchaService;
-
 
     @GET
     public List<Usuarios> index() {
@@ -133,12 +129,6 @@ public class UsuarioRecurso {
     public Response crearUsuario(UsuarioCreacionDTO dto) {
         System.out.println("DTO recibido: " + dto); // Agrega un log para imprimir el DTO recibido
     
-        RecaptchaResponse recaptchaResponse = recaptchaService.verify("6LfWLKIpAAAAACoZQ3Xqbdo2B2_YkBlC6hMswSs2", dto.getRecaptchaToken());
-        if (!recaptchaResponse.isSuccess()) {
-            // If reCAPTCHA verification fails, return an error response
-            return Response.status(Response.Status.BAD_REQUEST).entity("La verificación de reCAPTCHA falló").build();
-        }
-
         Usuarios nuevoUsuario = new Usuarios();
         nuevoUsuario.setRol(dto.getRol());
         nuevoUsuario.setEmail(dto.getEmail());
@@ -177,6 +167,7 @@ public class UsuarioRecurso {
     
         return Response.status(Response.Status.CREATED).entity(usuarioCreadoDTO).build();
     }
+
     
     @PUT
 @Path("/{id}")
