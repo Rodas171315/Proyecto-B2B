@@ -221,8 +221,10 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
 
     // Asumir que la habitación y el tipo ya han sido validados como existentes y adecuados
     // Ahora, aplicar una lógica similar a la creación de reserva para verificar la disponibilidad
-    List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1 AND id != ?2",
-                                                                   reservaActualizada.getIdHabitacion(), id);
+    List<Reservas> reservasExistentes = reservasRepositorio.list(
+        "FROM Reservas WHERE idHabitacion = ?1 AND estadoReserva = 'confirmada' AND id != ?2",
+        reservaActualizada.getIdHabitacion(), id
+    );
     LocalDate fechaIngreso = reservaActualizada.getFechaIngreso();
     LocalDate fechaSalida = reservaActualizada.getFechaSalida();
     boolean conflicto = reservasExistentes.stream().anyMatch(r -> 
