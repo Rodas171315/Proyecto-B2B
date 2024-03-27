@@ -26,8 +26,8 @@ const BookingHistoryPage = () => {
         console.log('Reservations fetched successfully:', data);
         setReservations(data.map(reserva => ({
           ...reserva,
-          // como numero
-          tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion), //formto
+          tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion),
+          idHotel: reserva.idHotel, // Asegúrate de que estás incluyendo esta línea
         })));
       } else {
         console.error("Failed to fetch reservations.");

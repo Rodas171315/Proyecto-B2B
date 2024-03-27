@@ -9,6 +9,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -21,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 
@@ -169,6 +172,7 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
         }
 
         detalle.setIdReserva(reserva.getIdReserva());
+        detalle.setIdHotel(reserva.getIdHotel()); // Agrega el ID del hotel aquí
         detalle.setIdHabitacion(reserva.getIdHabitacion()); // Asegúrate de setear idHabitacion aquí
         detalle.setNombreHotel(hotel.getNombre());
         detalle.setPais(hotel.getPais());
@@ -276,6 +280,30 @@ public Response cancelarReserva(@PathParam("id") Long id) {
     
     log.infof("Reserva con ID: %s ha sido cancelada", id);
     return Response.ok().entity("Reserva cancelada con éxito").build();
+}
+
+
+@GET
+@Path("/tipos-habitacion-por-hotel")
+public Response obtenerTiposHabitacionPorHotel(@QueryParam("hotelId") Long hotelId) {
+    if (hotelId == null) {
+        return Response.status(Response.Status.BAD_REQUEST).entity("Es necesario especificar el ID del hotel").build();
+    }
+
+    try {
+        // Obtiene todas las habitaciones para el hotelId proporcionado
+        List<Habitaciones> habitacionesDelHotel = habitacionRepositorio.buscarPorHotelId(hotelId);
+
+        // Extrae los IDs únicos de tipos de habitación de las habitaciones encontradas
+        Set<Integer> tiposHabitacionUnicos = habitacionesDelHotel.stream()
+                .map(Habitaciones::getTipo_habitacion)
+                .collect(Collectors.toSet());
+
+        // Si se requiere más información sobre cada tipo, ajusta esta parte para devolver una lista más detallada
+        return Response.ok(tiposHabitacionUnicos).build();
+    } catch (Exception e) {
+        return Response.serverError().entity("Error al recuperar los tipos de habitación: " + e.getMessage()).build();
+    }
 }
 
 

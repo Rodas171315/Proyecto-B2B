@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class DetalleReservaDTO {
 
     private Long idReserva;
+    private Long idHotel; // Campo añadido para almacenar el ID del hotel
     private String nombreHotel;
     private String pais;
     private String ciudad;
@@ -31,6 +32,14 @@ public class DetalleReservaDTO {
 
     public void setIdReserva(Long idReserva) {
         this.idReserva = idReserva;
+    }
+
+    public Long getIdHotel() {
+        return idHotel;
+    }
+
+    public void setIdHotel(Long idHotel) {
+        this.idHotel = idHotel;
     }
 
     public String getNombreHotel() {

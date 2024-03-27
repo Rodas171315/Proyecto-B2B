@@ -6,6 +6,7 @@ package pack_hotel;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 /**
  *
@@ -15,4 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class HabitacionRepositorio implements PanacheRepository<Habitaciones> {
     
+    public List<Habitaciones> buscarPorHotelId(Long hotelId) {
+        return find("id_hotel", hotelId).list();
+    }
 }
