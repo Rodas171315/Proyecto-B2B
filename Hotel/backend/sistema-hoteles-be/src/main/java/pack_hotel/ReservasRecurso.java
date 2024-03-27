@@ -70,16 +70,24 @@ public class ReservasRecurso {
     @Path("/verificar-disponibilidad")
     @Transactional
     public Response verificarDisponibilidad(VerificarDisponibilidadDTO verificarDisponibilidadDTO) {
-        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion = ?1", verificarDisponibilidadDTO.getIdHabitacion());
+        // Obtiene todas las reservas para la habitación, pero solo considera aquellas que no estén canceladas.
+        List<Reservas> reservasExistentes = reservasRepositorio.list(
+            "idHabitacion = ?1 AND estadoReserva != 'Cancelada'", verificarDisponibilidadDTO.getIdHabitacion());
         LocalDate fechaIngreso = LocalDate.parse(verificarDisponibilidadDTO.getFechaIngreso());
         LocalDate fechaSalida = LocalDate.parse(verificarDisponibilidadDTO.getFechaSalida());
+    
+        // Recorre las reservas existentes para verificar si alguna interfiere con las nuevas fechas de ingreso y salida.
         for (Reservas reserva : reservasExistentes) {
+            // Verifica que las fechas de la nueva reserva no se solapen con reservas existentes y confirmadas.
             if (!(fechaSalida.isBefore(reserva.getFechaIngreso()) || fechaIngreso.isAfter(reserva.getFechaSalida()))) {
+                // Si hay solapamiento, la habitación no está disponible.
                 return Response.ok(new DisponibilidadDTO(false)).build();
             }
         }
+        // Si llega hasta aquí, significa que no hay solapamientos con reservas confirmadas y la habitación está disponible.
         return Response.ok(new DisponibilidadDTO(true)).build();
     }
+    
 
 
 
@@ -107,34 +115,47 @@ public class ReservasRecurso {
     public Response crearReserva(Reservas reserva) {
         LocalDate fechaIngreso = reserva.getFechaIngreso();
         LocalDate fechaSalida = reserva.getFechaSalida();
+        
+        log.infof("Inicio del proceso de creación de reserva. Fecha de ingreso: %s, Fecha de salida: %s", fechaIngreso, fechaSalida);
     
-        // Verifica disponibilidad de la habitación para las fechas dadas
-        List<Reservas> reservasExistentes = reservasRepositorio.list("idHabitacion", reserva.getIdHabitacion());
-        for (Reservas reservaExistente : reservasExistentes) {
-            if (!(fechaSalida.isBefore(reservaExistente.getFechaIngreso()) || fechaIngreso.isAfter(reservaExistente.getFechaSalida()))) {
-                return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
-            }
+        // Corrección en la consulta para considerar correctamente las reservas que no están canceladas y su intersección con las fechas
+        List<Reservas> reservasExistentes = reservasRepositorio.list(
+            "FROM Reservas WHERE idHabitacion = ?1 AND estadoReserva != 'Cancelada' " +
+            "AND ((fechaIngreso <= ?3 AND fechaSalida >= ?2) OR (fechaIngreso <= ?2 AND fechaSalida >= ?2) OR (fechaIngreso <= ?3 AND fechaSalida >= ?3))", 
+            reserva.getIdHabitacion(), fechaIngreso, fechaSalida
+        );
+    
+        if (!reservasExistentes.isEmpty()) {
+            log.infof("Conflicto encontrado con otras reservas. No se puede crear la reserva para las fechas seleccionadas.");
+            return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas seleccionadas.").build();
+        } else {
+            log.infof("No se encontraron conflictos con otras reservas. Procediendo con la creación de la reserva.");
         }
-    
+        
         try {
             Habitaciones habitacion = habitacionRepositorio.findByIdOptional(reserva.getIdHabitacion())
                     .orElseThrow(() -> new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND));
     
-            // Asigna el tipo de habitación obtenido al campo correspondiente en la entidad Reservas
-            System.out.println("Tipo de habitación obtenido: " + habitacion.getTipo_habitacion());
+            log.infof("Habitación encontrada. Tipo de habitación obtenido: %s", habitacion.getTipo_habitacion());
+            
             reserva.setTipoHabitacion(habitacion.getTipo_habitacion());
-    
-            reserva.setEstadoReserva("confirmada"); // Establece el estado inicial de la reserva
+            reserva.setEstadoReserva("confirmada"); // Establece el estado inicial de la reserva como "confirmada"
             reservasRepositorio.persist(reserva);
     
+            log.infof("Reserva creada con éxito. ID de la reserva: %s", reserva.getIdReserva());
+            
             return Response.status(Response.Status.CREATED).entity(reserva).build();
         } catch (WebApplicationException e) {
+            log.errorf("Error WebApplicationException al crear la reserva: %s", e.getMessage());
             return Response.status(e.getResponse().getStatus()).entity(e.getMessage()).build();
         } catch (Exception e) {
+            log.errorf("Error al crear la reserva: %s", e.getMessage());
             e.printStackTrace();
             return Response.serverError().entity("Error al crear la reserva: " + e.getMessage()).build();
         }
     }
+    
+
     
     
     
