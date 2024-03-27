@@ -10,10 +10,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
@@ -25,8 +27,11 @@ import java.util.stream.Collectors;
  *
  * @author root
  */
+
+@RegisterRestClient(configKey="recaptchaService")
 @Path("/usuarios")
 @Transactional
+
 public class UsuarioRecurso {
 
     private static final Logger log = Logger.getLogger(UsuarioRecurso.class);
@@ -37,19 +42,21 @@ public class UsuarioRecurso {
     @Inject
     private RolRepositorio rolRepositorio;
 
+    @Inject
+    @RestClient
+    RecaptchaService recaptchaService;
+
+    
+
 
     @GET
     public List<Usuarios> index() {
         return usuariosRepositorio.listAll();
     }
     
-    @POST
-    public Usuarios insert(Usuarios insertedUser) {
-        assert insertedUser.getId() == null;
-        usuariosRepositorio.persist(insertedUser);
-        assert insertedUser.getId() != null;
-        return insertedUser;
-    }
+        
+
+
     
     @GET
     @Path("{id}")

@@ -14,6 +14,7 @@ public class UsuarioCreacionDTO {
     private LocalDate fechaNacimiento;
     private String nacionalidad;
     private Long pasaporte;
+    private String recaptchaToken;
 
     // Constructor sin argumentos
     public UsuarioCreacionDTO() {
@@ -116,6 +117,14 @@ public class UsuarioCreacionDTO {
         this.pasaporte = pasaporte;
     }
 
+    public String getRecaptchaToken() {
+        return recaptchaToken;
+    }
+    
+    public void setRecaptchaToken(String recaptchaToken) {
+        this.recaptchaToken = recaptchaToken;
+    }
+
     
     @Override
     public String toString() {
@@ -130,6 +139,7 @@ public class UsuarioCreacionDTO {
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", nacionalidad='" + nacionalidad + '\'' +
                 ", pasaporte=" + pasaporte +
+                
                 '}';
     }
 

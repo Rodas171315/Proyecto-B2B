@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+ import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
 "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
@@ -30,60 +31,84 @@ const RegisterPage = () => {
     email: '',
     password: '',
     primer_nombre: '',
-    segundo_nombre: '', 
+    segundo_nombre: '',
     primer_apellido: '',
-    segundo_apellido: '', 
-    fecha_nacimiento: '', 
+    segundo_apellido: '',
+    fecha_nacimiento: '',
     nacionalidad: '',
-    pasaporte: '' 
+    pasaporte: '',
   });
-
   const [showSuccess, setShowSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    if (!captchaToken) {
+      alert('Por favor, verifica que no eres un robot.');
+      return;
+    }
+  
+    // Asegúrate de que las claves coincidan con la estructura esperada por el backend
+    const usuarioToSend = {
+      email: user.email,
+      password: user.password,
+      primerNombre: user.primer_nombre, // nombres de las propiedades  con el DTO
+      segundoNombre: user.segundo_nombre,
+      primerApellido: user.primer_apellido,
+      segundoApellido: user.segundo_apellido,
+      fechaNacimiento: user.fecha_nacimiento,
+      nacionalidad: user.nacionalidad,
+      pasaporte: parseInt(user.pasaporte, 10),
+      rol: 2, // Rol estático como 2
+      recaptchaToken: captchaToken,
+    };
+    
+  
     try {
-      const usuarioToSend = {
-        ...user,
-        rol: 2, // Estableciendo rol predeterminado a 2
-        pasaporte: parseInt(user.pasaporte, 10) // Convertir pasaporte a número
-      };
-
-      const response = await fetch('http://localhost:8080/usuarios', {
+      const response = await fetch('http://localhost:8080/usuarios/captcha', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(usuarioToSend),
       });
-
+  
       if (!response.ok) {
-        throw new Error('La respuesta de la red no fue ok');
+        const errorBody = await response.json();
+        throw new Error(`Error: ${errorBody.message}`);
       }
-
+  
+      const responseData = await response.json();
+      console.log("Usuario creado exitosamente:", responseData);
+  
       setShowSuccess(true);
       setUser({
         email: '',
         password: '',
-        primer_nombre: '',
-        segundo_nombre: '',
-        primer_apellido: '',
-        segundo_apellido: '',
-        fecha_nacimiento: '',
+        primerNombre: '',
+        segundoNombre: '',
+        primerApellido: '',
+        segundoApellido: '',
+        fechaNacimiento: '',
         nacionalidad: '',
-        pasaporte: ''
+        pasaporte: '',
       });
+      setCaptchaToken('');
     } catch (error) {
       console.error('Error al enviar datos:', error);
-      alert('Error al conectar con el servidor. Por favor, asegúrate de que el servidor esté corriendo y accesible.');
+      alert('There was a problem with your fetch operation.');
     }
   };
+  
 
+
+  
   return (
     <Container className="my-5">
       {showSuccess && <Alert variant="success">Registro exitoso. Por favor inicia sesión.</Alert>}
@@ -93,13 +118,7 @@ const RegisterPage = () => {
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Correo electrónico</Form.Label>
-              <Form.Control 
-                type="email" 
-                placeholder="Ingrese su correo" 
-                name="email"
-                value={user.email}
-                onChange={handleChange}
-              />
+              <Form.Control type="email" placeholder="Ingrese su correo" name="email" value={user.email} onChange={handleChange} />
             </Form.Group>
   
             <Form.Group controlId="formBasicPassword">
@@ -189,18 +208,21 @@ const RegisterPage = () => {
                 name="pasaporte"
                 value={user.pasaporte}
                 onChange={handleChange}
-              />
-            </Form.Group>
-  
-            <Button variant="primary" type="submit" className="mt-3">
-              Registrarse
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
-  );
-  
-};
+                />
+              </Form.Group>
+    
+              <ReCAPTCHA
+                sitekey="6Lc2g6UpAAAAAJacvQNmo6OvOXyN-hJ2qs3hEkA0"
+                onChange={(value) => setCaptchaToken(value)} />
 
-export default RegisterPage;
+                <Button variant="primary" type="submit" className="mt-3" disabled={!captchaToken}>
+                  Registrarse
+                </Button>
+              </Form>
+            </Col>
+          </Row>
+        </Container>
+      );
+    };
+    
+    export default RegisterPage;
