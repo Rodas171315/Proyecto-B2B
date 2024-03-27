@@ -16,7 +16,7 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
     };
 
     useEffect(() => {
-        console.log(`Modal show: ${show}, hotelId: ${reserva?.idHotel}`);
+        console.log(`Modal show: ${show}, hotelId: ${reserva?.idHotel}, idHabitacion: ${reserva?.idHabitacion}`);
         
         const fetchTiposHabitacion = async () => {
             if (show && reserva?.idHotel) {
@@ -37,9 +37,9 @@ const EditReservationPage = ({ show, handleClose, reserva, actualizarReserva }) 
                 console.log('No se hará fetch porque el modal está cerrado o no se ha definido idHotel.');
             }
         };
-    
+
         fetchTiposHabitacion();
-    }, [show, reserva?.idHotel]);
+    }, [show, reserva?.idHotel, reserva?.idHabitacion]);
     
 
     const handleSubmit = async (e) => {

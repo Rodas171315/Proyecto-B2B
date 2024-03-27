@@ -16,6 +16,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
+import java.util.Optional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -98,7 +99,6 @@ public class ReservasRecurso {
     public Response actualizarEstadoReserva(@PathParam("id") Long id, Reservas estadoReserva) {
         Reservas reservaExistente = reservasRepositorio.findById(id);
         if (reservaExistente != null) {
-            // Aquí solo actualizamos el estado de la reserva, pero podrías ajustar para manejar otras propiedades si fuera necesario.
             reservaExistente.setEstadoReserva(estadoReserva.getEstadoReserva());
             reservasRepositorio.persist(reservaExistente);
             return Response.ok(reservaExistente).build();
@@ -234,59 +234,64 @@ public Response actualizarReserva(@PathParam("id") Long id, Reservas reservaActu
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    Habitaciones habitacion = habitacionRepositorio.findById(reservaActualizada.getIdHabitacion());
-    if (habitacion == null) {
-        log.errorf("Habitación no encontrada para ID: %s", reservaActualizada.getIdHabitacion());
-        return Response.status(Response.Status.NOT_FOUND).entity("Habitación no encontrada").build();
-    }
-
-    // Asumir que la habitación y el tipo ya han sido validados como existentes y adecuados
-    // Ahora, aplicar una lógica similar a la creación de reserva para verificar la disponibilidad
-    List<Reservas> reservasExistentes = reservasRepositorio.list(
-        "FROM Reservas WHERE idHabitacion = ?1 AND estadoReserva = 'confirmada' AND id != ?2",
-        reservaActualizada.getIdHabitacion(), id
+    List<Habitaciones> habitacionesDisponibles = habitacionRepositorio.buscarPorTipoYDisponibilidad(
+        reservaActualizada.getTipoHabitacion(), 
+        reservaActualizada.getFechaIngreso(), 
+        reservaActualizada.getFechaSalida(),
+        reservaExistente.getIdHotel() // Usa el idHotel de la reserva existente
     );
-    LocalDate fechaIngreso = reservaActualizada.getFechaIngreso();
-    LocalDate fechaSalida = reservaActualizada.getFechaSalida();
-    boolean conflicto = reservasExistentes.stream().anyMatch(r -> 
-        !(fechaSalida.isBefore(r.getFechaIngreso()) || fechaIngreso.isAfter(r.getFechaSalida())) &&
-        r.getTipoHabitacion().equals(reservaActualizada.getTipoHabitacion()));
 
-    if (conflicto) {
-        return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las fechas y el tipo de habitación seleccionados.").build();
+    if (habitacionesDisponibles.isEmpty()) {
+        return Response.status(Response.Status.CONFLICT).entity("No hay habitaciones disponibles para el tipo y las fechas seleccionadas.").build();
     }
 
-    // Actualiza la reserva si no hay conflictos
-    reservaExistente.setFechaIngreso(fechaIngreso);
-    reservaExistente.setFechaSalida(fechaSalida);
-    reservaExistente.setIdHabitacion(reservaActualizada.getIdHabitacion());
-    reservaExistente.setTipoHabitacion(reservaActualizada.getTipoHabitacion());
-    int totalReserva = calcularTotalReserva(habitacion, fechaIngreso, fechaSalida);
+    // Selecciona una de las habitaciones disponibles
+    Habitaciones nuevaHabitacion = habitacionesDisponibles.get(0); // Selecciona la primera habitación disponible
+
+    // Actualiza la reserva con la nueva habitación y recalcula el total
+    reservaExistente.setFechaIngreso(reservaActualizada.getFechaIngreso());
+    reservaExistente.setFechaSalida(reservaActualizada.getFechaSalida());
+    reservaExistente.setIdHabitacion(nuevaHabitacion.getId_habitacion());
+    reservaExistente.setTipoHabitacion(nuevaHabitacion.getTipo_habitacion());
+
+    // Verifica la disponibilidad de la habitación para las nuevas fechas
+    List<Reservas> reservasExistentes = reservasRepositorio.list(
+        "FROM Reservas WHERE idHabitacion = ?1 AND estadoReserva = 'confirmada' AND id != ?2 AND NOT (fechaSalida <= ?3 OR fechaIngreso >= ?4)",
+        reservaExistente.getIdHabitacion(), id, reservaActualizada.getFechaIngreso(), reservaActualizada.getFechaSalida());
+
+    if (!reservasExistentes.isEmpty()) {
+        return Response.status(Response.Status.CONFLICT).entity("La habitación no está disponible para las nuevas fechas seleccionadas.").build();
+    }
+
+    int totalReserva = calcularTotalReservaPorTipo(
+        reservaActualizada.getFechaIngreso(), 
+        reservaActualizada.getFechaSalida(), 
+        nuevaHabitacion.getId_habitacion()
+    );
     reservaExistente.setTotalReserva(totalReserva);
     
     reservasRepositorio.persist(reservaExistente);
-
-    log.infof("Reserva actualizada con éxito para el ID: %s", id);
+    
+    log.infof("Reserva actualizada con éxito para el ID: %s. Nueva habitación: %d, Nuevo total: %d", id, nuevaHabitacion.getId_habitacion(), totalReserva);
     return Response.ok(reservaExistente).build();
 }
 
+private Integer calcularTotalReservaPorTipo(LocalDate fechaIngreso, LocalDate fechaSalida, Long idHabitacion) {
+    Optional<Double> precioPorNoche = habitacionRepositorio.findPrecioPorNochePorIdHabitacion(idHabitacion);
 
-private boolean verificarDisponibilidadConExclusion(Long idHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long reservaId, Integer tipoHabitacion) {
-    // Aquí asumimos que "list" realiza una consulta a la base de datos que retorna todas las reservas excepto la actual (reservaId)
-    List<Reservas> reservasExistentes = reservasRepositorio.list(
-        "idHabitacion = ?1 AND tipoHabitacion = ?2 AND id != ?3", idHabitacion, tipoHabitacion, reservaId);
+    if (!precioPorNoche.isPresent()) {
+        log.error("No se encontró precio por noche para el ID de habitación especificado: " + idHabitacion);
+        return 0;
+    }
 
-    return reservasExistentes.stream().noneMatch(reserva -> 
-        (fechaIngreso.isBefore(reserva.getFechaSalida()) && fechaSalida.isAfter(reserva.getFechaIngreso()))
-    );
-
-}
-
-private Integer calcularTotalReserva(Habitaciones habitacion, LocalDate fechaIngreso, LocalDate fechaSalida) {
     long numeroNoches = ChronoUnit.DAYS.between(fechaIngreso, fechaSalida);
-    double totalReserva = numeroNoches * habitacion.getPrecioxnoche();
+    double totalReserva = numeroNoches * precioPorNoche.get();
+    log.infof("Calculando total reserva basado en el ID de habitación %d: %d noches a %f por noche. Total: %f", idHabitacion, numeroNoches, precioPorNoche.get(), totalReserva);
+
     return (int) Math.round(totalReserva);
 }
+
+
 
 
 @PUT

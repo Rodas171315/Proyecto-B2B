@@ -28,6 +28,7 @@ const BookingHistoryPage = () => {
           ...reserva,
           tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion),
           idHotel: reserva.idHotel, // Asegúrate de que estás incluyendo esta línea
+          idHabitacion: reserva.idHabitacion
         })));
       } else {
         console.error("Failed to fetch reservations.");
@@ -119,6 +120,7 @@ const BookingHistoryPage = () => {
     // Información de la reserva
     const reservationDetails = [
       { title: "Hotel", data: reserva.nombreHotel },
+      { title: "Número de habitación", data: reserva.numeroHabitacion.toString() }, 
       { title: "Tipo de habitación", data: reserva.tipoHabitacion },
       { title: "Ubicación", data: `${reserva.ciudad}, ${reserva.pais} - ${reserva.direccion}` },
       { title: "Check-in", data: reserva.fechaIngreso },
