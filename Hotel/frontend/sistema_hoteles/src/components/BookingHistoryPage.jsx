@@ -145,8 +145,9 @@ const BookingHistoryPage = () => {
       {reservations.length > 0 ? reservations.map((reserva) => (
         <Card key={reserva.idReserva} className="mb-3">
           <Card.Body>
-            <Card.Title>{reserva.nombreHotel} - Tipo de habitación: {reserva.tipoHabitacion}</Card.Title>
-            <Card.Subtitle>{reserva.ciudad}, {reserva.pais} - {reserva.direccion}</Card.Subtitle>
+          <Card.Title>
+          {reserva.nombreHotel} - Tipo de habitación: {reserva.tipoHabitacion} - Número de habitación: {reserva.numeroHabitacion}
+        </Card.Title>            <Card.Subtitle>{reserva.ciudad}, {reserva.pais} - {reserva.direccion}</Card.Subtitle>
             <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
             <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>
             <Card.Text>Número de noches: {calculateNights(reserva.fechaIngreso, reserva.fechaSalida)}</Card.Text>

@@ -6,6 +6,8 @@ public class DetalleReservaDTO {
 
     private Long idReserva;
     private Long idHotel; // Campo añadido para almacenar el ID del hotel
+    private Long idHabitacion; // Campo añadido, ya funciona con este
+    private int numeroHabitacion; 
     private String nombreHotel;
     private String pais;
     private String ciudad;
@@ -18,7 +20,7 @@ public class DetalleReservaDTO {
     private Integer totalReserva;
     private String estadoReserva;
     private Integer capacidadPersonas;
-    private Long idHabitacion; // Campo añadido, ya funciona con este
+
 
 
     // Constructor vacío
@@ -48,6 +50,14 @@ public class DetalleReservaDTO {
 
     public void setNombreHotel(String nombreHotel) {
         this.nombreHotel = nombreHotel;
+    }
+
+    public int getNumeroHabitacion() {
+        return numeroHabitacion;
+    }
+    
+    public void setNumeroHabitacion(int numeroHabitacion) {
+        this.numeroHabitacion = numeroHabitacion;
     }
 
     public String getPais() {

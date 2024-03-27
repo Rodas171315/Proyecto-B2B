@@ -172,13 +172,14 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
         }
 
         detalle.setIdReserva(reserva.getIdReserva());
-        detalle.setIdHotel(reserva.getIdHotel()); // Agrega el ID del hotel aquí
-        detalle.setIdHabitacion(reserva.getIdHabitacion()); // Asegúrate de setear idHabitacion aquí
+        detalle.setIdHotel(reserva.getIdHotel()); 
+        detalle.setIdHabitacion(reserva.getIdHabitacion()); 
+        detalle.setNumeroHabitacion(habitacion.getNumero_habitacion());
         detalle.setNombreHotel(hotel.getNombre());
         detalle.setPais(hotel.getPais());
         detalle.setCiudad(hotel.getCiudad());
         detalle.setDireccion(hotel.getDireccion());
-        detalle.setTipoHabitacion(reserva.getTipoHabitacion()); // Corrección aquí
+        detalle.setTipoHabitacion(reserva.getTipoHabitacion()); 
         detalle.setFechaIngreso(reserva.getFechaIngreso());
         detalle.setFechaSalida(reserva.getFechaSalida());
         long numeroNoches = ChronoUnit.DAYS.between(reserva.getFechaIngreso(), reserva.getFechaSalida());
