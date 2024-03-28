@@ -1,6 +1,8 @@
  import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import ReCAPTCHA from "react-google-recaptcha";
+import emailjs from 'emailjs-com'; 
+
 
 const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
 "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
@@ -83,9 +85,29 @@ const RegisterPage = () => {
         const errorBody = await response.json();
         throw new Error(`Error: ${errorBody.message}`);
       }
+
+
+      
   
       const responseData = await response.json();
       console.log("Usuario creado exitosamente:", responseData);
+
+
+      const templateParams = {
+        to_name: user.primer_nombre,
+        to_email: user.email,
+      };
+
+      // Enviar correo con emailjs
+      emailjs.send('service_db-dw', 'template_nzi1pho', templateParams, 'BLyjSRydByFGcVhN6')
+        .then((result) => {
+            console.log('Email successfully sent!', result.text);
+        }, (error) => {
+            console.error('Failed to send email. Error: ', error.text);
+        });
+
+
+        
   
       setShowSuccess(true);
       setUser({
