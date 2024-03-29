@@ -17,6 +17,7 @@ const Header = () => {
                 {!user && <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>}
                 {!user && <Button color="inherit" onClick={() => navigate('/register')}>Registrarse</Button>}
                 <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
+                <Button color="inherit" onClick={() => navigate('/afiliados')}>Hoteles y Aereolineas Afiliados</Button>
                 {user && <Button color="inherit" onClick={() => navigate('/userprofile')}>Perfil</Button>}
             </Toolbar>
         </AppBar>
