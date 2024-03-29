@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Container, Button, Form, Row, Col, Modal } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from './UserContext';
+import emailjs from 'emailjs-com';
+
+
+
+
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -42,6 +47,8 @@ const CheckoutPage = () => {
     setReservationData(prevState => ({ ...prevState, [name]: value }));
   };
 
+
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formattedCheckIn = new Date(reservationData.checkIn).toISOString().split('T')[0];
@@ -52,6 +59,13 @@ const CheckoutPage = () => {
       idHabitacion: roomDetails.idHabitacion,
       fechaIngreso: formattedCheckIn,
       fechaSalida: formattedCheckOut,
+    };
+
+    const calculateNights = (checkIn, checkOut) => {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+      return Math.ceil(diffTime / (1000 * 3600 * 24));
     };
   
     // Verificar disponibilidad primero
@@ -86,6 +100,45 @@ const CheckoutPage = () => {
     console.log("Room details received:", roomDetails);
     
     try {
+      // Verificar la disponibilidad de la habitación primero
+      const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(verificarDisponibilidadData),
+      });
+  
+      const disponibilidad = await responseDisponibilidad.json();
+      if (!disponibilidad.esDisponible) {
+        alert('La habitación no está disponible para las fechas seleccionadas. Por favor, elige otras fechas.');
+        return;
+      }
+  
+      // Si la habitación está disponible, proceder a crear la reserva
+      const finalReservationData = {
+        idHabitacion: roomDetails.idHabitacion,
+        idHotel: hotelDetails.id_hotel,
+        idUsuario: user.id,
+        codigoReserva: Math.floor(Math.random() * 1000000),
+        fechaIngreso: formattedCheckIn,
+        fechaSalida: formattedCheckOut,
+        totalReserva: reservationData.totalReserva,
+        personasReserva: roomDetails.capacidadPersonas,
+      };
+
+
+      const translateTipoHabitacion = (tipoHabitacion) => {
+        const tiposHabitacion = {
+          1: 'Doble',
+          2: 'Junior Suite',
+          3: 'Suite',
+          4: 'Gran Suite'
+        };
+      
+        return tiposHabitacion[tipoHabitacion] || "Tipo no especificado";
+      };
+
+
+  
       const response = await fetch('http://localhost:8080/reservas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,13 +146,41 @@ const CheckoutPage = () => {
       });
   
       if (!response.ok) {
-        throw new Error('Error al crear la reserva');
+        const errorData = await response.json();
+        throw new Error(`Error al crear la reserva: ${errorData.message}`);
       }
   
-      setShowSuccessModal(true);
+      // Si llegas aquí, significa que la reserva se creó exitosamente.
+      // Ahora preparamos los datos para enviar el correo electrónico.
+      const templateParams = {
+        to_name: user.primer_nombre,
+        hotel_name: hotelDetails.nombre,
+        room_number: roomDetails.numero_habitacion?.toString() || "No especificado", // Asegúrate de que es 'numero_habitacion'
+        room_type: translateTipoHabitacion(roomDetails.tipo_habitacion) || "Tipo no especificado", // Asegúrate de que es 'tipo_habitacion'
+        location: `${hotelDetails.ciudad}, ${hotelDetails.pais} - ${hotelDetails.direccion}`,
+        check_in_date: formattedCheckIn,
+        check_out_date: formattedCheckOut,
+        total_nights: calculateNights(formattedCheckIn, formattedCheckOut).toString(),
+        total_people: roomDetails.capacidadPersonas?.toString(), // Asegúrate de que capacidadPersonas exista
+        total_price: `$${reservationData.totalReserva.toFixed(2)}`,
+        reservation_status: "confirmada",
+        reservation_code: finalReservationData.codigoReserva.toString(), // Asegúrate de que codigoReserva exista y sea válido
+        to_email: user.email,
+      };
+  
+      // Envía el correo electrónico utilizando EmailJS.
+      emailjs.send('service_db-dw', 'template_0idkwyf', templateParams, 'BLyjSRydByFGcVhN6')
+        .then((result) => {
+          console.log('Email successfully sent!', result.text);
+          setShowSuccessModal(true); // Muestra el modal de éxito
+        }, (error) => {
+          console.error('Failed to send email. Error: ', error.text);
+          // Considera mostrar un mensaje de error específico relacionado con el fallo del envío del correo
+        });
+  
     } catch (error) {
-      alert('Hubo un error al procesar tu reserva. Por favor, intenta nuevamente.');
       console.error('Error en la reserva:', error);
+      alert('Hubo un error al procesar tu reserva. Por favor, intenta nuevamente.');
     }
   };
   
