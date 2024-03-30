@@ -20,7 +20,8 @@ public class DetalleReservaDTO {
     private Integer totalReserva;
     private String estadoReserva;
     private Integer capacidadPersonas;
-
+    private Long idUsuario; 
+    private String correoElectronico; 
 
 
     // Constructor vacío
@@ -157,5 +158,21 @@ public class DetalleReservaDTO {
 
     public void setIdHabitacion(Long idHabitacion) {
         this.idHabitacion = idHabitacion;
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
+
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
     }
 }

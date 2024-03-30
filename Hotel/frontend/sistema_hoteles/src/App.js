@@ -17,6 +17,7 @@ import AdministrarUsuarios from './components/AdministrarUsuarios';
 import AddHabitacionPage from './components/AddHabitacionPage';
 import PrivateRoute from './components/PrivateRoute';
 import FAQs from './components/FAQs'; 
+import AdministrarReservas from './components/AdministrarReservas';
 import { ReservationsProvider } from './components/ReservationsContext';
 import { CartProvider } from './components/CartContext'; 
 import { HotelsProvider } from './components/HotelsContext'; 
@@ -58,6 +59,8 @@ const App = () => {
                       <Route path="/add-hotel" element={<ProtectedRoute roleRequired='1'><AddHotelPage /></ProtectedRoute>} />
                       <Route path="/add-habitacion" element={<ProtectedRoute roleRequired='1'><AddHabitacionPage /></ProtectedRoute>} />
                       <Route path="/Administrar" element={<ProtectedRoute roleRequired='1'><AdministrarUsuarios /></ProtectedRoute>} />
+                      <Route path="/AdministrarReservas" element={<ProtectedRoute roleRequired='1'><AdministrarReservas /></ProtectedRoute>} />
+                      
                     </Routes>
                   </div>
                 </main>

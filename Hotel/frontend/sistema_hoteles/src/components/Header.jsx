@@ -38,6 +38,8 @@ const Header = () => {
     <Nav.Link as={Link} to="/add-hotel">Gestionar Hoteles</Nav.Link>
     <Nav.Link as={Link} to="/add-habitacion">Gestionar Habitaciones</Nav.Link>
     <Nav.Link as={Link} to="/Administrar">Administrar Usuarios</Nav.Link>
+    <Nav.Link as={Link} to="/AdministrarReservas">Administrar Reservas</Nav.Link>
+
   </>
 )}
 

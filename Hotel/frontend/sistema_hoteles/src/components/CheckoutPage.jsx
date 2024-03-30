@@ -150,21 +150,20 @@ const CheckoutPage = () => {
         throw new Error(`Error al crear la reserva: ${errorData.message}`);
       }
   
-      // Si llegas aquí, significa que la reserva se creó exitosamente.
-      // Ahora preparamos los datos para enviar el correo electrónico.
+
       const templateParams = {
         to_name: user.primer_nombre,
         hotel_name: hotelDetails.nombre,
-        room_number: roomDetails.numero_habitacion?.toString() || "No especificado", // Asegúrate de que es 'numero_habitacion'
-        room_type: translateTipoHabitacion(roomDetails.tipo_habitacion) || "Tipo no especificado", // Asegúrate de que es 'tipo_habitacion'
+        room_number: roomDetails.numero_habitacion?.toString() || "No especificado", 
+        room_type: translateTipoHabitacion(roomDetails.tipo_habitacion) || "Tipo no especificado", 
         location: `${hotelDetails.ciudad}, ${hotelDetails.pais} - ${hotelDetails.direccion}`,
         check_in_date: formattedCheckIn,
         check_out_date: formattedCheckOut,
         total_nights: calculateNights(formattedCheckIn, formattedCheckOut).toString(),
-        total_people: roomDetails.capacidadPersonas?.toString(), // Asegúrate de que capacidadPersonas exista
+        total_people: roomDetails.capacidadPersonas?.toString(),
         total_price: `$${reservationData.totalReserva.toFixed(2)}`,
         reservation_status: "confirmada",
-        reservation_code: finalReservationData.codigoReserva.toString(), // Asegúrate de que codigoReserva exista y sea válido
+        reservation_code: finalReservationData.codigoReserva.toString(), 
         to_email: user.email,
       };
   

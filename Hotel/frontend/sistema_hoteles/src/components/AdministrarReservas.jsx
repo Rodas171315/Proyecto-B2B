@@ -5,7 +5,7 @@ import EditReservationPage from './EditReservationPage';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const BookingHistoryPage = () => {
+const AdministrarReservas = () => {
   const [reservations, setReservations] = useState([]);
   const { user } = useUser();
   const [showEditModal, setShowEditModal] = useState(false);
@@ -21,7 +21,7 @@ const BookingHistoryPage = () => {
   const fetchReservations = async () => {
     console.log('Fetching reservations for user:', user.id);
     try {
-      const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
+      const response = await fetch(`http://localhost:8080/reservas/detalle/todas`);
       if (response.ok) {
         const data = await response.json();
         console.log('Reservations fetched successfully:', data);
@@ -144,32 +144,40 @@ const BookingHistoryPage = () => {
 
   return (
     <div className="booking-history-container">
-      <h2>Historial de Reservas</h2>
-      {reservations.length > 0 ? reservations.map((reserva) => (
-        <Card key={reserva.idReserva} className="mb-3">
-          <Card.Body>
-          <Card.Title>
-          {reserva.nombreHotel} - Tipo de habitación: {reserva.tipoHabitacion} - Número de habitación: {reserva.numeroHabitacion}
-        </Card.Title>            <Card.Subtitle>{reserva.ciudad}, {reserva.pais} - {reserva.direccion}</Card.Subtitle>
-            <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
-            <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>
-            <Card.Text>Número de noches: {calculateNights(reserva.fechaIngreso, reserva.fechaSalida)}</Card.Text>
-            <Card.Text>Personas: {reserva.capacidadPersonas}</Card.Text>
-            <Card.Text>Total Reserva: ${reserva.totalReserva}</Card.Text>
-            <Card.Text>Estado: {reserva.estadoReserva}</Card.Text>
-            <Card.Text>Código de reserva: {reserva.codigoReserva}</Card.Text>
-            {reserva.estadoReserva !== "Cancelada" && (
-              <>
-                <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar Reserva</Button>
-                <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar Reserva</Button>
-              </>
-            )}
-                      <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar Reserva</Button>
-
-          </Card.Body>
-        </Card>
+      <h2 className="text-center">Historial de Reservas</h2>
+      {reservations.length > 0 ? (
+        reservations.map((reserva) => (
+          <Card key={reserva.idReserva} className="mb-4 shadow">
+            <Card.Header as="h5" className="font-weight-bold">
+              Reserva #{reserva.codigoReserva} - {reserva.correoElectronico}
+            </Card.Header>
+            <Card.Body>
+              <Card.Title>{reserva.nombreHotel}</Card.Title>
+              <Card.Subtitle className="mb-2 text-muted">
+                {reserva.ciudad}, {reserva.pais} - {reserva.direccion}
+              </Card.Subtitle>
+              <Card.Text>Tipo de habitación: {reserva.tipoHabitacion}</Card.Text>
+              <Card.Text>Número de habitación: {reserva.numeroHabitacion}</Card.Text>
+              <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
+              <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>
+              <Card.Text>Número de noches: {calculateNights(reserva.fechaIngreso, reserva.fechaSalida)}</Card.Text>
+              <Card.Text>Personas: {reserva.capacidadPersonas}</Card.Text>
+              <Card.Text>Total Reserva: ${reserva.totalReserva}</Card.Text>
+              <Card.Text>Estado: {reserva.estadoReserva}</Card.Text>
+              {reserva.estadoReserva !== "Cancelada" && (
+                <>
+                  <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar</Button>
+                  <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar</Button>
+                </>
+              )}
+              <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
+            </Card.Body>
+          </Card>
         
-      )) : <p>No se encontraron reservas.</p>}
+        ))
+      ) : (
+        <p className="text-center">No se encontraron reservas.</p>
+      )}
       {currentReservation && (
         <EditReservationPage
           show={showEditModal}
@@ -183,4 +191,4 @@ const BookingHistoryPage = () => {
   );
 };
 
-export default BookingHistoryPage;
+export default AdministrarReservas;

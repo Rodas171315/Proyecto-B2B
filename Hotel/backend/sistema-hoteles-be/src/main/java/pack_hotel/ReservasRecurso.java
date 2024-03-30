@@ -48,6 +48,9 @@ public class ReservasRecurso {
 
     @Inject
     Tipo_habitacionRepositorio tipoHabitacionRepositorio; 
+
+    @Inject
+    private UsuarioRepositorio UsuarioRepositorio;
     
     @GET
     public List<Reservas> listarTodasLasReservas() {
@@ -217,7 +220,61 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
 }
 
 
-    
+
+@GET
+@Path("/detalle/todas")
+public Response obtenerDetalleTodasReservas() {
+    List<Reservas> reservas = reservasRepositorio.listAll();
+    if (reservas.isEmpty()) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    List<DetalleReservaDTO> detalleReservasList = reservas.stream().map(reserva -> {
+        DetalleReservaDTO detalle = new DetalleReservaDTO();
+
+        Hoteles hotel = hotelRepositorio.findById(reserva.getIdHotel());
+        if (hotel == null) {
+            throw new WebApplicationException("Hotel no encontrado.", Response.Status.NOT_FOUND);
+        }
+
+        Habitaciones habitacion = habitacionRepositorio.findById(reserva.getIdHabitacion());
+        if (habitacion == null) {
+            throw new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND);
+        }
+
+        Usuarios usuario = UsuarioRepositorio.findById(reserva.getIdUsuario());
+        if (usuario == null) {
+            throw new WebApplicationException("Usuario no encontrado.", Response.Status.NOT_FOUND);
+        }
+
+        detalle.setIdReserva(reserva.getIdReserva());
+        detalle.setIdHotel(reserva.getIdHotel()); 
+        detalle.setIdHabitacion(reserva.getIdHabitacion()); 
+        detalle.setNumeroHabitacion(habitacion.getNumero_habitacion());
+        detalle.setNombreHotel(hotel.getNombre());
+        detalle.setPais(hotel.getPais());
+        detalle.setCiudad(hotel.getCiudad());
+        detalle.setDireccion(hotel.getDireccion());
+        detalle.setTipoHabitacion(reserva.getTipoHabitacion()); 
+        detalle.setFechaIngreso(reserva.getFechaIngreso());
+        detalle.setFechaSalida(reserva.getFechaSalida());
+        long numeroNoches = ChronoUnit.DAYS.between(reserva.getFechaIngreso(), reserva.getFechaSalida());
+        detalle.setNumeroNoches((int) numeroNoches);
+        detalle.setCodigoReserva(reserva.getCodigoReserva());
+        detalle.setTotalReserva(reserva.getTotalReserva());
+        detalle.setEstadoReserva(reserva.getEstadoReserva());
+        detalle.setCapacidadPersonas(habitacion.getCapacidad_personas());
+        detalle.setIdUsuario(usuario.getId());
+        detalle.setCorreoElectronico(usuario.getEmail()); // Usa getEmail() para obtener el correo del usuario
+
+        return detalle;
+    }).collect(Collectors.toList());
+
+    return Response.ok(detalleReservasList).build();
+}
+
+
+
 
 
 
