@@ -4,6 +4,8 @@ import { useUser } from './UserContext';
 import EditReservationPage from './EditReservationPage';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import emailjs from 'emailjs-com';
+
 
 const AdministrarReservas = () => {
   const [reservations, setReservations] = useState([]);
@@ -142,6 +144,38 @@ const AdministrarReservas = () => {
     doc.save(`Reserva_${reserva.codigoReserva}.pdf`);
   };
 
+  const handleNotificarCambios = async (reserva) => {
+    const translatedRoomType = translateTipoHabitacion(reserva.tipoHabitacion.toString());
+
+    const templateParams = {
+      to_name: user.primer_nombre,
+      hotel_name: reserva.nombreHotel,
+      room_number: reserva.numeroHabitacion.toString() || "No especificado", 
+      room_type: reserva.tipoHabitacion, 
+      location: `${reserva.ciudad}, ${reserva.pais} - ${reserva.direccion}`,
+      check_in_date: reserva.fechaIngreso,
+      check_out_date: reserva.fechaSalida,
+      total_nights: calculateNights(reserva.fechaIngreso, reserva.fechaSalida).toString(),
+      total_people: reserva.capacidadPersonas.toString(),
+      total_price: `$${reserva.totalReserva.toFixed(2)}`,
+      reservation_status: reserva.estadoReserva,
+      reservation_code: reserva.codigoReserva.toString(), 
+      to_email: user.email, // Asegúrate de tener este dato disponible.
+    };
+
+    try {
+      const result = await emailjs.send('service_db-dw2', 'template_vhblb7c', templateParams, '83TAqc_7hHgnfdESC');
+      console.log('Email successfully sent!', result.text);
+      // Aquí puedes manejar una respuesta exitosa, como mostrar un mensaje de éxito al usuario.
+    } catch (error) {
+      console.error('Error al enviar notificación de cambio:', error.text);
+      // Aquí puedes manejar un error, como mostrar un mensaje de error al usuario.
+    }
+};
+
+
+
+
   return (
     <div className="booking-history-container">
       <h2 className="text-center">Historial de Reservas</h2>
@@ -171,6 +205,8 @@ const AdministrarReservas = () => {
                 </>
               )}
               <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
+              <Button variant="warning" onClick={() => handleNotificarCambios(reserva)}>Notificar cambios</Button>
+
             </Card.Body>
           </Card>
         

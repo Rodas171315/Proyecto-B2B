@@ -109,5 +109,4 @@ const EditReservationAdmin = ({ show, handleClose, reserva, actualizarReserva })
         </Modal>
     );
 };
-
 export default EditReservationAdmin;
