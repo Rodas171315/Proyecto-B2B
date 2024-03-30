@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Modal, Form } from 'react-bootstrap';
 import { useUser } from './UserContext';
 import EditReservationPage from './EditReservationPage';
 import jsPDF from 'jspdf';
@@ -13,6 +13,11 @@ const AdministrarReservas = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentReservation, setCurrentReservation] = useState(null);
   const [editedReservation, setEditedReservation] = useState(null);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [comment, setComment] = useState('');
+
+
+
 
   useEffect(() => {
     if (user) {
@@ -30,7 +35,7 @@ const AdministrarReservas = () => {
         setReservations(data.map(reserva => ({
           ...reserva,
           tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion),
-          idHotel: reserva.idHotel, // Asegúrate de que estás incluyendo esta línea
+          idHotel: reserva.idHotel, 
           idHabitacion: reserva.idHabitacion
         })));
       } else {
@@ -64,6 +69,7 @@ const AdministrarReservas = () => {
     setCurrentReservation(reserva);
     setShowEditModal(true);
   };
+  
 
   const cancelarReserva = async (idReserva) => {
     try {
@@ -104,11 +110,10 @@ const AdministrarReservas = () => {
       } else {
         console.log('Reservation updated successfully');
         setShowEditModal(false);
-        await fetchReservations(); // Refresh the list of reservations
+        await fetchReservations(); // Refresca lalista de reservaciones
       }
     } catch (error) {
       console.error('Error updating reservation:', error);
-      // Maneja el error genérico
       alert("Ocurrió un error al actualizar la reserva. Por favor, intenta de nuevo.");
     }
   };
@@ -143,6 +148,15 @@ const AdministrarReservas = () => {
 
     doc.save(`Reserva_${reserva.codigoReserva}.pdf`);
   };
+  
+
+  const openNotificarCambiosModal = (reserva) => {
+    setCurrentReservation(reserva);
+    setShowCommentModal(true);
+  };
+
+
+  
 
   const handleNotificarCambios = async (reserva) => {
     const translatedRoomType = translateTipoHabitacion(reserva.tipoHabitacion.toString());
@@ -160,18 +174,20 @@ const AdministrarReservas = () => {
       total_price: `$${reserva.totalReserva.toFixed(2)}`,
       reservation_status: reserva.estadoReserva,
       reservation_code: reserva.codigoReserva.toString(), 
-      to_email: user.email, // Asegúrate de tener este dato disponible.
+      to_email: user.email, 
+      comment, 
     };
 
     try {
-      const result = await emailjs.send('service_db-dw2', 'template_vhblb7c', templateParams, '83TAqc_7hHgnfdESC');
-      console.log('Email successfully sent!', result.text);
-      // Aquí puedes manejar una respuesta exitosa, como mostrar un mensaje de éxito al usuario.
+      await emailjs.send('service_db-dw2', 'template_vhblb7c', templateParams, '83TAqc_7hHgnfdESC');
+      console.log('Email successfully sent!');
     } catch (error) {
       console.error('Error al enviar notificación de cambio:', error.text);
-      // Aquí puedes manejar un error, como mostrar un mensaje de error al usuario.
     }
-};
+
+    setShowCommentModal(false); // Cerrar modal
+    setComment(''); // Limpiar comentario
+  };
 
 
 
@@ -205,7 +221,7 @@ const AdministrarReservas = () => {
                 </>
               )}
               <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
-              <Button variant="warning" onClick={() => handleNotificarCambios(reserva)}>Notificar cambios</Button>
+              <Button variant="warning" onClick={() => openNotificarCambiosModal(reserva)}>Notificar cambios</Button>
 
             </Card.Body>
           </Card>
@@ -223,6 +239,22 @@ const AdministrarReservas = () => {
         />
         
       )}
+            {/* Modal para el comentario */}
+            <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Notificacion de cambios</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form.Group>
+      <Form.Label>Comentario</Form.Label>
+      <Form.Control as="textarea" rows="3" value={comment} onChange={(e) => setComment(e.target.value)} />
+    </Form.Group>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowCommentModal(false)}>Cerrar</Button>
+    <Button variant="primary" onClick={() => handleNotificarCambios(currentReservation)}>Enviar Notificación</Button>
+  </Modal.Footer>
+</Modal>
     </div>
   );
 };
