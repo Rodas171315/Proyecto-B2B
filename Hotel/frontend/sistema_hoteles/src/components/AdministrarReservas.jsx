@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Modal, Form, Table } from 'react-bootstrap';
+import { Button, Card, Modal, Form, Table, InputGroup, FormControl } from 'react-bootstrap';
 import { useUser } from './UserContext';
 import EditReservationPage from './EditReservationPage';
 import jsPDF from 'jspdf';
@@ -17,7 +17,8 @@ const AdministrarReservas = () => {
   const [comment, setComment] = useState('');
   const [showHistoryModal, setShowHistoryModal] = useState(false); // para la vista
   const [userReservations, setUserReservations] = useState([]);  // para la vista
-  
+  const [searchCode, setSearchCode] = useState('');   // filtro
+  const [filteredReservations, setFilteredReservations] = useState([]);  // filtro
 
 
 
@@ -212,58 +213,88 @@ const AdministrarReservas = () => {
   
   const formatToLocalDateString = (dateString) => {
     try {
-      // Intenta parsear la fecha utilizando el constructor Date
       const date = new Date(dateString);
-      // Verifica si la fecha es válida antes de intentar formatearla
       if (!isNaN(date)) {
         return date.toLocaleDateString();
       }
     } catch (error) {
       console.error("Error al parsear la fecha:", error);
     }
-    // Si la fecha es inválida o no se puede parsear, retorna un valor predeterminado o una cadena vacía
     return "Fecha no disponible";
   };
 
 
-  return (
-    <div className="booking-history-container">
-      <h2 className="text-center">Historial de Reservas</h2>
-      {reservations.length > 0 ? (
-        reservations.map((reserva) => (
-          <Card key={reserva.idReserva} className="mb-4 shadow">
-            <Card.Header as="h5" className="font-weight-bold">
-              Reserva #{reserva.codigoReserva} - {reserva.correoElectronico}
-            </Card.Header>
-            <Card.Body>
-              <Card.Title>{reserva.nombreHotel}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">
-                {reserva.ciudad}, {reserva.pais} - {reserva.direccion}
-              </Card.Subtitle>
-              <Card.Text>Tipo de habitación: {reserva.tipoHabitacion}</Card.Text>
-              <Card.Text>Número de habitación: {reserva.numeroHabitacion}</Card.Text>
-              <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
-              <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>
-              <Card.Text>Número de noches: {calculateNights(reserva.fechaIngreso, reserva.fechaSalida)}</Card.Text>
-              <Card.Text>Personas: {reserva.capacidadPersonas}</Card.Text>
-              <Card.Text>Total Reserva: ${reserva.totalReserva}</Card.Text>
-              <Card.Text>Estado: {reserva.estadoReserva}</Card.Text>
-              {reserva.estadoReserva !== "Cancelada" && (
-                <>
-                  <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar</Button>
-                  <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar</Button>
-                </>
-              )}
-              <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
-              <Button variant="warning" onClick={() => openNotificarCambiosModal(reserva)}>Notificar cambios</Button>
-              <Button variant="secondary" onClick={() => fetchUserReservations(reserva.idUsuario)}>Ver Historial</Button>
+
+const handleSearchChange = (e) => {
+  setSearchCode(e.target.value);
+};
+
+const filterReservationsByCode = () => {
+  if (!searchCode) {
+    setFilteredReservations([]);
+    return;
+  }
+  
+  const filtered = reservations.filter(reserva => reserva.codigoReserva.toString() === searchCode);
+  setFilteredReservations(filtered);
+};
+
+const showAllReservations = () => {
+  // Restablecer el código de búsqueda
+  setSearchCode('');
+  // Restablecer las reservaciones filtradas a todas las reservaciones
+  setFilteredReservations(reservations);
+};
 
 
-            </Card.Body>
-          </Card>
-        
-        ))
-      ) : (
+
+return (
+  <div className="booking-history-container">
+    <h2 className="text-center">Encontrar Reserva</h2>
+
+    <InputGroup className="mb-3">
+      <FormControl
+        placeholder="Buscar por código de reserva"
+        aria-label="Buscar por código de reserva"
+        onChange={(e) => setSearchCode(e.target.value)}
+      />
+      <Button variant="outline-secondary" onClick={() => filterReservationsByCode()}>Buscar</Button>
+      <Button variant="outline-info" onClick={() => showAllReservations()}>Mostrar Todas</Button>
+
+    </InputGroup>
+
+    {filteredReservations.length > 0 ? (
+      filteredReservations.map((reserva) => (
+        <Card key={reserva.idReserva} className="mb-4 shadow">
+          <Card.Header as="h5" className="font-weight-bold">
+            Reserva #{reserva.codigoReserva} - {reserva.correoElectronico}
+          </Card.Header>
+          <Card.Body>
+            <Card.Title>{reserva.nombreHotel}</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              {reserva.ciudad}, {reserva.pais} - {reserva.direccion}
+            </Card.Subtitle>
+            <Card.Text>Tipo de habitación: {reserva.tipoHabitacion}</Card.Text>
+            <Card.Text>Número de habitación: {reserva.numeroHabitacion}</Card.Text>
+            <Card.Text>Check-in: {reserva.fechaIngreso}</Card.Text>
+            <Card.Text>Check-out: {reserva.fechaSalida}</Card.Text>
+            <Card.Text>Número de noches: {calculateNights(reserva.fechaIngreso, reserva.fechaSalida)}</Card.Text>
+            <Card.Text>Personas: {reserva.capacidadPersonas}</Card.Text>
+            <Card.Text>Total Reserva: ${reserva.totalReserva}</Card.Text>
+            <Card.Text>Estado: {reserva.estadoReserva}</Card.Text>
+            {reserva.estadoReserva !== "Cancelada" && (
+              <>
+                <Button variant="warning" onClick={() => handleEdit(reserva)}>Editar</Button>
+                <Button variant="danger" onClick={() => cancelarReserva(reserva.idReserva)}>Cancelar</Button>
+              </>
+            )}
+            <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
+            <Button variant="warning" onClick={() => openNotificarCambiosModal(reserva)}>Notificar cambios</Button>
+            <Button variant="secondary" onClick={() => fetchUserReservations(reserva.idUsuario)}>Ver Historial</Button>
+          </Card.Body>
+        </Card>
+      ))
+    ) : (
         <p className="text-center">No se encontraron reservas.</p>
       )}
       {currentReservation && (
@@ -321,6 +352,7 @@ const AdministrarReservas = () => {
           ))}
         </tbody>
       </Table>
+      
     ) : (
       <p>No se encontraron reservas para este usuario.</p>
     )}
