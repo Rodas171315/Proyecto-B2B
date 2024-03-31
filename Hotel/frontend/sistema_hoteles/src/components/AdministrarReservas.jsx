@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Modal, Form } from 'react-bootstrap';
+import { Button, Card, Modal, Form, Table } from 'react-bootstrap';
 import { useUser } from './UserContext';
 import EditReservationPage from './EditReservationPage';
 import jsPDF from 'jspdf';
@@ -15,7 +15,9 @@ const AdministrarReservas = () => {
   const [editedReservation, setEditedReservation] = useState(null);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [comment, setComment] = useState('');
-
+  const [showHistoryModal, setShowHistoryModal] = useState(false); // para la vista
+  const [userReservations, setUserReservations] = useState([]);  // para la vista
+  
 
 
 
@@ -36,7 +38,8 @@ const AdministrarReservas = () => {
           ...reserva,
           tipoHabitacion: translateTipoHabitacion(reserva.tipoHabitacion),
           idHotel: reserva.idHotel, 
-          idHabitacion: reserva.idHabitacion
+          idHabitacion: reserva.idHabitacion,
+          idUsuario: reserva.idUsuario
         })));
       } else {
         console.error("Failed to fetch reservations.");
@@ -190,6 +193,37 @@ const AdministrarReservas = () => {
   };
 
 
+  const fetchUserReservations = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/reservas/historial/${userId}`);
+      if (!response.ok) {
+        throw new Error('No se pudo cargar el historial de reservas');
+      }
+      const historialReservas = await response.json();
+      setUserReservations(historialReservas);
+      setShowHistoryModal(true);  // Muestra el modal con el historial de reservas
+    } catch (error) {
+      console.error('Error al cargar el historial de reservas:', error);
+    }
+  };
+  
+
+  
+  
+  const formatToLocalDateString = (dateString) => {
+    try {
+      // Intenta parsear la fecha utilizando el constructor Date
+      const date = new Date(dateString);
+      // Verifica si la fecha es válida antes de intentar formatearla
+      if (!isNaN(date)) {
+        return date.toLocaleDateString();
+      }
+    } catch (error) {
+      console.error("Error al parsear la fecha:", error);
+    }
+    // Si la fecha es inválida o no se puede parsear, retorna un valor predeterminado o una cadena vacía
+    return "Fecha no disponible";
+  };
 
 
   return (
@@ -222,6 +256,8 @@ const AdministrarReservas = () => {
               )}
               <Button variant="info" onClick={() => downloadReservationPdf(reserva)}>Descargar</Button>
               <Button variant="warning" onClick={() => openNotificarCambiosModal(reserva)}>Notificar cambios</Button>
+              <Button variant="secondary" onClick={() => fetchUserReservations(reserva.idUsuario)}>Ver Historial</Button>
+
 
             </Card.Body>
           </Card>
@@ -255,6 +291,51 @@ const AdministrarReservas = () => {
     <Button variant="primary" onClick={() => handleNotificarCambios(currentReservation)}>Enviar Notificación</Button>
   </Modal.Footer>
 </Modal>
+
+
+<Modal show={showHistoryModal} onHide={() => setShowHistoryModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Historial de Reservas del Usuario</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {userReservations.length > 0 ? (
+      <Table striped bordered hover size="sm">
+        <thead>
+          <tr>
+            <th>Código de Reserva</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Estado</th>
+            <th>Total Reserva</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userReservations.map((reservation, index) => (
+            <tr key={index}>
+              <td>{reservation.codigoReserva}</td>
+              <td>{formatToLocalDateString(reservation.fechaIngreso)}</td>
+              <td>{formatToLocalDateString(reservation.fechaSalida)}</td>
+              <td>{reservation.estadoReserva}</td>
+              <td>${reservation.totalReserva ? reservation.totalReserva.toFixed(2) : "0.00"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ) : (
+      <p>No se encontraron reservas para este usuario.</p>
+    )}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowHistoryModal(false)}>
+      Cerrar
+    </Button>
+  </Modal.Footer>
+</Modal>
+
+
+
+
+
     </div>
   );
 };

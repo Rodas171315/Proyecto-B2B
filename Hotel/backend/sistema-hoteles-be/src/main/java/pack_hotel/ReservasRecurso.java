@@ -1,6 +1,8 @@
 package pack_hotel;
 
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -10,6 +12,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.persistence.Query;
 
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
@@ -55,7 +58,13 @@ public class ReservasRecurso {
     @GET
     public List<Reservas> listarTodasLasReservas() {
         return reservasRepositorio.listAll();
+
     }
+
+    @PersistenceContext
+    EntityManager entityManager;
+
+
 
     @GET
     @Path("{id}")
@@ -391,6 +400,29 @@ public Response obtenerTiposHabitacionPorHotel(@QueryParam("hotelId") Long hotel
         return Response.serverError().entity("Error al recuperar los tipos de habitación: " + e.getMessage()).build();
     }
 }
+
+
+// vista
+
+   @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/historial/{idUsuario}")
+    public Response obtenerHistorialReservasUsuario(@PathParam("idUsuario") Long idUsuario) {
+        try {
+            List<DetalleReservaDTO> historialReservas = reservasRepositorio.obtenerReservasPorUsuario(idUsuario);
+            if (historialReservas.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).entity("No se encontraron reservas para el usuario con ID: " + idUsuario).build();
+            }
+            return Response.ok(historialReservas).build();
+        } catch (Exception e) {
+            log.error("Error al obtener el historial de reservas del usuario", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al procesar la solicitud").build();
+        }
+    }
+    
+
+
+    
 
 
 }
