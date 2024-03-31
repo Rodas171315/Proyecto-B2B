@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.Produces;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -93,5 +94,18 @@ public class HotelRecurso {
         return hotelesRepositorio.listarPaisesUnicos();
     }
 
+
+    //imagenes
+
+
+    @GET
+    @Path("/{id}/imagenes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<String> obtenerImagenesAmenidades(@PathParam("id") Long id) {
+        return hotelesRepositorio.obtenerImagenesAmenidadesPorHotel(id);
+    }
+
+
+    }
+
     
-}

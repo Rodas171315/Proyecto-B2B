@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Alert, Image } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
 import Comentarios from './Comentarios';
@@ -10,6 +10,8 @@ const HomePage = () => {
   const [paisSeleccionado, setPaisSeleccionado] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [hotelImages, setHotelImages] = useState({}); 
+
 
   const tiposHabitacion = {
     1: 'Doble',
@@ -23,6 +25,30 @@ const HomePage = () => {
     fetchPaises();
     fetchHotelsAndRooms(paisSeleccionado);
   }, []);
+
+
+
+
+  //IMAGENES
+
+  const fetchHotelImages = async (idHotel) => {
+    try {
+      const response = await fetch(`http://localhost:8080/hoteles/${idHotel}/imagenes`);
+      if (!response.ok) throw new Error('Error al cargar imágenes del hotel');
+      const images = await response.json();
+      setHotelImages(prevImages => ({ ...prevImages, [idHotel]: images }));
+    } catch (error) {
+      console.error('Error fetching hotel images:', error);
+    }
+  };
+
+  useEffect(() => {
+    hotels.forEach(hotel => {
+      fetchHotelImages(hotel.id_hotel);
+    });
+  }, [hotels]);
+
+  
 
   const fetchPaises = async () => {
     try {
@@ -89,13 +115,16 @@ const HomePage = () => {
         </Col>
       </Row>
       <Row>
-        {hotels.length > 0 ? (
-          hotels.map((hotel) => (
-            <React.Fragment key={hotel.id_hotel}>
-              <Col md={12} className="mt-4">
-                <h3>Hotel: {hotel.nombre}</h3>
-                <p>{hotel.ciudad}, {hotel.pais}</p>
-                <p>Dirección: {hotel.direccion}</p>
+      {hotels.length > 0 ? (
+        hotels.map((hotel) => (
+          <React.Fragment key={hotel.id_hotel}>
+            <Col md={12} className="mt-4">
+              <h3>Hotel: {hotel.nombre}</h3>
+              {hotelImages[hotel.id_hotel] && hotelImages[hotel.id_hotel].map((image, index) => (
+                <Image key={index} src={image} alt={`Imagen del hotel ${hotel.nombre}`} thumbnail />
+              ))}
+              <p>{hotel.ciudad}, {hotel.pais}</p>
+              <p>Dirección: {hotel.direccion}</p>
               </Col>
               {hotel.rooms && hotel.rooms.map((room) => (
                 <Col key={room.id_habitacion} md={4}>

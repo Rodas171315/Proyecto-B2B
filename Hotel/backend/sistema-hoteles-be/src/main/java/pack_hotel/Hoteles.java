@@ -36,6 +36,9 @@ public class Hoteles {
     
     private LocalTime checkout;
 
+    private String imagenUrl;
+
+
     public Long getId_hotel() {
         return id_hotel;
     }
@@ -98,6 +101,14 @@ public class Hoteles {
 
     public void setCheckout(LocalTime checkout) {
         this.checkout = checkout;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
     }
 
     @Override

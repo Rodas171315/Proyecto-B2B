@@ -5,6 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @ApplicationScoped
 public class HotelRepositorio implements PanacheRepository<Hoteles> {
@@ -22,4 +24,11 @@ public class HotelRepositorio implements PanacheRepository<Hoteles> {
                             .getResultList();
     }
     
+    public List<String> obtenerImagenesAmenidadesPorHotel(Long idHotel) {
+        return em.createQuery("SELECT ia.urlImagen FROM ImagenAmenidad ia WHERE ia.hotel.id = :idHotel", String.class)
+                .setParameter("idHotel", idHotel)
+                .getResultList();
+
+    }
+
 }
