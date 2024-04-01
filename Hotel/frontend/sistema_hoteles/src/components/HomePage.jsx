@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert, Image } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Alert, Image, Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
 import Comentarios from './Comentarios';
@@ -142,16 +142,27 @@ const HomePage = () => {
       </Row>
       <Row>
       {hotels.length > 0 ? (
-        hotels.map((hotel) => (
-          <React.Fragment key={hotel.id_hotel}>
-            <Col md={12} className="mt-4">
-              <h3>Hotel: {hotel.nombre}</h3>
-              {hotelImages[hotel.id_hotel] && hotelImages[hotel.id_hotel].map((image, index) => (
-                <Image key={index} src={image} alt={`Imagen del hotel ${hotel.nombre}`} thumbnail />
-              ))}
-              <p>{hotel.ciudad}, {hotel.pais}</p>
-              <p>Dirección: {hotel.direccion}</p>
-              </Col>
+  hotels.map((hotel) => (
+    <React.Fragment key={hotel.id_hotel}>
+      <Col md={8} className="mt-4">
+        <h3>Hotel: {hotel.nombre}</h3>
+        <p>{hotel.ciudad}, {hotel.pais}</p>
+        <p>Dirección: {hotel.direccion}</p>
+        {hotelImages[hotel.id_hotel] && hotelImages[hotel.id_hotel].length > 0 && (
+          <Carousel interval={null}>
+            {hotelImages[hotel.id_hotel].map((image, index) => (
+              <Carousel.Item key={index}>
+                <img
+                  className="d-block w-100"
+                  src={image}
+                  alt={`Imagen ${index + 1} del hotel ${hotel.nombre}`}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+        )}
+
+      </Col>
               {hotel.rooms && hotel.rooms.map((room) => (
                 <Col key={room.id_habitacion} md={4}>
                   <Card className="mb-3">
