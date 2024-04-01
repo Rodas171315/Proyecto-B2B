@@ -111,7 +111,6 @@ public class HotelRecurso {
     }
 
 
-
     @POST
     @Path("/{id}/imagenes")
     public Response actualizarImagenesHotel(@PathParam("id") Long id, List<String> urlImagenes) {

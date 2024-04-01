@@ -113,7 +113,7 @@ const manejarImagenesDelHotel = async (hotelId, imageLinks) => {
 
   try {
     const response = await fetch(`http://localhost:8080/hoteles/${hotelId}/imagenes`, {
-      method: 'POST', // Usa POST para actualizar todas las imágenes a la vez
+      method: 'POST', //  POST para actualizar todas las imágenes a la vez
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(urlImagenes) // Envía un arreglo de URLs
     });

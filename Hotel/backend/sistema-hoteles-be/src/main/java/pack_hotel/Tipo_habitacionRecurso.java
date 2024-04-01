@@ -12,8 +12,14 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.MediaType;
+
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import io.smallrye.common.annotation.Blocking;
+import jakarta.ws.rs.Produces;
 
 /**
  *
@@ -42,15 +48,22 @@ public class Tipo_habitacionRecurso {
         return insertedData;
     }
     
+
+    
+    @Blocking // Indica que este método puede realizar operaciones bloqueantes
     @GET
     @Path("{id}")
     public Tipos_habitacion retrieve(@PathParam("id") Long id) {
         var tipo = tipos_habitacionRepositorio.findById(id);
         if (tipo != null) {
+            if (tipo.getImagenUrl() == null) {
+                tipo.setImagenUrl("URL por defecto"); // Proporciona la URL por defecto aquí
+            }
             return tipo;
         }
         throw new NoSuchElementException("No hay tipo de habitacion con el ID " + id + ".");
     }
+    
     
 
     
@@ -76,5 +89,8 @@ public class Tipo_habitacionRecurso {
         }
         throw new NoSuchElementException("No existe un tipo de habitacion con el ID: " + id + ".");
     }
+
+
+    
     
 }

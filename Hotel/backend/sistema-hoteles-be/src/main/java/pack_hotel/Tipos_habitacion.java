@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.util.Objects;
+import jakarta.persistence.Column;
 
 /**
  *
@@ -23,6 +24,9 @@ public class Tipos_habitacion {
     
     private String tipo;
 
+    @Column(name = "IMAGEN_URL")
+    private String imagenUrl;
+
     public Long getId_tipo() {
         return id_tipo;
     }
@@ -37,6 +41,14 @@ public class Tipos_habitacion {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
     }
 
     @Override

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
-import defaultRoomImage from './roomImage.jpg';
+import defaultRoomImage from './roomImage.jpg'; // Asegúrate de tener esta imagen como fallback
+
 
 const HotelDetailsPage = () => {
   const [hotels, setHotels] = useState([]);
@@ -21,11 +22,24 @@ const HotelDetailsPage = () => {
       try {
         const hotelsResponse = await fetch(`http://localhost:8080/hoteles`);
         const hotelsData = await hotelsResponse.json();
+        
+        const roomTypesResponse = await fetch(`http://localhost:8080/tipos_habitacion`);
+        const roomTypesData = await roomTypesResponse.json();
+        const roomTypesMap = roomTypesData.reduce((acc, roomType) => {
+          acc[roomType.id_tipo] = roomType.imagenUrl || defaultRoomImage;
+          return acc;
+        }, {});
+
         const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
           const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
           const roomsData = await roomsResponse.json();
-          return { ...hotel, rooms: roomsData };
+          const roomsWithImages = roomsData.map(room => ({
+            ...room,
+            imagenUrl: roomTypesMap[room.tipo_habitacion]
+          }));
+          return { ...hotel, rooms: roomsWithImages };
         }));
+
         setHotels(hotelsWithRooms);
       } catch (error) {
         console.error('Error fetching hotels and rooms:', error);
@@ -56,7 +70,7 @@ const HotelDetailsPage = () => {
                     <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
                     <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
                     <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
-                    <Card.Img variant="top" src={defaultRoomImage} />
+                    <Card.Img variant="top" src={room.imagenUrl} />
                     <Button variant="primary" onClick={() => {
                       console.log("Navigating with hotelDetails:", hotel);
                       navigate('/checkout', {
