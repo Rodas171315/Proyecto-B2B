@@ -13,11 +13,12 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.Produces;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-
+import java.util.Map;
 /**
  *
  * @author root
@@ -29,6 +30,10 @@ public class HotelRecurso {
     
     @Inject
     private HotelRepositorio hotelesRepositorio;
+
+        
+    @Inject
+    private ImagenAmenidadRepositorio imagenAmenidadRepositorio;
     
     @GET
     public List<Hoteles> index() {
@@ -104,6 +109,58 @@ public class HotelRecurso {
     public List<String> obtenerImagenesAmenidades(@PathParam("id") Long id) {
         return hotelesRepositorio.obtenerImagenesAmenidadesPorHotel(id);
     }
+
+
+
+    @POST
+    @Path("/{id}/imagenes")
+    public Response actualizarImagenesHotel(@PathParam("id") Long id, List<String> urlImagenes) {
+        Hoteles hotel = hotelesRepositorio.findById(id);
+        if (hotel == null) {
+            throw new NoSuchElementException("No hay hotel con el ID " + id + ".");
+        }
+        
+        // Eliminar imágenes existentes
+        imagenAmenidadRepositorio.deleteByHotelId(hotel.getId_hotel());
+        
+        // Añadir nuevas imágenes
+        for (String urlImagen : urlImagenes) {
+            ImagenAmenidad nuevaImagen = new ImagenAmenidad();
+            nuevaImagen.setUrlImagen(urlImagen);
+            nuevaImagen.setHotel(hotel);
+            imagenAmenidadRepositorio.persist(nuevaImagen);
+        }
+    
+        return Response.ok().build();
+    }
+    
+
+  @PUT
+  @Path("/{id}/imagen")
+  public Response updateHotelImage(@PathParam("id") Long id, Map<String, String> image) {
+    Hoteles hotel = hotelesRepositorio.findById(id);
+    if (hotel != null) {
+      hotel.setImagenUrl(image.get("urlImagen"));
+      hotelesRepositorio.persist(hotel);
+      return Response.ok(hotel).build();
+    } else {
+      throw new NoSuchElementException("No hay hotel con el ID " + id + ".");
+    }
+  }
+
+  @DELETE
+  @Path("/{id}/imagen")
+  public Response deleteHotelImage(@PathParam("id") Long id) {
+    Hoteles hotel = hotelesRepositorio.findById(id);
+    if (hotel != null) {
+      hotel.setImagenUrl(null);
+      hotelesRepositorio.persist(hotel);
+      return Response.ok().build();
+    } else {
+      throw new NoSuchElementException("No hay hotel con el ID " + id + ".");
+    }
+  }
+
 
 
     }
