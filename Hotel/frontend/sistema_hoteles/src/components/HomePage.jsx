@@ -11,6 +11,8 @@ const HomePage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [hotelImages, setHotelImages] = useState({}); 
+  const [roomTypes, setRoomTypes] = useState({});
+
 
 
   const tiposHabitacion = {
@@ -22,6 +24,7 @@ const HomePage = () => {
 
 
   useEffect(() => {
+    fetchRoomTypes();
     fetchPaises();
     fetchHotelsAndRooms(paisSeleccionado);
   }, []);
@@ -43,12 +46,29 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    hotels.forEach(hotel => {
+    hotels.forEach((hotel) => {
       fetchHotelImages(hotel.id_hotel);
     });
   }, [hotels]);
 
   
+
+  const fetchRoomTypes = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/tipos_habitacion');
+      if (!response.ok) throw new Error('Error al cargar los tipos de habitación');
+      const data = await response.json();
+      setRoomTypes(data.reduce((map, roomType) => {
+        map[roomType.id_tipo] = roomType.imagenUrl || defaultRoomImage; 
+        return map;
+      }, {}));
+    } catch (error) {
+      setError('Error al cargar los tipos de habitación: ' + error.message);
+    }
+  };
+  
+
+
 
   const fetchPaises = async () => {
     try {
@@ -64,27 +84,33 @@ const HomePage = () => {
   const fetchHotelsAndRooms = async (pais = '') => {
     let url = pais ? `http://localhost:8080/hoteles/por-pais/${pais}` : `http://localhost:8080/hoteles`;
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Error al cargar hoteles');
-      const hotelsData = await response.json();
+      const hotelsResponse = await fetch(url);
+      if (!hotelsResponse.ok) throw new Error('Error al cargar hoteles');
+      const hotelsData = await hotelsResponse.json();
+  
+      const roomTypesResponse = await fetch('http://localhost:8080/tipos_habitacion');
+      const roomTypesData = await roomTypesResponse.json();
+      const roomTypesMap = roomTypesData.reduce((acc, roomType) => {
+        acc[roomType.id_tipo] = roomType.imagenUrl || defaultRoomImage;
+        return acc;
+      }, {});
   
       const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
-        try {
-          const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
-          if (!roomsResponse.ok) throw new Error('Failed to load rooms');
-          const roomsData = await roomsResponse.json();
-          return { ...hotel, rooms: roomsData };
-        } catch (error) {
-          console.error('Error fetching rooms for hotel:', hotel.id_hotel, error);
-          return { ...hotel, rooms: [] }; // Return the hotel with no rooms in case of error.
-        }
+        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+        const roomsData = await roomsResponse.json();
+        const roomsWithImages = roomsData.map(room => ({
+          ...room,
+          imagenUrl: roomTypesMap[room.tipo_habitacion]
+        }));
+        return { ...hotel, rooms: roomsWithImages };
       }));
   
       setHotels(hotelsWithRooms);
     } catch (error) {
-      console.error('Error fetching hotels:', error);
+      setError('Error al cargar hoteles y habitaciones: ' + error.message);
     }
   };
+  
   
   
   
@@ -129,7 +155,7 @@ const HomePage = () => {
               {hotel.rooms && hotel.rooms.map((room) => (
                 <Col key={room.id_habitacion} md={4}>
                   <Card className="mb-3">
-                    <Card.Img variant="top" src={defaultRoomImage} />
+                  <Card.Img variant="top" src={room.imagenUrl || defaultRoomImage} />
                     <Card.Body>
                     <Card.Title>Habitación: {tiposHabitacion[room.tipo_habitacion]}</Card.Title>
                       <Card.Text>Número de habitación: {room.numero_habitacion}</Card.Text>
