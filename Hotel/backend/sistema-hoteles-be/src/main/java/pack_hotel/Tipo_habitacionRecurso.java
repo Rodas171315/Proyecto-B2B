@@ -6,6 +6,7 @@ package pack_hotel;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -13,8 +14,12 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 import java.util.List;
+import jakarta.persistence.EntityManager;
+
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -50,14 +55,14 @@ public class Tipo_habitacionRecurso {
     
 
     
-    @Blocking // Indica que este método puede realizar operaciones bloqueantes
+    @Blocking // puede realizar operaciones bloqueantes
     @GET
     @Path("{id}")
     public Tipos_habitacion retrieve(@PathParam("id") Long id) {
         var tipo = tipos_habitacionRepositorio.findById(id);
         if (tipo != null) {
             if (tipo.getImagenUrl() == null) {
-                tipo.setImagenUrl("URL por defecto"); // Proporciona la URL por defecto aquí
+                tipo.setImagenUrl("URL por defecto"); 
             }
             return tipo;
         }
@@ -65,6 +70,27 @@ public class Tipo_habitacionRecurso {
     }
     
     
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response actualizarImagenTipoHabitacion(@PathParam("id") Long id, Map<String, String> imagenData) {
+        Tipos_habitacion tipoHabitacion = tipos_habitacionRepositorio.findById(id);
+        if (tipoHabitacion == null) {
+            throw new NoSuchElementException("No hay tipo de habitación con el ID " + id + ".");
+        }
+        
+        String nuevaUrlImagen = imagenData.get("imagenUrl");
+        tipos_habitacionRepositorio.actualizarImagen(id, nuevaUrlImagen);
+        
+        return Response.ok().build();
+    }
+    
+
+    
+
+
+
+
 
     
     @DELETE
@@ -75,19 +101,6 @@ public class Tipo_habitacionRecurso {
         } else {
             return "No se ha borrado (no existe)";
         }
-    }
-    
-    @PUT
-    @Path("{id}")
-    public Tipos_habitacion update(@PathParam("id") Long id, Tipos_habitacion tipo_habitacion) {
-        var updatedData = tipos_habitacionRepositorio.findById(id);
-        if (updatedData != null) {
-            updatedData.setId_tipo(tipo_habitacion.getId_tipo());
-            updatedData.setTipo(tipo_habitacion.getTipo());
-            tipos_habitacionRepositorio.persist(updatedData);
-            return updatedData;
-        }
-        throw new NoSuchElementException("No existe un tipo de habitacion con el ID: " + id + ".");
     }
 
 

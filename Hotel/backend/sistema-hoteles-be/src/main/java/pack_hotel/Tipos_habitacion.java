@@ -5,10 +5,14 @@
 package pack_hotel;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 
 /**
  *
@@ -26,6 +30,11 @@ public class Tipos_habitacion {
 
     @Column(name = "IMAGEN_URL")
     private String imagenUrl;
+
+        @ElementCollection(fetch = FetchType.LAZY)
+    private List<String> urlsImagenes = new ArrayList<>();
+
+
 
     public Long getId_tipo() {
         return id_tipo;
@@ -50,6 +59,15 @@ public class Tipos_habitacion {
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
     }
+
+
+    public void actualizarUrlsImagenes(List<String> nuevasUrls) {
+        this.urlsImagenes.clear();
+        if (nuevasUrls != null) {
+            this.urlsImagenes.addAll(nuevasUrls);
+        }
+    }
+    
 
     @Override
     public boolean equals(Object obj) {

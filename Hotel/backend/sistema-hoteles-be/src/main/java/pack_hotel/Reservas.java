@@ -48,7 +48,6 @@ public class Reservas {
     @Column(name = "ESTADO_RESERVA")
     private String estadoReserva;
 
-    // Se ha añadido la referencia directa al tipo de habitación
     @Column(name = "TIPO_HABITACION")
     private Integer tipoHabitacion;
 
@@ -151,12 +150,12 @@ public class Reservas {
         if (!(o instanceof Reservas)) return false;
         Reservas reservas = (Reservas) o;
         return Objects.equals(idReserva, reservas.idReserva) &&
-                Objects.equals(idHotel, reservas.idHotel); // Incluye idHotel en equals
+                Objects.equals(idHotel, reservas.idHotel); 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idReserva, idHotel); // Incluye idHotel en hashCode
+        return Objects.hash(idReserva, idHotel); 
     }
 
     @Override

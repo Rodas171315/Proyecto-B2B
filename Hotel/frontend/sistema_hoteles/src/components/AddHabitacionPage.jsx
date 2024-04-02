@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Button, Table, Alert, Row, Col } from 'react-bootstrap';
+import TipoHabitacionImagenesEditor from './TipoHabitacionImagenesEditor'; 
+
 
 const AddHabitacionPage = () => {
   const [hoteles, setHoteles] = useState([]);
@@ -321,7 +323,15 @@ onChange={handleChangeNuevaHabitacion}
     </>
     
   )}
-</Container>
+     <div className="mt-5">
+        <h2>Editar Imágenes de Tipos de Habitación</h2>
+        {["1", "2", "3", "4"].map((tipoId) => ( // Asegúrate de reemplazar estos IDs con los reales de tus tipos de habitación
+          <div key={tipoId} className="mb-4">
+            <TipoHabitacionImagenesEditor idTipoHabitacion={tipoId} />
+          </div>
+        ))}
+      </div>
+    </Container>
 );
 };
 
