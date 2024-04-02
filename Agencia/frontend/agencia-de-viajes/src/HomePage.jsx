@@ -14,19 +14,19 @@ const HomePage = () => {
 
     useEffect(() => {
         
-        fetch('http://localhost:8080/contenido-estatico//destinos-populares')
+        fetch('http://localhost:8081/contenido-estatico//destinos-populares')
             .then((response) => response.json())
             .then(setDestinosPopulares)
             .catch((error) => console.error("Error al cargar destinos populares:", error));
 
         
-        fetch('http://localhost:8080/contenido-estatico//promociones-ofertas-especiales')
+        fetch('http://localhost:8081/contenido-estatico//promociones-ofertas-especiales')
             .then((response) => response.json())
             .then(setOfertasEspeciales)
             .catch((error) => console.error("Error al cargar ofertas especiales:", error));
 
         
-        fetch('http://localhost:8080/contenido-estatico//descubre-hospedaje')
+        fetch('http://localhost:8081/contenido-estatico//descubre-hospedaje')
             .then((response) => response.json())
             .then(setHospedajesFavoritos)
             .catch((error) => console.error("Error al cargar hospedajes favoritos:", error));

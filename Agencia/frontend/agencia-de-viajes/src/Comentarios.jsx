@@ -13,7 +13,7 @@ const Comentarios = () => {
   const cargarComentarios = async () => {
     setCargando(true);
     try {
-      const respuesta = await fetch('http://localhost:8080/comentarios');
+      const respuesta = await fetch('http://localhost:8081/comentarios');
       const textoRespuesta = await respuesta.text();
       try {
         const data = JSON.parse(textoRespuesta);
@@ -53,7 +53,7 @@ const Comentarios = () => {
     };
   
     try {
-      const respuesta = await fetch('http://localhost:8080/comentarios', {
+      const respuesta = await fetch('http://localhost:8081/comentarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(comentarioData),

@@ -95,7 +95,7 @@ const SearchForm = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/static/vuelos', {
+            const response = await fetch('http://localhost:8081/static/vuelos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ const SearchForm = () => {
     
     const handleBuscarPaquetes = async () => {
         try {
-            const response = await fetch('http://localhost:8080/paquetes');
+            const response = await fetch('http://localhost:8081/paquetes');
             if (!response.ok) throw new Error('Error al buscar paquetes');
             const paquetesEncontrados = await response.json();
             

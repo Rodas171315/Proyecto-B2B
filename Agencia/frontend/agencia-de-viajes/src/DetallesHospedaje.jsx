@@ -26,7 +26,7 @@ const DetallesHospedaje = () => {
     useEffect(() => {
         const fetchHabitaciones = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/hoteles/${id}/habitaciones`);
+                const response = await fetch(`http://localhost:8081/hoteles/${id}/habitaciones`);
                 if (!response.ok) {
                     throw new Error('No se pudo cargar las habitaciones');
                 }
