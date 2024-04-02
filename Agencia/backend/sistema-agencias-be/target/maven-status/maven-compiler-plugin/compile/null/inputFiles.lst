@@ -1,4 +1,7 @@
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/org/acme/GreetingResource.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/AerolineaRepository.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Aerolineas.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/AerolineasService.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Comentarios.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/ComentariosRepositorio.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/ComentariosServicio.java
@@ -8,6 +11,9 @@
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/HabitacionResource.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Hospedaje.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/HospedajeFavorito.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/HotelRepository.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Hoteles.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/HotelesService.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Login.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/NoSuchElementExceptionMapper.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Paquete.java
