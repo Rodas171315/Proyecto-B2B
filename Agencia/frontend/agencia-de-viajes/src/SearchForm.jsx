@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, InputLabel, Select, MenuItem, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -32,10 +32,8 @@ const SearchForm = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [origen, setOrigen] = useState('');
-    const [idHabitacion, setIdHabitacion] = useState('');
-    const [fechaIngreso, setFechaIngreso] = useState('');
-    const [fechaSalida, setFechaSalida] = useState('');
-
+    const [paisSeleccionado, setPaisSeleccionado] = useState('');
+    const [paises, setPaises] = useState([]);
 
 
 
@@ -48,40 +46,45 @@ const SearchForm = () => {
     const navigate = useNavigate(); 
 
     
-    const handleBuscarHospedaje = async () => {
+    useEffect(() => {
         
-        const idHabitacion = 1; 
-        const criteriosBusqueda = {
-            idHabitacion,
-            fechaIngreso, 
-            fechaSalida,
-        };
-    
-        try {
-            const response = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(criteriosBusqueda),
-            });
-    
-            if (!response.ok) throw new Error('Error al verificar la disponibilidad');
-            const disponibilidad = await response.json();
-    
-            if (disponibilidad.disponible) {
-                
-                alert('Habitación disponible');
-            } else {
-                setDialogMessage('No hay disponibilidad para las fechas seleccionadas.');
+        const fetchPaises = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/hoteles/pais');
+                if (!response.ok) throw new Error('Error al cargar los países');
+                const data = await response.json();
+                setPaises(data);
+            } catch (error) {
+                console.error('Error al cargar los países:', error);
+                setDialogMessage('Error al cargar los países.');
                 setOpenDialog(true);
             }
+        };
+        fetchPaises();
+    }, []);
+
+    const handleBuscarHospedaje = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionado}`);
+            if (!response.ok) throw new Error('Error al buscar hoteles');
+            const hoteles = await response.json();
+    
+            if (hoteles.length === 0) {
+                setDialogMessage('No se encontraron hoteles disponibles en el país seleccionado.');
+                setOpenDialog(true);
+            } else {
+                
+                navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles } });
+            }
         } catch (error) {
-            console.error('Error al verificar la disponibilidad:', error);
-            setDialogMessage('Ocurrió un error al verificar la disponibilidad.');
+            console.error('Error al buscar hospedaje:', error);
+            setDialogMessage('Ocurrió un error al buscar hoteles.');
             setOpenDialog(true);
         }
     };
+    
+
+
     
     
     const handleBuscarVuelos = async () => {
@@ -149,39 +152,23 @@ const SearchForm = () => {
             <TabPanel value={tabValue} index={0}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <TextField
-                            label="ID de la Habitación"
-                            type="number"
-                            fullWidth
-                            value={idHabitacion} 
-                            onChange={(e) => setIdHabitacion(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Fecha de Ingreso"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            value={fechaIngreso} 
-                            onChange={(e) => setFechaIngreso(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Fecha de Salida"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            value={fechaSalida} 
-                            onChange={(e) => setFechaSalida(e.target.value)}
-                        />
+                        <FormControl fullWidth>
+                            <InputLabel>País</InputLabel>
+                            <Select
+                                value={paisSeleccionado}
+                                onChange={(e) => setPaisSeleccionado(e.target.value)}
+                                label="País"
+                            >
+                                {paises.map((pais) => (
+                                    <MenuItem key={pais} value={pais}>{pais}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
                 
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                    <DialogTitle>No se encontraron hospedajes</DialogTitle>
+                    <DialogTitle>Información</DialogTitle>
                     <DialogContent>
                         <Typography>{dialogMessage}</Typography>
                     </DialogContent>
@@ -191,7 +178,7 @@ const SearchForm = () => {
                 </Dialog>
                 
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarHospedaje}>
-                    Verificar Disponibilidad
+                    Buscar Hoteles
                 </Button>
             </TabPanel>
 

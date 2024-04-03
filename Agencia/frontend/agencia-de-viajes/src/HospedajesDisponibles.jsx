@@ -4,24 +4,49 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header'; 
 import Footer from './Footer'; 
 
-
 const HospedajesDisponibles = () => {
-    const [hospedajes, setHospedajes] = useState([]); 
+    const [hotelesConHabitaciones, setHotelesConHabitaciones] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation(); 
+    const location = useLocation();
 
     useEffect(() => {
-        
-        if(location.state && location.state.hospedajes){
-            setHospedajes(location.state.hospedajes);
+        const { paisSeleccionado } = location.state ? location.state : { paisSeleccionado: '' };
+        if (paisSeleccionado) {
+            console.log(`Buscando hoteles para el país: ${paisSeleccionado}`);
+            fetchHotelsAndRooms(paisSeleccionado);
         } else {
-            
-            console.error("No se proporcionaron datos de hospedajes");
+            console.error("No se proporcionó un país para la búsqueda");
         }
-    }, [location.state]); 
+    }, [location.state]);
 
-    const verDetalles = (id) => {
-        navigate(`/hospedajes/${id}`); 
+    const fetchHotelsAndRooms = async (pais) => {
+        try {
+            const responseHoteles = await fetch(`http://localhost:8080/hoteles/por-pais/${pais}`);
+            if (!responseHoteles.ok) throw new Error('Error al cargar hoteles');
+            const hoteles = await responseHoteles.json();
+
+            const hotelesConHabitacionesPromesas = hoteles.map(async (hotel) => {
+                const respuestaHabitaciones = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+                if (!respuestaHabitaciones.ok) {
+                    console.error(`Error al cargar habitaciones para el hotel: ${hotel.nombre}`);
+                    return { ...hotel, habitaciones: [] };
+                }
+                const habitaciones = await respuestaHabitaciones.json();
+                console.log(`Habitaciones cargadas para ${hotel.nombre}:`, habitaciones); 
+                return { ...hotel, habitaciones };
+            });
+
+            const hotelesConHabitaciones = await Promise.all(hotelesConHabitacionesPromesas);
+            console.log("Hoteles con habitaciones:", hotelesConHabitaciones); 
+            setHotelesConHabitaciones(hotelesConHabitaciones);
+        } catch (error) {
+            console.error('Error al cargar hoteles y habitaciones:', error);
+        }
+    };
+
+    const iniciarCompra = (hotel, habitacion) => {
+        console.log("Datos de la habitación:", habitacion);
+        navigate('/comprahospedaje', { state: { hotelDetails: hotel, roomDetails: habitacion } });
     };
 
     return (
@@ -29,30 +54,37 @@ const HospedajesDisponibles = () => {
             <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
-                    Hospedajes Disponibles
+                    Hoteles y Habitaciones Disponibles
                 </Typography>
                 <Grid container spacing={4}>
-                    {hospedajes.map((hospedaje, index) => (
-                        <Grid item key={hospedaje.id} xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    image={`https://source.unsplash.com/random?hotel&sig=${index}`}
-                                    alt="Imagen del hotel"
-                                />
-                                <CardContent>
-                                    <Typography variant="h5" component="div">{hospedaje.nombre}</Typography>
-                                    <Typography>{hospedaje.descripcion}</Typography>
-                                    <Typography>{hospedaje.precio}</Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Button size="small" onClick={() => verDetalles(hospedaje.id)}>Ver Detalles</Button>
-                                    <Button size="small" color="primary" onClick={() => navigate('/comprahospedaje', { state: { hospedaje } })}>Comprar</Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
+                    {hotelesConHabitaciones.map((hotel) =>
+                        hotel.habitaciones.map((habitacion, index) => (
+                            <Grid item key={index} xs={12} sm={6} md={4}>
+                                <Card>
+                                   
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        image={`https://source.unsplash.com/random?hotelRoom&sig=${index}`}
+                                        alt={`Habitación ${habitacion.numero_habitacion}`}
+                                    />
+                                    <CardContent>
+                                        <Typography variant="h5" component="div">
+                                            {hotel.nombre} - Habitación {habitacion.numero_habitacion}
+                                        </Typography>
+                                        <Typography>Capacidad: {habitacion.capacidad_personas} personas</Typography>
+                                        <Typography>Precio por noche: ${habitacion.precioxnoche}</Typography>
+                                        <Typography>Valoración: {habitacion.valuacion} estrellas</Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                    <Button size="small" onClick={() => iniciarCompra(hotel, habitacion)}>
+                                        Comprar
+                                    </Button>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))
+                    )}
                 </Grid>
             </Container>
             <Footer />
@@ -61,3 +93,7 @@ const HospedajesDisponibles = () => {
 };
 
 export default HospedajesDisponibles;
+
+
+
+
