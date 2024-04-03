@@ -19,6 +19,7 @@ const Header = () => {
                 <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
                 <Button color="inherit" onClick={() => navigate('/afiliados')}>Hoteles y Aereolineas Afiliados</Button>
                 {user && <Button color="inherit" onClick={() => navigate('/userprofile')}>Perfil</Button>}
+                {user && <Button color="inherit" onClick={() => navigate('/reservations')}>Lista de Reservas</Button>}
             </Toolbar>
         </AppBar>
     );

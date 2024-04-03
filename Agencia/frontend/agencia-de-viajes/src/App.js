@@ -21,6 +21,7 @@ import PrivateRoute from './PrivateRoute';
 import PaquetesDisponibles from './PaquetesDisponibles';
 import CompraPaquete from './CompraPaquete';
 import AfiliadosComponent from './AfiliadosComponent';
+import UserReservationsList from './UserReservationsList';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/aboutus" element={<AboutUs />} />
             <Route path="/afiliados" element={<AfiliadosComponent />} />
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+            <Route path="/reservations" element={<PrivateRoute><UserReservationsList /></PrivateRoute>} />
             <Route path="/useradministration" element={<PrivateRoute><UserAdministration /></PrivateRoute>} />
             <Route path="/hospedajes-disponibles" element={<PrivateRoute><HospedajesDisponibles /></PrivateRoute>} />
             <Route path="/vuelos-disponibles" element={<PrivateRoute><VuelosDisponibles /></PrivateRoute>} />
