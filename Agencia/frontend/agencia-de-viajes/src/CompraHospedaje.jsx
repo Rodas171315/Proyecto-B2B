@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Container, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Typography, Button, Container, TextField, Card, CardContent, Dialog, CardMedia, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import Header from './Header'; 
 import Footer from './Footer'; 
 import { useUser } from './UserContext';
@@ -87,6 +87,12 @@ const CompraHospedaje = () => {
             <Header />
             <Container maxWidth="sm" sx={{ mt: 4 }}>
                 <Card>
+                <CardMedia
+                                        component="img"
+                                        height="140"
+                                        image={`https://source.unsplash.com/random?hotelRoom&sig=`}
+                                        alt={`Habitación `}
+                                    />
                     <CardContent>
                         <Typography variant="h5" component="h2">Reserva de Hospedaje</Typography>
                         <Typography variant="body1">Hotel: {hotelDetails.nombre}</Typography>

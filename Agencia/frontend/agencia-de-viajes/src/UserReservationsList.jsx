@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Card, CardContent, Typography } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, CardMedia } from '@mui/material';
 import { useUser } from './UserContext';
 import Header from './Header'; 
 import Footer from './Footer'; 
@@ -54,9 +54,15 @@ const UserReservationsList = () => {
                 </Typography>
                 {reservations.length > 0 ? (
                     <Grid container spacing={4}>
-                    {reservations.map((reservation) => (
+                    {reservations.map((reservation, index) => (
                         <Grid item xs={12} sm={6} md={4} key={reservation.idReserva}>
                         <Card>
+                        <CardMedia
+                            component="img"
+                            height="140"
+                            image={`https://source.unsplash.com/random?hotelRoom&sig=${index}`}
+                            alt={`Habitación`}
+                        />
                             <CardContent>
                             <Typography variant="h6" gutterBottom>
                                 {reservation.nombreHotel}
