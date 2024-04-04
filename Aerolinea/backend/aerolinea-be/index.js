@@ -13,7 +13,7 @@ dotenv.config();
 
 //CORS
 const corsOptions = {
-    origin:'http://localhost:5173', 
+    origin:''+process.env.FRONTEND_URL, 
     credentials:true,   //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
@@ -22,9 +22,9 @@ app.get("/", (req,res) => {
     res.send("Welcome to Express Backend");
 });
 
-app.listen(8800, () => {
+app.listen(process.env.BACKEND_PORT, () => {
     connect();
-    console.log("Connected to backend on http://localhost:8800.");
+    console.log("Connected to backend on "+process.env.BACKEND_URL);
 });
 
 const connect = async () => {
@@ -38,6 +38,7 @@ const connect = async () => {
 
 mongoose.connection.on("disconnected", () => {
     console.log("mongoDB disconnected!");
+    connect();
 });
 
 //middlewares
