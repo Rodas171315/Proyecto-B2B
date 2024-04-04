@@ -1,22 +1,22 @@
 <script setup>
-import axios from 'axios'
-import { ref, onMounted } from 'vue'
-import { confirmation } from '../../functions'
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { confirmation, fechayhoraFormateada } from '../../functions';
 
 onMounted(() => {
-    getVuelos()
-})
-const vuelos = ref([])
-const load = ref(false)
+    getVuelos();
+});
+const vuelos = ref([]);
+const load = ref(false);
 const getVuelos = async () => {
     await axios
-        .get('http://localhost:8800/vuelos')
-        .then((response) => (vuelos.value = response.data))
-    load.value = true
-}
+        .get(import.meta.env.VITE_BACKEND_URL + '/vuelos')
+        .then((response) => (vuelos.value = response.data));
+    load.value = true;
+};
 const deleteVuelo = (id) => {
-    confirmation(id, 'http://localhost:8800/vuelos/' + id, '/vuelos')
-}
+    confirmation(id, import.meta.env.VITE_BACKEND_URL + '/vuelos/' + id, '/vuelos');
+};
 </script>
 <template>
     <div class="row">
@@ -42,7 +42,7 @@ const deleteVuelo = (id) => {
                             <th>#</th>
                             <th>Origen</th>
                             <th>Destino</th>
-                            <th>Fecha de salida</th>
+                            <th>Fecha y hora de salida</th>
                             <th>Precio</th>
                             <th>Valuacion</th>
                         </tr>
@@ -52,7 +52,7 @@ const deleteVuelo = (id) => {
                             <td>{{ i + 1 }}</td>
                             <td>{{ vuelo.ciudad_origen }}</td>
                             <td>{{ vuelo.ciudad_destino }}</td>
-                            <td>{{ vuelo.fecha_salida }}</td>
+                            <td>{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</td>
                             <td>Q{{ vuelo.precio }}</td>
                             <td>{{ vuelo.valuacion }}</td>
                             <td>

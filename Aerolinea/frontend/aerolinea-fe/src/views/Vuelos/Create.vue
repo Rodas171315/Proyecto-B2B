@@ -1,20 +1,21 @@
 <script setup>
-import { ref, nextTick } from 'vue'
-import { sendRequest } from '../../functions'
+import { ref, nextTick } from 'vue';
+import { sendRequest, fechayhoraFormateada } from '../../functions';
 
-const form = ref({ ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '' })
-const ciudad_origenInput = ref('')
-const ciudad_destinoInput = ref('')
-const fecha_salidaInput = ref('')
-const precioInput = ref('')
+const form = ref({ ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '' });
+const ciudad_origenInput = ref('');
+const ciudad_destinoInput = ref('');
+const fecha_salidaInput = ref('');
+const precioInput = ref('');
 const save = () => {
-    sendRequest('POST', form.value, 'http://localhost:8800/vuelos', '')
-    form.value.ciudad_origen = ''
-    form.value.ciudad_destino = ''
-    form.value.fecha_salida = ''
-    form.value.precio = ''
-    nextTick(() => ciudad_origenInput.value.focus())
-}
+    form.value.fecha_salida = fechayhoraFormateada(form.value.fecha_salida, 'create');
+    sendRequest('POST', form.value, import.meta.env.VITE_BACKEND_URL + '/vuelos', '');
+    form.value.ciudad_origen = '';
+    form.value.ciudad_destino = '';
+    form.value.fecha_salida = '';
+    form.value.precio = '';
+    nextTick(() => ciudad_origenInput.value.focus());
+};
 </script>
 <template>
     <div class="row mt-5">
@@ -50,18 +51,24 @@ const save = () => {
                                 ref="ciudad_destinoInput"
                             />
                         </div>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">
-                                <i class="fa-solid fa-calendar-days"></i>
-                            </span>
-                            <input
-                                type="datetime-local"
-                                v-model="form.fecha_salida"
-                                placeholder="Fecha de salida"
-                                class="form-control"
-                                required
-                                ref="fecha_salidaInput"
-                            />
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </span>
+                                <input
+                                    type="datetime-local"
+                                    v-model="form.fecha_salida"
+                                    placeholder="Fecha de salida"
+                                    class="form-control"
+                                    required
+                                    ref="fecha_salidaInput"
+                                    aria-describedby="fecha_salidaHelpBlock"
+                                />
+                            </div>
+                            <div id="fecha_salidaHelpBlock" class="form-text">
+                                Fecha y hora de salida del vuelo
+                            </div>
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">
@@ -77,7 +84,7 @@ const save = () => {
                             />
                         </div>
                         <div class="d-grid col-10 mx-auto">
-                            <button class="btn btn-dark">
+                            <button class="btn btn-success">
                                 <i class="fa-solid fa-save"></i> Guardar
                             </button>
                         </div>
