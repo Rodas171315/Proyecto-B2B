@@ -4,6 +4,7 @@ import { Typography, Button, Container, TextField, Card, CardContent, Dialog, Ca
 import Header from './Header'; 
 import Footer from './Footer'; 
 import { useUser } from './UserContext';
+import emailjs from 'emailjs-com';
 
 const CompraHospedaje = () => {
     const navigate = useNavigate();
@@ -70,6 +71,22 @@ const CompraHospedaje = () => {
 
             if (responseReserva.ok) {
                 console.log('Reserva realizada con éxito');
+    
+               
+                const templateParams = {
+                    to_name: user.primer_nombre, 
+                    to_email: user.email, 
+                };
+    
+                
+                emailjs.send('service_97sfyyu', 'template_vt8izap', templateParams, 'JuvkFpFUkVC3f6giZ')
+                    .then((result) => {
+                        console.log('Correo enviado exitosamente', result.text);
+                    }, (error) => {
+                        console.log('Error al enviar correo', error.text);
+                    });
+    
+                
                 setOpenDialog(true);
             } else {
                 const errorText = await responseReserva.text();
