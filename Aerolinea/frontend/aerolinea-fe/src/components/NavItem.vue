@@ -38,6 +38,15 @@ const authStore = useAuthStore();
                     <li class="nav-item">
                         <RouterLink to="/reports" class="nav-link">Reportes</RouterLink>
                     </li>
+                    <li class="nav-item">
+                        <RouterLink to="/register" class="nav-link">Registrarse</RouterLink>
+                    </li>
+                    <li class="nav-item">
+                        <RouterLink to="/login" class="nav-link">Iniciar Sesión</RouterLink>
+                    </li>
+                    <li class="nav-item">
+                        <RouterLink to="/perfil" class="nav-link">Perfil</RouterLink>
+                    </li>
                 </ul>
                 <ul class="navbar-nav me-2 mb-2 mb-lg-0">
                     <li class="nav-item px-lg-5">

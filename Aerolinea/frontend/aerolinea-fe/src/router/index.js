@@ -29,6 +29,10 @@ const router = createRouter({
             component: () => import('../views/Register.vue'),
         },
         {
+            path: '/perfil',
+            name: 'perfil',
+            component: () => import('../views/Perfil.vue'),        },
+        {
             path: '/vuelos',
             name: 'vuelos',
             component: () => import('../views/Vuelos/Index.vue'),
