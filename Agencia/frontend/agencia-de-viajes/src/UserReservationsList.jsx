@@ -72,6 +72,7 @@ const UserReservationsList = () => {
                             <Typography color="textSecondary">Check-out: {reservation.fechaSalida}</Typography>
                             <Typography color="textSecondary">Noches: {calculateNights(reservation.fechaIngreso, reservation.fechaSalida)}</Typography>
                             <Typography color="textSecondary">Total: ${reservation.totalReserva}</Typography>
+                            <Typography color="textSecondary">Estado: {reservation.estadoReserva}</Typography>
                             </CardContent>
                         </Card>
                         </Grid>

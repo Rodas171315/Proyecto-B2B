@@ -22,6 +22,7 @@ import PaquetesDisponibles from './PaquetesDisponibles';
 import CompraPaquete from './CompraPaquete';
 import AfiliadosComponent from './AfiliadosComponent';
 import UserReservationsList from './UserReservationsList';
+import AllReservationsList from './AllReservationsList';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/afiliados" element={<AfiliadosComponent />} />
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             <Route path="/reservations" element={<PrivateRoute><UserReservationsList /></PrivateRoute>} />
+            <Route path="/allreservations" element={<PrivateRoute><AllReservationsList /></PrivateRoute>} />
             <Route path="/useradministration" element={<PrivateRoute><UserAdministration /></PrivateRoute>} />
             <Route path="/hospedajes-disponibles" element={<PrivateRoute><HospedajesDisponibles /></PrivateRoute>} />
             <Route path="/vuelos-disponibles" element={<PrivateRoute><VuelosDisponibles /></PrivateRoute>} />
