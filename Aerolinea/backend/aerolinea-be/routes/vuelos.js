@@ -1,5 +1,5 @@
 import express from "express";
-import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos } from "../controllers/vuelo.js";
+import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos, getFilteredVuelos } from "../controllers/vuelo.js";
 
 const router = express.Router();
 
@@ -12,10 +12,13 @@ router.put("/:id", updateVuelo);
 //DELETE
 router.delete("/:id", deleteVuelo);
 
-//GET
+//GET FILTROS
+router.get('/filtered', getFilteredVuelos); // Mover esta línea aquí
+
+//GET UN VUELO POR ID
 router.get("/:id", getVuelo);
 
-//GET ALL
+//GET TODOS LOS VUELOS
 router.get("/", getVuelos);
 
 export default router;

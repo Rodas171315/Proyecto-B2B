@@ -49,3 +49,54 @@ export const getVuelos = async (req, res, next) => {
         next(err);
     }
 };
+
+
+
+export const getFilteredVuelos = async (req, res, next) => {
+    let query = {};
+
+    const { ciudad_origen, ciudad_destino, fecha_salida } = req.query;
+
+    if (ciudad_origen) query.ciudad_origen = ciudad_origen;
+    if (ciudad_destino) query.ciudad_destino = ciudad_destino;
+    if (fecha_salida) {
+        // Aquí asumimos que quieres buscar vuelos en una fecha específica sin tener en cuenta la hora
+        let fechaInicio = new Date(fecha_salida);
+        let fechaFin = new Date(fecha_salida);
+        fechaFin.setDate(fechaFin.getDate() + 1);
+
+        query.fecha_salida = {
+            $gte: fechaInicio,
+            $lt: fechaFin
+        };
+    }
+
+    try {
+        const vuelos = await Vuelo.find(query);
+        res.status(200).json(vuelos);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const filtrarVuelos = async (req, res) => {
+    try {
+      const { ciudad_origen, ciudad_destino, fecha_salida } = req.query;
+      const query = {};
+  
+      if (ciudad_origen) query.ciudad_origen = ciudad_origen;
+      if (ciudad_destino) query.ciudad_destino = ciudad_destino;
+      if (fecha_salida) query.fecha_salida = new Date(fecha_salida);
+  
+      const vuelos = await Vuelo.find(query);
+      res.status(200).json(vuelos);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+  // http://localhost:8800/vuelos/filtered?ciudad_origen=valor1&ciudad_destino=valor2&fecha_salida=fecha
+
+  // ejemplo para agencia: http://localhost:8800/vuelos/filtered?ciudad_origen=Guatemala&ciudad_destino=Bogot%C3%A1&fecha_salida=2024-03-23
+
+
