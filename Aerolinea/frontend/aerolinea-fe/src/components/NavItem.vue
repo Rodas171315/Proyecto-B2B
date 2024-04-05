@@ -39,6 +39,9 @@ const authStore = useAuthStore();
                         <RouterLink to="/reports" class="nav-link">Reportes</RouterLink>
                     </li>
                     <li class="nav-item">
+                        <RouterLink to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</RouterLink>
+                    </li>
+                    <li class="nav-item">
                         <RouterLink to="/register" class="nav-link">Registrarse</RouterLink>
                     </li>
                     <li class="nav-item">
@@ -46,6 +49,9 @@ const authStore = useAuthStore();
                     </li>
                     <li class="nav-item">
                         <RouterLink to="/perfil" class="nav-link">Perfil</RouterLink>
+                    </li>
+                    <li class="nav-item">
+                        <RouterLink to="/reservas" class="nav-link">Reservaciones</RouterLink>
                     </li>
                 </ul>
                 <ul class="navbar-nav me-2 mb-2 mb-lg-0">
