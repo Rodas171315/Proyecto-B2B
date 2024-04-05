@@ -130,13 +130,14 @@ const UserAdministration = () => {
                     autoFocus
                     margin="dense"
                     id="password"
-                    label="Contrasena"
-                    type="text"
+                    label="Contraseña"
+                    type="password" 
                     fullWidth
                     name="password"
                     value={editFormData.password || ''}
                     onChange={handleEditFormChange} 
                 />
+
                 <TextField
                     autoFocus
                     margin="dense"

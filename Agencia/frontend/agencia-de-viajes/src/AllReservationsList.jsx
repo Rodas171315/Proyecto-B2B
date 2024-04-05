@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Grid, Card, CardContent, Typography, Button, CardMedia } from '@mui/material';
 import Header from './Header'; 
 import Footer from './Footer'; 
+import emailjs from 'emailjs-com';
 
 const AllReservationsList = () => {
   const [reservations, setReservations] = useState([]);
@@ -47,6 +48,27 @@ const AllReservationsList = () => {
         headers: { 'Content-Type': 'application/json' },
       });
       if (response.ok) {
+        
+        const reservationDetails = reservations.find(res => res.idReserva === idReserva);
+        const userDetails = agencyUsers.find(user => user.id === reservationDetails.idUsuario);
+        
+        
+        const emailParams = {
+          to_name: userDetails.nombre, 
+          to_email: userDetails.email, 
+          hotel_name: reservationDetails.nombreHotel,
+          check_in_date: reservationDetails.fechaIngreso,
+          check_out_date: reservationDetails.fechaSalida,
+        };
+  
+        
+        emailjs.send('service_521uswb', 'template_78rxtg3', emailParams, 'BaaC73U6PfMwmi5uk')
+          .then((result) => {
+              console.log('Email sent:', result.text);
+          }, (error) => {
+              console.error('Email send error:', error.text);
+          });
+  
         alert('Reserva cancelada con éxito');
         fetchAgencyUsersAndReservations(); 
       } else {
@@ -57,7 +79,6 @@ const AllReservationsList = () => {
       alert('Error al cancelar la reserva');
     }
   };
-
   return (
     <div>
         <Header />
