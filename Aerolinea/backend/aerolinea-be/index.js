@@ -12,8 +12,15 @@ const app = express();
 dotenv.config();
 
 //CORS
+var whitelist = [process.env.FRONTEND_URL, process.env.FRONTEND_AGENCY_URL]
 const corsOptions = {
-    origin:''+process.env.FRONTEND_URL, 
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }, 
     credentials:true,   //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
