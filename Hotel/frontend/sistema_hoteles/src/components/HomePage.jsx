@@ -144,7 +144,7 @@ const HomePage = () => {
       {hotels.length > 0 ? (
   hotels.map((hotel) => (
     <React.Fragment key={hotel.id_hotel}>
-      <Col md={8} className="mt-4">
+      <Col md={10} className="mt-4">
         <h3>Hotel: {hotel.nombre}</h3>
         <p>{hotel.ciudad}, {hotel.pais}</p>
         <p>Dirección: {hotel.direccion}</p>
@@ -164,7 +164,7 @@ const HomePage = () => {
 
       </Col>
               {hotel.rooms && hotel.rooms.map((room) => (
-                <Col key={room.id_habitacion} md={4}>
+                <Col key={room.id_habitacion} md={6}>
                   <Card className="mb-3">
                   <Card.Img variant="top" src={room.imagenUrl || defaultRoomImage} />
                     <Card.Body>

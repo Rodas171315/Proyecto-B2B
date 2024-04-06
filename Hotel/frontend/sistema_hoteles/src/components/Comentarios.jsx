@@ -13,14 +13,37 @@ function Comentarios({ idHabitacion }) {
     fetchComentarios();
   }, [idHabitacion]);
 
+  const estructurarComentarios = (comentarios) => {
+    //  map almacena la referencia de cada comentario por su ID
+    const comentariosMap = comentarios.reduce((map, comentario) => {
+      map[comentario.idComentario] = { ...comentario, respuestas: [] };
+      return map;
+    }, {});
+
+    //  bucle asigna cada comentario a su respectivo padre
+    comentarios.forEach(comentario => {
+      if (comentario.idComentarioPadre) {
+        const padre = comentariosMap[comentario.idComentarioPadre];
+        if (padre) {
+          padre.respuestas.push(comentariosMap[comentario.idComentario]);
+        }
+      }
+    });
+
+    // Filtra solo los comentarios de nivel superior
+    return Object.values(comentariosMap).filter(comentario => !comentario.idComentarioPadre);
+  };
+
   const fetchComentarios = async () => {
     try {
       console.log(`Cargando comentarios para la habitación ${idHabitacion}`);
       const response = await fetch(`http://localhost:8080/comentarios/por-habitacion/${idHabitacion}`);
       if (response.ok) {
         const data = await response.json();
-        setComentarios(data);
-        console.log("Comentarios cargados exitosamente:", data);
+        // Se estructuran los comentarios una sola vez
+        const comentariosEstructurados = estructurarComentarios(data);
+        setComentarios(comentariosEstructurados); // Utiliza solo comentarios estructurados
+        console.log("Comentarios estructurados exitosamente:", comentariosEstructurados);
       } else {
         console.error('Error al recuperar los comentarios', response);
       }
@@ -44,8 +67,6 @@ function Comentarios({ idHabitacion }) {
       idComentarioPadre
     };
 
-    console.log("Enviando comentario:", comentarioData);
-
     try {
       const response = await fetch('http://localhost:8080/comentarios', {
         method: 'POST',
@@ -58,7 +79,7 @@ function Comentarios({ idHabitacion }) {
         setTextoComentario('');
         setRating(1);
         setIdComentarioPadre(null);
-        fetchComentarios();
+        fetchComentarios(); // Refresca los comentarios después de agregar uno nuevo
       } else {
         console.error('Error al crear el comentario', response);
       }
@@ -67,64 +88,27 @@ function Comentarios({ idHabitacion }) {
     }
   };
 
-  const responderAComentario = (idComentario) => {
-    setIdComentarioPadre(idComentario);
+  const renderComentarios = (comentariosParaRenderizar, nivel = 0) => {
+    const hue = 50; 
+    const saturation = 30 - (nivel * 5); 
+    const lightness = 90 - (nivel * 15); 
+
+    return comentariosParaRenderizar.map(comentario => (
+      <div key={comentario.idComentario} style={{ marginLeft: `${nivel * 20}px`, marginTop: '10px' }}>
+        <Card style={{ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` }}>
+          <Card.Body>
+            <Card.Title>{comentario.nombreUsuario} - {comentario.rating} estrellas</Card.Title>
+            <Card.Text>{comentario.textoComentario}</Card.Text>
+            <div style={{ fontSize: '0.8em', color: '#666' }}>
+              Publicado: {new Date(comentario.fechaComentario).toLocaleString()}
+            </div>
+            <Button variant="secondary" size="sm" onClick={() => setIdComentarioPadre(comentario.idComentario)}>Responder</Button>
+          </Card.Body>
+        </Card>
+        {comentario.respuestas && comentario.respuestas.length > 0 && renderComentarios(comentario.respuestas, nivel + 1)}
+      </div>
+    ));
   };
-
-
-  const mapComentarios = {};
-comentarios.forEach(comentario => {
-  if (comentario.idComentarioPadre) {
-    if (!mapComentarios[comentario.idComentarioPadre]) {
-      mapComentarios[comentario.idComentarioPadre] = [];
-    }
-    mapComentarios[comentario.idComentarioPadre].push(comentario);
-  }
-});
-
-
-
-
-
-const comentariosMap = {};
-comentarios.forEach(comentario => {
-  comentariosMap[comentario.idComentario] = {...comentario, respuestas: []};
-});
-
-//  aca se asigna los comentarios a su padre correspondiente
-comentarios.forEach(comentario => {
-  if (comentario.idComentarioPadre) {
-    if (comentariosMap[comentario.idComentarioPadre]) {
-      comentariosMap[comentario.idComentarioPadre].respuestas.push(comentario);
-    }
-  }
-});
-
-const comentariosDeNivelSuperior = Object.values(comentariosMap).filter(comentario => !comentario.idComentarioPadre);
-
-const renderComentarios = (comentariosParaRenderizar, nivel = 0) => {
-  const baseColor = 200; 
-  const colorDifuminado = baseColor - (nivel * 30); 
-
-  return comentariosParaRenderizar.map(comentario => (
-    <div key={comentario.idComentario} style={{ marginLeft: `${nivel * 20}px`, marginTop: '10px' }}>
-      <Card style={{ backgroundColor: `hsla(${colorDifuminado}, 100%, 90%, 0.5)` }}>
-        <Card.Body>
-          <Card.Title>{comentario.nombreUsuario} - {comentario.rating} estrellas</Card.Title>
-          <Card.Text>{comentario.textoComentario}</Card.Text>
-          {nivel > 0 && <div style={{ fontSize: '0.8em', color: '#666' }}>{comentario.idComentarioPadre}</div>}
-          <Button variant="secondary" size="sm" onClick={() => setIdComentarioPadre(comentario.idComentario)}>Responder</Button>
-        </Card.Body>
-      </Card>
-      {/* Renderizar de manera recursiva si hay respuestas */}
-      {comentario.respuestas && comentario.respuestas.length > 0 && renderComentarios(comentario.respuestas, nivel + 1)}
-    </div>
-  ));
-};
-  
-
-
-
 
 
   return (
@@ -145,14 +129,25 @@ const renderComentarios = (comentariosParaRenderizar, nivel = 0) => {
               <option>5</option>
             </Form.Control>
           </Form.Group>
-          {idComentarioPadre && (
-            <div>Respondiendo al comentario #{idComentarioPadre}</div>
+
+                  {/* Comentado para no mostrar a qué comentario se está respondiendo */}
+        {/* {idComentarioPadre && (
+          <div>Respondiendo al comentario #{idComentarioPadre}</div>
+        )} */}
+
+          {/* Muestra un botón diferente si el usuario está respondiendo a un comentario */}
+          {idComentarioPadre ? (
+            <>
+              <div>Respondiendo al comentario</div>
+              <Button variant="success" type="submit">Enviar Respuesta</Button>
+            </>
+          ) : (
+            <Button variant="primary" type="submit">Enviar Comentario</Button>
           )}
-          <Button variant="primary" type="submit">Enviar Comentario</Button>
         </Form>
       </Row>
       <Row>
-      {renderComentarios(comentariosDeNivelSuperior)}
+        {renderComentarios(comentarios)}
       </Row>
     </Container>
   );
