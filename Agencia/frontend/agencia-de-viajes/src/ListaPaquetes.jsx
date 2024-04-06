@@ -36,6 +36,7 @@ const ListaPaquetes = () => {
             hotel: hotel.nombre, 
             habitacion: habitacion.tipo_habitacion, 
             precioH: habitacion.precioxnoche,
+            capacidad: habitacion.capacidad_personas,
             vuelo: `${vuelo.ciudad_origen} a ${vuelo.ciudad_destino}`,
             precioA: vuelo.precio,
             fecha: vuelo.fecha_salida,
@@ -72,6 +73,32 @@ const ListaPaquetes = () => {
     }
   };
   
+  const cancelarPaquete = async (idPaquete) => {
+    try {
+     
+      const response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
+        method: 'PUT', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        
+        body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
+      });
+      if (!response.ok) {
+        throw new Error('No se pudo cancelar el paquete.');
+      }
+      
+      const updatedPaquetes = paquetes.map(paquete => 
+        paquete.idPaquete === idPaquete ? { ...paquete, estadoPaquete: 'Cancelado' } : paquete
+      );
+      setPaquetes(updatedPaquetes);
+      alert('Paquete cancelado con éxito.');
+    } catch (error) {
+      console.error('Error al cancelar el paquete:', error);
+      alert('Error al cancelar el paquete. Por favor, intenta de nuevo.');
+    }
+  };
+  
 
   return (
     <div>
@@ -101,6 +128,9 @@ const ListaPaquetes = () => {
                                 Habitación: {paquete.habitacion}
                               </Typography>
                               <Typography>
+                                Capacidad: {paquete.capacidad}
+                              </Typography>
+                              <Typography>
                                 Precio por Noche: ${paquete.precioH}
                               </Typography>
                               <Typography>
@@ -108,6 +138,9 @@ const ListaPaquetes = () => {
                               </Typography>
                               <Typography>
                                 Descripcion: {paquete.descripcion}
+                              </Typography>
+                              <Typography>
+                                Estado del paquete: {paquete.estadoPaquete}
                               </Typography>
                               <Typography>
                                 Precio de vuelo: ${paquete.precioA}
@@ -120,7 +153,11 @@ const ListaPaquetes = () => {
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
-
+                            {paquete.estadoPaquete === 'Disponible' && (
+                              <Button size="small" color="secondary" onClick={() => cancelarPaquete(paquete.idPaquete)}>
+                                Cancelar
+                              </Button>
+                            )}
                             </CardActions>
                         </Card>
                     </Grid>

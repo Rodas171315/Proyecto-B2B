@@ -38,17 +38,22 @@ public class PaquetesService {
     }
 
     @PUT
-    @Path("{id}")
+    @Path("/{id}")
     @Transactional
-    public Response updatePaquete(@PathParam("id") Long id, Paquetes paqueteUpdate) {
-        Paquetes paquete = paquetesRepository.findById(id);
-        if (paquete != null) {
-            
-            return Response.ok(paquete).build();
+    public Response updateEstadoPaquete(@PathParam("id") Long id, Paquetes paquete) {
+        Paquetes paqueteExistente = paquetesRepository.findById(id);
+        if (paqueteExistente != null) {
+            paqueteExistente.setEstadoPaquete(paquete.getEstadoPaquete());
+            paquetesRepository.persist(paqueteExistente);
+            return Response.ok(paqueteExistente).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+    
+    
+    
+    
 
     @DELETE
     @Path("{id}")

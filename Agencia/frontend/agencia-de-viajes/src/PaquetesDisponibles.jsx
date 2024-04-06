@@ -90,6 +90,9 @@ const PaquetesDisponibles = () => {
                                 Descripcion: {paquete.descripcion}
                               </Typography>
                               <Typography>
+                                Estado del paquete: {paquete.estadoPaquete}
+                              </Typography>
+                              <Typography>
                                 Precio de vuelo: ${paquete.precioA}
                               </Typography>
                               <Typography>
@@ -97,8 +100,13 @@ const PaquetesDisponibles = () => {
                               </Typography>
                             </CardContent>
                             <CardActions>
-                                <Button size="small" onClick={() => navigate('/compra-paquete', { state: { paquete } })}>Comprar</Button>
+                                {paquete.estadoPaquete === 'Disponible' && (
+                                    <Button size="small" onClick={() => navigate('/compra-paquete', { state: { paquete } })}>
+                                        Comprar
+                                    </Button>
+                                )}
                             </CardActions>
+
                         </Card>
                     </Grid>
                 ))}

@@ -38,6 +38,7 @@ const SearchForm = () => {
     const [fechaCheckOut, setFechaCheckOut] = useState('');
     const [capacidadPersona, setCapacidadPersona] = useState(1);
 
+
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
@@ -111,21 +112,53 @@ const SearchForm = () => {
     
     const handleBuscarPaquetes = async () => {
         try {
-            const response = await fetch('http://localhost:8081/paquetes');
-            if (!response.ok) throw new Error('Error al buscar paquetes');
-            const paquetesEncontrados = await response.json();
-            
-            if (paquetesEncontrados.length === 0) {
-                console.log('No se encontraron paquetes disponibles.');
+            const resPaquetes = await fetch('http://localhost:8081/paquetes');
+            if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
+            let paquetesData = await resPaquetes.json();
+    
+            paquetesData = await Promise.all(paquetesData.map(async (paquete) => {
+                const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
+                    fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
+                    fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
+                    fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+                ]);
+    
+                const [hotel, habitacion, vuelo] = await Promise.all([
+                    hotelRes.json(),
+                    habitacionRes.json(),
+                    vueloRes.json(),
+                ]);
+    
+                return {
+                    ...paquete,
+                    hotel: hotel.nombre, 
+                    habitacion: habitacion.tipo_habitacion, 
+                    precioH: habitacion.precioxnoche,
+                    vuelo: `${vuelo.ciudad_origen} a ${vuelo.ciudad_destino}`,
+                    precioA: vuelo.precio,
+                    fecha: vuelo.fecha_salida,
+                };
+            }));
+    
+           
+            const paquetesFiltrados = paquetesData.filter(paquete =>
+                paquete.vuelo.includes(origen) && paquete.vuelo.includes(destino) 
+            );
+    
+            if (paquetesFiltrados.length === 0) {
+                setDialogMessage('No se encontraron paquetes disponibles con los criterios proporcionados.');
+                setOpenDialog(true);
             } else {
-                navigate('/paquetes-disponibles', { state: { paquetes: paquetesEncontrados } });
+                navigate('/paquetes-disponibles', { state: { paquetes: paquetesFiltrados } });
             }
         } catch (error) {
             console.error('Error al buscar paquetes:', error);
+            setDialogMessage('Ocurrió un error al buscar paquetes.');
+            setOpenDialog(true);
         }
     };
-      
-
+    
+    
     return (
         <Container>
             <Tabs value={tabValue} onChange={handleTabChange} centered>
@@ -349,7 +382,16 @@ const SearchForm = () => {
                     />
                     </Grid>
                     </Grid>
-                    
+                    <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                        <DialogTitle>Información</DialogTitle>
+                        <DialogContent>
+                            <Typography>{dialogMessage}</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpenDialog(false)}>Cerrar</Button>
+                        </DialogActions>
+                    </Dialog>
+
                     <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
                         Buscar Paquetes
                     </Button>

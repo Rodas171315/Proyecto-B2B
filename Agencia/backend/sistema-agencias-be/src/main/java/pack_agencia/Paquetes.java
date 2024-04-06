@@ -31,6 +31,9 @@ public class Paquetes {
     @Column(name = "ID_Vuelo", length = 500)
     private String idVuelo;
 
+    @Column(name = "estadoPaquete", nullable = false, length = 20)
+    private String estadoPaquete;
+
     
     public Long getIdPaquete() {
         return idPaquete;
@@ -56,6 +59,10 @@ public class Paquetes {
         return idVuelo;
     }
 
+    public String getEstadoPaquete() {
+        return estadoPaquete;
+    }
+
  
     public void setIdPaquete(Long idPaquete) {
         this.idPaquete = idPaquete;
@@ -79,5 +86,9 @@ public class Paquetes {
 
     public void setIdVuelo(String idVuelo) {
         this.idVuelo = idVuelo;
+    }
+
+    public void setEstadoPaquete(String estadoPaquete) {
+        this.estadoPaquete = estadoPaquete;
     }
 }
