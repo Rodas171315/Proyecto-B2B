@@ -82,7 +82,9 @@ public class ComentarioRecurso {
             dto.setTextoComentario(comentario.getTextoComentario());
             dto.setRating(comentario.getRating());
             dto.setFechaComentario(comentario.getFechaComentario());
-            
+            dto.setIdComentarioPadre(comentario.getIdComentarioPadre()); 
+
+
             Usuarios usuario = UsuarioRepositorio.findById(comentario.getIdUsuario());
             if (usuario != null) {
                 dto.setNombreUsuario(usuario.getPrimer_nombre());
@@ -102,6 +104,7 @@ public class ComentarioRecurso {
         comentario.setIdUsuario(comentarioDto.getIdUsuario());
         comentario.setTextoComentario(comentarioDto.getTextoComentario());
         comentario.setRating(comentarioDto.getRating());
+        comentario.setIdComentarioPadre(comentarioDto.getIdComentarioPadre()); 
         comentario.setFechaComentario(LocalDateTime.now()); // esto assume la fecha actual para el comentario
         comentarioRepositorio.persist(comentario);
         

@@ -11,6 +11,7 @@ public class ComentarioDTO {
     private Integer rating;
     private String nombreUsuario; 
     private String fechaComentario;
+    private Long idComentarioPadre;
 
     // Constructor vacío
     public ComentarioDTO() {}
@@ -72,4 +73,13 @@ public class ComentarioDTO {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.fechaComentario = (fechaComentario != null) ? fechaComentario.format(formatter) : null;
     }
+
+    public Long getIdComentarioPadre() {
+        return idComentarioPadre;
+    }
+
+    public void setIdComentarioPadre(Long idComentarioPadre) {
+        this.idComentarioPadre = idComentarioPadre;
+    }
+
 }
