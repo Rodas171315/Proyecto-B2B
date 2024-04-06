@@ -53,6 +53,9 @@ const authStore = useAuthStore();
                     <li class="nav-item">
                         <RouterLink to="/reservas" class="nav-link">Reservaciones</RouterLink>
                     </li>
+                    <li class="nav-item">
+                        <RouterLink to="/historialreservas" class="nav-link">Mis Reservas</RouterLink>
+                    </li>
                 </ul>
                 <ul class="navbar-nav me-2 mb-2 mb-lg-0">
                     <li class="nav-item px-lg-5">
