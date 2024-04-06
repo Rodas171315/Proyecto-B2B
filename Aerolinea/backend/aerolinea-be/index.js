@@ -23,7 +23,7 @@ const corsOptions = {
         }
     },
     */
-    origin: "*",
+    origin: "*",    //access-control-allow-origin:any
     credentials:true,   //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
