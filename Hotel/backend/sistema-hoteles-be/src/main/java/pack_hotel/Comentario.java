@@ -32,7 +32,7 @@ public class Comentario {
     private String texto_comentario;
 
     @Column(name = "RATING")
-    private Integer rating; // Cambiado a Integer para permitir nulos
+    private Integer rating; 
 
     @Column(name = "FECHA_COMENTARIO")
     private LocalDateTime fecha_comentario;
@@ -96,10 +96,6 @@ public class Comentario {
         this.id_comentario_padre = id_comentario_padre;
     }
 
-    
-
-
-    // Equals and hashCode methods
 
     @Override
     public boolean equals(Object o) {
@@ -128,4 +124,3 @@ public class Comentario {
                 '}';
     }
 }
-

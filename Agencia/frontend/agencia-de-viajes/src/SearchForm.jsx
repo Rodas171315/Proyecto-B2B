@@ -83,38 +83,27 @@ const SearchForm = () => {
     };
     
     const handleBuscarVuelos = async () => {
-        const criteriosBusqueda = {
-            origen, 
-            destino,
-            fechaIda,
-            fechaVuelta,
-            tipoViaje,
-            claseVuelo,
-        };
-
+        const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
+        const queryParams = new URLSearchParams({
+            ciudad_origen: origen,
+            ciudad_destino: destino,
+            fecha_salida: fechaIda
+        }).toString();
+        const fullURL = `${baseURL}?${queryParams}`;
+    
         try {
-            const response = await fetch('http://localhost:8081/static/vuelos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(criteriosBusqueda),
-            });
-
+            const response = await fetch(fullURL);
             if (!response.ok) throw new Error('No se pudieron encontrar vuelos con los criterios proporcionados.');
             const vuelosEncontrados = await response.json();
             
             if (vuelosEncontrados.length === 0) {
-                
                 setDialogMessage('No se encontraron vuelos disponibles con los criterios proporcionados.');
                 setOpenDialog(true);
             } else {
-                
                 navigate('/vuelos-disponibles', { state: { vuelos: vuelosEncontrados } });
             }
         } catch (error) {
             console.error(error);
-            
             setDialogMessage('Ocurrió un error al buscar vuelos.');
             setOpenDialog(true);
         }
@@ -294,6 +283,7 @@ const SearchForm = () => {
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
                 <Box sx={{ mt: 3 }}>
+                <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <TextField 
                         fullWidth 
@@ -310,6 +300,55 @@ const SearchForm = () => {
                         value={destino}
                         onChange={(e) => setDestino(e.target.value)} />
                 </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Fecha de Ida"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            value={fechaIda}
+                            onChange={(e) => setFechaIda(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Fecha de Vuelta"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            value={fechaVuelta}
+                            onChange={(e) => setFechaVuelta(e.target.value)}
+                            disabled={tipoViaje === 'sencillo'}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Clase</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="clase"
+                                name="clase-vuelo"
+                                value={claseVuelo}
+                                onChange={(e) => setClaseVuelo(e.target.value)}
+                            >
+                                <FormControlLabel value="economica" control={<Radio />} label="Económica" />
+                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutiva" />
+                                
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} >
+                    <TextField
+                        label="Numero de Pasajeros"
+                        type="number"
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        value={capacidadPersona}
+                        onChange={(e) => setCapacidadPersona(e.target.value)}
+                    />
+                    </Grid>
+                    </Grid>
                     
                     <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
                         Buscar Paquetes

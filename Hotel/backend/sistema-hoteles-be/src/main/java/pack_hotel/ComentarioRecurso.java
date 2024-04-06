@@ -64,7 +64,7 @@ public class ComentarioRecurso {
 
         comentarioExistente.setTextoComentario(comentario.getTextoComentario());
         comentarioExistente.setRating(comentario.getRating());
-        // Agregar aquí cualquier otro campo que necesite ser actualizado
+        
         comentarioRepositorio.persist(comentarioExistente);
 
         return Response.ok(comentarioExistente).build();
@@ -82,7 +82,9 @@ public class ComentarioRecurso {
             dto.setTextoComentario(comentario.getTextoComentario());
             dto.setRating(comentario.getRating());
             dto.setFechaComentario(comentario.getFechaComentario());
-            
+            dto.setIdComentarioPadre(comentario.getIdComentarioPadre()); 
+
+
             Usuarios usuario = UsuarioRepositorio.findById(comentario.getIdUsuario());
             if (usuario != null) {
                 dto.setNombreUsuario(usuario.getPrimer_nombre());
@@ -102,10 +104,11 @@ public class ComentarioRecurso {
         comentario.setIdUsuario(comentarioDto.getIdUsuario());
         comentario.setTextoComentario(comentarioDto.getTextoComentario());
         comentario.setRating(comentarioDto.getRating());
-        comentario.setFechaComentario(LocalDateTime.now()); // esto assume la fecha actual para el comentario
+        comentario.setIdComentarioPadre(comentarioDto.getIdComentarioPadre()); 
+        comentario.setFechaComentario(LocalDateTime.now()); 
         comentarioRepositorio.persist(comentario);
         
-        // Calcula el promedio de los ratings para la habitación y actualiza la valuación
+       
         actualizarValuacionHabitacion(comentario.getIdHabitacion());
 
         return Response.status(Response.Status.CREATED).entity(comentario).build();
@@ -119,7 +122,7 @@ public class ComentarioRecurso {
                                       .orElse(0.0);
         Habitaciones habitacion = HabitacionRepositorio.findById(idHabitacion);
         if (habitacion != null) {
-            habitacion.setValuacion((int) Math.round(promedio)); // Actualiza la valuación con el promedio
+            habitacion.setValuacion((int) Math.round(promedio)); 
             HabitacionRepositorio.persist(habitacion);
         }
     }

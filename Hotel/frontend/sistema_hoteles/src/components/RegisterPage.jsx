@@ -1,4 +1,4 @@
- import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import ReCAPTCHA from "react-google-recaptcha";
 import emailjs from 'emailjs-com'; 
@@ -56,18 +56,18 @@ const RegisterPage = () => {
       return;
     }
   
-    // Asegúrate de que las claves coincidan con la estructura esperada por el backend
+    
     const usuarioToSend = {
       email: user.email,
       password: user.password,
-      primerNombre: user.primer_nombre, // nombres de las propiedades  con el DTO
+      primerNombre: user.primer_nombre, 
       segundoNombre: user.segundo_nombre,
       primerApellido: user.primer_apellido,
       segundoApellido: user.segundo_apellido,
       fechaNacimiento: user.fecha_nacimiento,
       nacionalidad: user.nacionalidad,
       pasaporte: parseInt(user.pasaporte, 10),
-      rol: 2, // Rol estático como 2
+      rol: 2, 
       recaptchaToken: captchaToken,
     };
     
@@ -98,7 +98,7 @@ const RegisterPage = () => {
         to_email: user.email,
       };
 
-      // Enviar correo con emailjs
+      
       emailjs.send('service_db-dw', 'template_nzi1pho', templateParams, 'BLyjSRydByFGcVhN6')
         .then((result) => {
             console.log('Email successfully sent!', result.text);

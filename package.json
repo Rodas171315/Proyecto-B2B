@@ -3,6 +3,7 @@
     "emailjs-com": "^3.2.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
+    "react-google-recaptcha": "^3.1.0",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1"
   }

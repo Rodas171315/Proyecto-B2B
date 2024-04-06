@@ -23,6 +23,8 @@ import CompraPaquete from './CompraPaquete';
 import AfiliadosComponent from './AfiliadosComponent';
 import UserReservationsList from './UserReservationsList';
 import AllReservationsList from './AllReservationsList';
+import ListaPaquetes from './ListaPaquetes';
+import CrearPaquete from './CrearPaquete';
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
             <Route path="/aboutus" element={<AboutUs />} />
             <Route path="/afiliados" element={<AfiliadosComponent />} />
             <Route path="/userprofile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+            <Route path="/lista-paquetes" element={<PrivateRoute><ListaPaquetes /></PrivateRoute>} />
+            <Route path="/crear-paquete" element={<PrivateRoute><CrearPaquete /></PrivateRoute>} />
             <Route path="/reservations" element={<PrivateRoute><UserReservationsList /></PrivateRoute>} />
             <Route path="/allreservations" element={<PrivateRoute><AllReservationsList /></PrivateRoute>} />
             <Route path="/useradministration" element={<PrivateRoute><UserAdministration /></PrivateRoute>} />

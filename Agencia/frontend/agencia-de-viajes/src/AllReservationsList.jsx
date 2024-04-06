@@ -107,9 +107,11 @@ const AllReservationsList = () => {
                         <Typography color="textSecondary">Total: ${reservation.totalReserva}</Typography>
                         <Typography color="textSecondary">Usuario: {reservation.idUsuario}</Typography>
                         <Typography color="textSecondary">Reserva: {reservation.estadoReserva}</Typography>
-                        <Button color="secondary" onClick={() => cancelarReserva(reservation.idReserva)}>
-                            Cancelar Reserva
-                        </Button>
+                        {reservation.estadoReserva !== "Cancelada" && (
+                          <Button color="secondary" onClick={() => cancelarReserva(reservation.idReserva)}>
+                              Cancelar Reserva
+                          </Button>
+                        )}
                         </CardContent>
                     </Card>
                     </Grid>
