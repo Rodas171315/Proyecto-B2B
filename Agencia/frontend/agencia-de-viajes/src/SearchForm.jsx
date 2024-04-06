@@ -34,10 +34,9 @@ const SearchForm = () => {
     const [origen, setOrigen] = useState('');
     const [paisSeleccionado, setPaisSeleccionado] = useState('');
     const [paises, setPaises] = useState([]);
-
-
-
-
+    const [fechaCheckIn, setFechaCheckIn] = useState('');
+    const [fechaCheckOut, setFechaCheckOut] = useState('');
+    const [capacidadPersona, setCapacidadPersona] = useState(1);
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
@@ -82,10 +81,6 @@ const SearchForm = () => {
             setOpenDialog(true);
         }
     };
-    
-
-
-    
     
     const handleBuscarVuelos = async () => {
         const criteriosBusqueda = {
@@ -151,7 +146,7 @@ const SearchForm = () => {
             </Tabs>
             <TabPanel value={tabValue} index={0}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
                             <InputLabel>País</InputLabel>
                             <Select
@@ -165,8 +160,38 @@ const SearchForm = () => {
                             </Select>
                         </FormControl>
                     </Grid>
-                </Grid>
                 
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Fecha de Check-In"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={fechaCheckIn}
+                    onChange={(e) => setFechaCheckIn(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Fecha de Check-Out"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={fechaCheckOut}
+                    onChange={(e) => setFechaCheckOut(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Capacidad de Persona"
+                    type="number"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={capacidadPersona}
+                    onChange={(e) => setCapacidadPersona(e.target.value)}
+                />
+                </Grid>
+                </Grid>
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                     <DialogTitle>Información</DialogTitle>
                     <DialogContent>
