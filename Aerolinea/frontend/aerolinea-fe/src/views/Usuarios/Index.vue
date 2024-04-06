@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ref, onMounted, nextTick } from 'vue';
 import { confirmation, sendRequest, fechaFormateada } from '../../functions';
 import Modal from '@/components/ModalItem.vue';
+import Paginate from 'vuejs-paginate-next';
 
 onMounted(() => {
     getUsuarios(1);
@@ -98,7 +99,6 @@ const save = async () => {
         );
         if (res == true) {
             nextTick(() => close.value.click());
-            getUsuarios(1);
         }
     }
 };
@@ -181,6 +181,13 @@ const save = async () => {
                         </tr>
                     </tbody>
                 </table>
+                <Paginate
+                    :page-count="rows"
+                    :click-handler="getUsuarios"
+                    :prev-text="'Prev'"
+                    :next-text="'Next'"
+                    :container-class="'pagination'"
+                ></Paginate>
             </div>
         </div>
     </div>
@@ -193,7 +200,7 @@ const save = async () => {
                     </span>
                     <input
                         autofocus
-                        type="text"
+                        type="email"
                         v-model="form.email"
                         placeholder="Email"
                         class="form-control"
@@ -290,6 +297,9 @@ const save = async () => {
                     </button>
                 </div>
             </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-dark" ref="close" data-bs-dismiss="modal">Cerrar</button>
         </div>
     </Modal>
 </template>
