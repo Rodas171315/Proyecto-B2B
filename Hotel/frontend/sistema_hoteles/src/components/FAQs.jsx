@@ -113,11 +113,12 @@ function FAQs() {
                       <p>{faq.pregunta}</p>
                       <p>{faq.respuesta}</p>
                       {isAdmin() && (
-                          <>
-                              <button onClick={() => setFaqEdit(faq)}>Edit</button>
-                              <button onClick={() => deleteFaq(faq.id)}>Delete</button>
-                          </>
-                      )}
+  <>
+    <button onClick={() => setFaqEdit(faq)} className="btn btn-primary me-2">Edit</button>
+    <button onClick={() => deleteFaq(faq.id)} className="btn btn-danger">Delete</button>
+  </>
+)}
+
                   </div>
               ))}
               {isAdmin() && (
