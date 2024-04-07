@@ -5,7 +5,7 @@
       <div class="card-body">
         <p class="card-text"><strong>Origen:</strong> {{ vuelo.ciudad_origen }}</p>
         <p class="card-text"><strong>Destino:</strong> {{ vuelo.ciudad_destino }}</p>
-        <p class="card-text"><strong>Fecha de Salida:</strong> {{ formatFechaSalida(vuelo.fecha_salida) }}</p>
+        <p class="card-text"><strong>Fecha de Salida:</strong> {{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</p>
         <p class="card-text"><strong>Precio:</strong> Q{{ vuelo.precio }}</p>
         <div class="mb-3">
           <label for="tipoAsiento" class="form-label"><strong>Tipo de Asiento:</strong></label>
@@ -24,29 +24,40 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 import moment from 'moment';
+import { fechayhoraFormateada } from '../functions.js'; 
 
 const router = useRouter();
 const vuelo = ref(null);
 const tipoAsiento = ref('turista');
+const asientosDisponibles = ref({ turista: 0, ejecutivo: 0 });
 
 onMounted(() => {
   const vueloSeleccionado = localStorage.getItem('vueloSeleccionado');
   if (vueloSeleccionado) {
     vuelo.value = JSON.parse(vueloSeleccionado);
+    cargarAsientosDisponibles(vuelo.value._id); // Carga inicial de asientos disponibles
   } else {
     console.error('No se han proporcionado detalles del vuelo.');
     router.push({ name: 'VuelosDisponibles' });
   }
 });
 
-// Añadimos esta función para formatear la fecha
-function formatFechaSalida(fecha) {
-  return moment(fecha).format('YYYY-MM-DD HH:mm');
+
+async function cargarAsientosDisponibles(vueloId) {
+  try {
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/vuelos/${vueloId}/asientos-disponibles`);
+    asientosDisponibles.value = data;
+  } catch (error) {
+    console.error('Error al cargar asientos disponibles:', error);
+  }
 }
+
+
+
 
 const confirmarReserva = async () => {
   const usuarioId = localStorage.getItem('user_id');

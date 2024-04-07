@@ -2,19 +2,26 @@
 import { ref, nextTick } from 'vue';
 import { sendRequest, fechayhoraFormateada } from '../../functions';
 
-const form = ref({ ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '' });
+const form = ref({
+  ciudad_origen: '',
+  ciudad_destino: '',
+  fecha_salida: '',
+  precio: '',
+  asientosTuristaDisponibles: '',
+  asientosEjecutivosDisponibles: '',
+});
 const ciudad_origenInput = ref('');
 const ciudad_destinoInput = ref('');
 const fecha_salidaInput = ref('');
 const precioInput = ref('');
-const save = () => {
-    form.value.fecha_salida = fechayhoraFormateada(form.value.fecha_salida, 'create');
-    sendRequest('POST', form.value, import.meta.env.VITE_BACKEND_URL + '/vuelos', '');
-    form.value.ciudad_origen = '';
-    form.value.ciudad_destino = '';
-    form.value.fecha_salida = '';
-    form.value.precio = '';
-    nextTick(() => ciudad_origenInput.value.focus());
+const asientosTuristaInput = ref('');
+const asientosEjecutivoInput = ref('');
+
+const save = async () => {
+  form.value.fecha_salida = fechayhoraFormateada(form.value.fecha_salida, 'create');
+  await sendRequest('POST', form.value, import.meta.env.VITE_BACKEND_URL + '/vuelos');
+  form.value = { ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '', asientosTuristaDisponibles: 50, asientosEjecutivosDisponibles: 20 };
+  nextTick(() => ciudad_origenInput.value.focus());
 };
 </script>
 <template>
@@ -83,6 +90,21 @@ const save = () => {
                                 ref="precioInput"
                             />
                         </div>
+
+
+
+                        <div class="input-group mb-3">
+    <span class="input-group-text"><i class="fas fa-chair"></i> Asientos Turista</span>
+    <input type="number" v-model="form.asientosTuristaDisponibles" placeholder="Asientos Turista Disponibles" class="form-control" required ref="asientosTuristaInput" />
+  </div>
+  <div class="input-group mb-3">
+    <span class="input-group-text"><i class="fas fa-chair"></i> Asientos Ejecutivo</span>
+    <input type="number" v-model="form.asientosEjecutivosDisponibles" placeholder="Asientos Ejecutivo Disponibles" class="form-control" required ref="asientosEjecutivoInput" />
+  </div>
+
+
+
+
                         <div class="d-grid col-10 mx-auto">
                             <button class="btn btn-success">
                                 <i class="fa-solid fa-save"></i> Guardar

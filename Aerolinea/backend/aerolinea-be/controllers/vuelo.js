@@ -95,6 +95,23 @@ export const filtrarVuelos = async (req, res) => {
     }
   };
 
+
+  export const getAsientosDisponibles = async (req, res) => {
+    try {
+      const vuelo = await Vuelo.findById(req.params.id);
+      if (!vuelo) {
+        return res.status(404).json({ message: "Vuelo no encontrado" });
+      }
+      res.status(200).json({
+        asientosTuristaDisponibles: vuelo.asientosTuristaDisponibles,
+        asientosEjecutivosDisponibles: vuelo.asientosEjecutivosDisponibles
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+
   // http://localhost:8800/vuelos/filtered?ciudad_origen=valor1&ciudad_destino=valor2&fecha_salida=fecha
 
   // ejemplo para agencia: http://localhost:8800/vuelos/filtered?ciudad_origen=Guatemala&ciudad_destino=Bogot%C3%A1&fecha_salida=2024-03-23

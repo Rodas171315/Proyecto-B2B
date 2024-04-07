@@ -8,26 +8,26 @@ import usuariosRoute from "./routes/usuarios.js";
 import vuelosRoute from "./routes/vuelos.js";
 import boletosRoute from "./routes/boletos.js";
 
+
+
 const app = express();
 dotenv.config();
 
-//CORS
-//var whitelist = [''+process.env.FRONTEND_URL, ''+process.env.FRONTEND_AGENCY_URL]
+var whitelist = [process.env.FRONTEND_URL, process.env.FRONTEND_AGENCY_URL];
+
 const corsOptions = {
-    /*
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1 || !origin) {
+            // Permite el origen si está en la lista blanca o es una solicitud sin origen (como las solicitudes de tipo POSTMAN, etc.)
             callback(null, true);
         } else {
+            // Rechaza cualquier otro origen
             callback(new Error('Not allowed by CORS'));
         }
     },
-    */
-    origin: "*",    //access-control-allow-origin:any
-    credentials:true,   //access-control-allow-credentials:true
-    optionSuccessStatus:200
-}
-
+    credentials: true, // access-control-allow-credentials:true
+    optionSuccessStatus: 200
+};
 
 
 

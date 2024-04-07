@@ -1,5 +1,5 @@
 import express from "express";
-import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos, getFilteredVuelos } from "../controllers/vuelo.js";
+import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos, getFilteredVuelos, getAsientosDisponibles } from "../controllers/vuelo.js";
 
 const router = express.Router();
 
@@ -20,5 +20,9 @@ router.get("/:id", getVuelo);
 
 //GET TODOS LOS VUELOS
 router.get("/", getVuelos);
+
+
+router.get('/:id/asientos-disponibles', getAsientosDisponibles);
+
 
 export default router;

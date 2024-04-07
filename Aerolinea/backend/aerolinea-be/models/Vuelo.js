@@ -22,6 +22,21 @@ const VueloSchema = new mongoose.Schema({
         min: 0,
         max: 5,
     },
+
+
+
+asientosTuristaDisponibles: {
+    type: Number,
+    required: true,
+    default: 50 
+},
+asientosEjecutivosDisponibles: {
+    type: Number,
+    required: true,
+    default: 20 
+}
+
+
 });
 
 export default mongoose.model("Vuelo", VueloSchema);
