@@ -1,7 +1,3 @@
-<script setup>
-import { useAuthStore } from '../stores/auth';
-const authStore = useAuthStore();
-</script>
 <template>
     <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
