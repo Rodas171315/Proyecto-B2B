@@ -46,10 +46,14 @@ export const useAuthStore = defineStore('auth', {
                 });
         },
         async logout() {
+            /*
             await axios.get(import.meta.env.VITE_BACKEND_URL + '/auth/logout', this.authToken);
             this.authToken = null;
             this.authUser = null;
-            this.router.push('/login');
+            */
+            localStorage.user_id = null;
+            localStorage.isAdmin = null;
+            this.router.push('/');
         },
     },
     persist: true,

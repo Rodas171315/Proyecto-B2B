@@ -1,8 +1,6 @@
 <script setup>
-/*
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth';
 const authStore = useAuthStore();
-*/
 </script>
 <template>
     <nav class="navbar navbar-expand-lg bg-body-secondary">
@@ -39,7 +37,9 @@ const authStore = useAuthStore();
                         <RouterLink to="/reports" class="nav-link">Reportes</RouterLink>
                     </li>
                     <li class="nav-item">
-                        <RouterLink to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</RouterLink>
+                        <RouterLink to="/vuelosdisponibles" class="nav-link"
+                            >Vuelos Disponibles</RouterLink
+                        >
                     </li>
                     <li class="nav-item">
                         <RouterLink to="/register" class="nav-link">Registrarse</RouterLink>
@@ -56,7 +56,7 @@ const authStore = useAuthStore();
                 </ul>
                 <ul class="navbar-nav me-2 mb-2 mb-lg-0">
                     <li class="nav-item px-lg-5">
-                        <button @click="($event) => authStore.logout" class="btn btn-danger">
+                        <button @click="($event) => authStore.logout()" class="btn btn-danger">
                             Salir
                         </button>
                     </li>
