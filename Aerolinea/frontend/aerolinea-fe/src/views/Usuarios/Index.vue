@@ -18,6 +18,7 @@ const form = ref({
     apellido: '',
     fecha_nacimiento: '',
     nacionalidad: '',
+    rol: '',
     pasaporte: '',
 });
 const emailInput = ref('');
@@ -48,6 +49,7 @@ const openModal = (
     fecha_nacimiento,
     nacionalidad,
     pasaporte,
+    rol,
     usuario,
 ) => {
     clear();
@@ -65,6 +67,8 @@ const openModal = (
         form.value.fecha_nacimiento = fechaFormateada(fecha_nacimiento);
         form.value.nacionalidad = nacionalidad;
         form.value.pasaporte = pasaporte;
+        form.value.rol = rol;
+
     }
 };
 const clear = () => {
@@ -75,6 +79,7 @@ const clear = () => {
     form.value.fecha_nacimiento = '';
     form.value.nacionalidad = '';
     form.value.pasaporte = '';
+    form.value.rol = '';
 };
 const save = async () => {
     let res;
@@ -136,6 +141,7 @@ const save = async () => {
                             <th>Fecha de Nacimiento</th>
                             <th>Nacionalidad</th>
                             <th>Pasaporte</th>
+                            <th>Rol</th> 
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
@@ -147,6 +153,7 @@ const save = async () => {
                             <td>{{ fechaFormateada(usuario.fecha_nacimiento) }}</td>
                             <td>{{ usuario.nacionalidad }}</td>
                             <td>{{ usuario.pasaporte }}</td>
+                            <td>{{ usuario.isAdmin ? 'Administrador' : 'Usuario' }}</td> 
                             <td>
                                 <button
                                     class="btn btn-warning"
@@ -163,6 +170,7 @@ const save = async () => {
                                                 usuario.fecha_nacimiento,
                                                 usuario.nacionalidad,
                                                 usuario.pasaporte,
+                                                usuario.rol,
                                                 usuario._id,
                                             )
                                     "
@@ -290,6 +298,13 @@ const save = async () => {
                         required
                         ref="pasaporteInput"
                     />
+                    <div class="input-group mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="isAdmin" v-model="form.isAdmin">
+        <label class="form-check-label" for="isAdmin">Administrador</label>
+    </div>
+</div>
+
                 </div>
                 <div class="d-grid col-10 mx-auto">
                     <button class="btn btn-success">

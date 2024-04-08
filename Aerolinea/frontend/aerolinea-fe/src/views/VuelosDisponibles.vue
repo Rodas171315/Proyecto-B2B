@@ -31,8 +31,10 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
-import { confirmation, fechayhoraFormateada } from '../functions.js';
+import { confirmation, fechayhoraFormateada } from '../functions';
+import { useRouter } from 'vue-router'; // Importa useRouter
 
+const router = useRouter(); // Utiliza useRouter para obtener la instancia del router
 const vuelos = ref([]);
 const load = ref(false);
 const filtroOrigen = ref('');
@@ -40,33 +42,46 @@ const filtroDestino = ref('');
 const filtroFecha = ref('');
 
 async function cargarVuelos() {
-  try {
-    const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos');
-    vuelos.value = response.data;
-    load.value = true;
-  } catch (error) {
-    console.error('Error al obtener los vuelos:', error);
-    load.value = true;
-  }
+    try {
+        const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos');
+        vuelos.value = response.data;
+        load.value = true;
+    } catch (error) {
+        console.error('Error al obtener los vuelos:', error);
+        load.value = true;
+    }
 }
 
 onMounted(cargarVuelos);
 
 const vuelosFiltrados = computed(() => {
-  return vuelos.value.filter(vuelo => {
-    const cumpleOrigen = vuelo.ciudad_origen.toLowerCase().includes(filtroOrigen.value.toLowerCase());
-    const cumpleDestino = vuelo.ciudad_destino.toLowerCase().includes(filtroDestino.value.toLowerCase());
-    const fechaVuelo = new Date(vuelo.fecha_salida).toISOString().slice(0, 10);
-    const cumpleFecha = !filtroFecha.value || fechaVuelo === filtroFecha.value;
-    return cumpleOrigen && cumpleDestino && cumpleFecha;
-  });
+    return vuelos.value.filter(vuelo => {
+        const cumpleOrigen = vuelo.ciudad_origen.toLowerCase().includes(filtroOrigen.value.toLowerCase());
+        const cumpleDestino = vuelo.ciudad_destino.toLowerCase().includes(filtroDestino.value.toLowerCase());
+        const fechaVuelo = new Date(vuelo.fecha_salida).toISOString().slice(0, 10);
+        const cumpleFecha = !filtroFecha.value || fechaVuelo === filtroFecha.value;
+        return cumpleOrigen && cumpleDestino && cumpleFecha;
+    });
 });
 
 function aplicarFiltros() {
-  cargarVuelos();
+    cargarVuelos();
 }
-</script>
 
+
+const reservarVuelo = (vueloId) => {
+    const vueloSeleccionado = vuelosFiltrados.value.find(vuelo => vuelo._id === vueloId);
+    if (!vueloSeleccionado) {
+        console.error('Vuelo no encontrado');
+        return;
+    }
+    localStorage.setItem('vueloSeleccionado', JSON.stringify(vueloSeleccionado));
+    router.push({ name: 'Checkout' });
+};
+
+
+
+</script>
 
 
   

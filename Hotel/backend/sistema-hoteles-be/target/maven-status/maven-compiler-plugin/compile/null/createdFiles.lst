@@ -1,0 +1,16 @@
+pack_hotel/Tipo_habitacionRecurso.class
+pack_hotel/UsuarioRepositorio.class
+org/acme/GreetingResource.class
+pack_hotel/HotelRepositorio.class
+pack_hotel/UsuarioRecurso.class
+pack_hotel/Tipo_habitacionRepositorio.class
+pack_hotel/Hoteles.class
+pack_hotel/NoSuchElementExceptionMapper$NoSuchElementMessage.class
+pack_hotel/Habitaciones.class
+pack_hotel/Usuarios.class
+pack_hotel/HabitacionRepositorio.class
+pack_hotel/Tipos_habitacion.class
+pack_hotel/HabitacionRecurso.class
+org/acme/MyEntity.class
+pack_hotel/NoSuchElementExceptionMapper.class
+pack_hotel/HotelRecurso.class

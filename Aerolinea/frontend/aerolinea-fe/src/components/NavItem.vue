@@ -51,7 +51,9 @@ const authStore = useAuthStore();
                         <RouterLink to="/perfil" class="nav-link">Perfil</RouterLink>
                     </li>
                     <li class="nav-item">
-                        <RouterLink to="/reservas" class="nav-link">Reservaciones</RouterLink>
+                        <RouterLink to="/historialreservas" class="nav-link"
+                            >Mis Reservas</RouterLink
+                        >
                     </li>
                 </ul>
                 <ul class="navbar-nav me-2 mb-2 mb-lg-0">

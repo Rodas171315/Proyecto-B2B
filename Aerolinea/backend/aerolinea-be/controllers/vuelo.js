@@ -1,4 +1,5 @@
 import Vuelo from "../models/Vuelo.js";
+import Boleto from "../models/Boleto.js"; 
 
 export const createVuelo = async (req, res, next) => {
     const newVuelo = new Vuelo(req.body);
@@ -94,6 +95,36 @@ export const filtrarVuelos = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+
+export const getAsientosDisponibles = async (req, res) => {
+  try {
+    const vueloId = req.params.id;
+    const vuelo = await Vuelo.findById(vueloId);
+    if (!vuelo) {
+      return res.status(404).json({ message: "Vuelo no encontrado" });
+    }
+
+    // Calcula asientos reservados por tipo de asiento
+    const boletos = await Boleto.find({ vueloId: vuelo._id });
+    const asientosReservadosTurista = boletos.filter(boleto => boleto.tipoAsiento === 'turista').length;
+    const asientosReservadosEjecutivo = boletos.filter(boleto => boleto.tipoAsiento === 'ejecutivo').length;
+
+    // Calcula asientos disponibles
+    const asientosTuristaDisponibles = Math.max(0, vuelo.asientosTuristaDisponibles - asientosReservadosTurista);
+    const asientosEjecutivosDisponibles = Math.max(0, vuelo.asientosEjecutivosDisponibles - asientosReservadosEjecutivo);
+
+    res.status(200).json({
+      asientosTuristaDisponibles,
+      asientosEjecutivosDisponibles
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+  
 
   // http://localhost:8800/vuelos/filtered?ciudad_origen=valor1&ciudad_destino=valor2&fecha_salida=fecha
 
