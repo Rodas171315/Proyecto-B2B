@@ -1,105 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, TextField, Button, Grid, Container } from '@mui/material';
+import { Box, Card, CardContent, Typography, Button, TextField, Container, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { useUser } from './UserContext';
 
-const Comentarios = () => {
+function Comentarios({ idHabitacion }) {
   const [comentarios, setComentarios] = useState([]);
-  const [nuevoComentario, setNuevoComentario] = useState("");
-  const [comentarioRespuestaId, setComentarioRespuestaId] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const [textoComentario, setTextoComentario] = useState('');
+  const [rating, setRating] = useState(1);
+  const [idComentarioPadre, setIdComentarioPadre] = useState(null);
   const { user } = useUser();
 
+  useEffect(() => {
+    fetchComentarios();
+  }, [idHabitacion]);
 
-  const cargarComentarios = async () => {
-    setCargando(true);
+  const estructurarComentarios = (comentarios) => {
+   
+    const comentariosMap = comentarios.reduce((map, comentario) => {
+      map[comentario.idComentario] = { ...comentario, respuestas: [] };
+      return map;
+    }, {});
+
+    
+    comentarios.forEach(comentario => {
+      if (comentario.idComentarioPadre) {
+        const padre = comentariosMap[comentario.idComentarioPadre];
+        if (padre) {
+          padre.respuestas.push(comentariosMap[comentario.idComentario]);
+        }
+      }
+    });
+
+    
+    return Object.values(comentariosMap).filter(comentario => !comentario.idComentarioPadre);
+  };
+
+  const fetchComentarios = async () => {
     try {
-      const respuesta = await fetch('http://localhost:8081/comentarios');
-      const textoRespuesta = await respuesta.text();
-      try {
-        const data = JSON.parse(textoRespuesta);
-        setComentarios(data);
-      } catch (parseError) {
-        console.error("Error al analizar la respuesta JSON:", parseError);
+      console.log(`Cargando comentarios para la habitación ${idHabitacion}`);
+      const response = await fetch(`http://localhost:8080/comentarios/por-habitacion/${idHabitacion}`);
+      if (response.ok) {
+        const data = await response.json();
         
+        const comentariosEstructurados = estructurarComentarios(data);
+        setComentarios(comentariosEstructurados); 
+        console.log("Comentarios estructurados exitosamente:", comentariosEstructurados);
+      } else {
+        console.error('Error al recuperar los comentarios', response);
       }
     } catch (error) {
-      console.error(error);
-    } finally {
-      setCargando(false);
+      console.error('Error al recuperar los comentarios:', error);
     }
   };
 
-  useEffect(() => {
-    cargarComentarios();
-  }, []);
-  useEffect(() => {
-    cargarComentarios();
-  }, []);
-
-  const agregarComentario = async () => {
-    if (!user) {
-      console.error("No hay usuario autenticado");
+  const crearComentario = async (e) => {
+    e.preventDefault();
+    if (!user || !user.id) {
+      alert('Debes estar registrado y haber iniciado sesión para realizar un comentario.');
       return;
     }
-  
-    
-    const comentarioData = comentarioRespuestaId ? {
-      usuario: { id: user.id }, 
-      comentario: nuevoComentario,
-      parent: { id: comentarioRespuestaId }, 
-    } : {
-      usuario: { id: user.id },
-      comentario: nuevoComentario,
+
+    const comentarioData = {
+      idHabitacion,
+      idUsuario: user.id,
+      textoComentario,
+      rating,
+      idComentarioPadre
     };
-  
+
     try {
-      const respuesta = await fetch('http://localhost:8081/comentarios', {
+      const response = await fetch('http://localhost:8080/comentarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(comentarioData),
+        body: JSON.stringify(comentarioData)
       });
-      if (!respuesta.ok) throw new Error('Error al agregar el comentario');
-      cargarComentarios(); 
-      setNuevoComentario(""); 
-      setComentarioRespuestaId(null); 
+
+      if (response.ok) {
+        console.log("Comentario creado exitosamente");
+        setTextoComentario('');
+        setRating(1);
+        setIdComentarioPadre(null);
+        fetchComentarios(); 
+      } else {
+        console.error('Error al crear el comentario', response);
+      }
     } catch (error) {
-      console.error(error.message);
+      console.error('Error al crear el comentario:', error);
     }
   };
 
-  if (cargando) return <p>Cargando comentarios...</p>;
+const renderComentarios = (comentariosParaRenderizar, nivel = 0) => {
+    const hue = 50; 
+    const saturation = 30 - (nivel * 5); 
+    const lightness = 90 - (nivel * 15); 
+
+    return comentariosParaRenderizar.map(comentario => (
+      <Box key={comentario.idComentario} sx={{ ml: `${nivel * 2}em`, mt: '10px' }}>
+        <Card sx={{ backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)` }}>
+          <CardContent>
+            <Typography variant="h6">{comentario.nombreUsuario} - {comentario.rating} estrellas</Typography>
+            <Typography>{comentario.textoComentario}</Typography>
+            <Typography sx={{ fontSize: '0.8em', color: '#666' }}>
+              Publicado: {new Date(comentario.fechaComentario).toLocaleString()}
+            </Typography>
+            <Button size="small" onClick={() => setIdComentarioPadre(comentario.idComentario)}>Responder</Button>
+          </CardContent>
+        </Card>
+        {comentario.respuestas && comentario.respuestas.length > 0 && renderComentarios(comentario.respuestas, nivel + 1)}
+      </Box>
+    ));
+  };
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h5" sx={{ mb: 2 }}>Comentarios de nuestros clientes</Typography>
-      <Grid container spacing={2}>
-        {comentarios.map((comentario) => (
-          <Grid item xs={12} key={comentario.id}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6">{comentario.usuario ? comentario.usuario.nombre : 'Anónimo'}</Typography>
-                <Typography variant="body2">{comentario.comentario}</Typography>
-                <Button size="small" onClick={() => setComentarioRespuestaId(comentario.id)}>Responder</Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Deja tu comentario</Typography>
-      <TextField
-        label="Tu Comentario"
-        multiline
-        rows={4}
-        variant="outlined"
-        fullWidth
-        value={nuevoComentario}
-        onChange={(e) => setNuevoComentario(e.target.value)}
-        sx={{ mb: 2 }}
-      />
-      {comentarioRespuestaId && <Typography>Respondiendo al comentario ID: {comentarioRespuestaId}</Typography>}
-      <Button variant="contained" onClick={agregarComentario}>Publicar Comentario</Button>
+    <Container>
+      <Box component="form" onSubmit={crearComentario} noValidate sx={{ mt: 1 }}>
+        <TextField
+          margin="normal"
+          fullWidth
+          id="textoComentario"
+          label="Comentario"
+          name="textoComentario"
+          multiline
+          rows={4}
+          value={textoComentario}
+          onChange={(e) => setTextoComentario(e.target.value)}
+        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="rating-label">Rating</InputLabel>
+          <Select
+            labelId="rating-label"
+            id="rating"
+            value={rating}
+            label="Rating"
+            onChange={(e) => setRating(e.target.value)}
+          >
+            <MenuItem value={1}>1</MenuItem>
+            <MenuItem value={2}>2</MenuItem>
+            <MenuItem value={3}>3</MenuItem>
+            <MenuItem value={4}>4</MenuItem>
+            <MenuItem value={5}>5</MenuItem>
+          </Select>
+        </FormControl>
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
+          {idComentarioPadre ? 'Enviar Respuesta' : 'Enviar Comentario'}
+        </Button>
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        {renderComentarios(comentarios)}
+      </Box>
     </Container>
   );
-};
+}
 
 export default Comentarios;

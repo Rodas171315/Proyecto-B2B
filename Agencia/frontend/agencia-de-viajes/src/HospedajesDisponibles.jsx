@@ -3,6 +3,7 @@ import { Typography, Button, Container, Grid, Card, CardContent, CardActions, Ca
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header'; 
 import Footer from './Footer'; 
+import Comentarios from './Comentarios';
 
 const HospedajesDisponibles = () => {
     const [hotelesConHabitaciones, setHotelesConHabitaciones] = useState([]);
@@ -186,6 +187,8 @@ const HospedajesDisponibles = () => {
                                             Comprar
                                         </Button>
                                     </CardActions>
+                                    <Comentarios idHabitacion={habitacion.id_habitacion} />
+
                                 </Card>
                             </Grid>
                         ))

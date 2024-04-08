@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Container, TextField, Card, CardContent, Dialog, CardMedia, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Typography, Button, Container, Grid, TextField, Card, CardContent, Dialog, CardMedia, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import Header from './Header'; 
 import Footer from './Footer'; 
 import { useUser } from './UserContext';
@@ -14,6 +14,11 @@ const CompraHospedaje = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
+    const [cardNumber, setCardNumber] = useState('');
+    const [cvv, setCvv] = useState('');
+    const [cardName, setCardName] = useState('');
+    const [billingAddress, setBillingAddress] = useState('');
+
     const precioConDescuento = (precio) => precio - precio * 0.20;
     const realizarReserva = async () => {
         
@@ -104,12 +109,12 @@ const CompraHospedaje = () => {
             <Header />
             <Container maxWidth="sm" sx={{ mt: 4 }}>
                 <Card>
-                <CardMedia
-                                        component="img"
-                                        height="140"
-                                        image={`https://source.unsplash.com/random?hotelRoom&sig=`}
-                                        alt={`Habitación `}
-                                    />
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={`https://source.unsplash.com/random?hotelRoom&sig=`}
+                        alt="Habitación"
+                    />
                     <CardContent>
                         <Typography variant="h5" component="h2">Reserva de Hospedaje</Typography>
                         <Typography variant="body1">Hotel: {hotelDetails.nombre}</Typography>
@@ -117,9 +122,58 @@ const CompraHospedaje = () => {
                         <Typography variant="body1">
                             Precio por noche: <s>${roomDetails.precioxnoche}</s> ${precioConDescuento(Number(roomDetails.precioxnoche)).toFixed(2)}
                         </Typography>
-                        <TextField type="date" fullWidth label="Check-In" margin="normal" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
-                        <TextField type="date" fullWidth label="Check-Out" margin="normal" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
-                        <Button variant="contained" color="primary" onClick={realizarReserva}>
+                        <TextField
+                            type="date"
+                            fullWidth
+                            label="Check-In"
+                            margin="normal"
+                            value={checkIn}
+                            onChange={(e) => setCheckIn(e.target.value)}
+                        />
+                        <TextField
+                            type="date"
+                            fullWidth
+                            label="Check-Out"
+                            margin="normal"
+                            value={checkOut}
+                            onChange={(e) => setCheckOut(e.target.value)}
+                        />
+                        {/* Campos de información de pago */}
+                        <TextField
+                            label="Número de Tarjeta"
+                            fullWidth
+                            margin="normal"
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(e.target.value)}
+                        />
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="CVV"
+                                    fullWidth
+                                    margin="normal"
+                                    value={cvv}
+                                    onChange={(e) => setCvv(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label="Nombre en Tarjeta"
+                                    fullWidth
+                                    margin="normal"
+                                    value={cardName}
+                                    onChange={(e) => setCardName(e.target.value)}
+                                />
+                            </Grid>
+                        </Grid>
+                        <TextField
+                            label="Dirección de Cobro"
+                            fullWidth
+                            margin="normal"
+                            value={billingAddress}
+                            onChange={(e) => setBillingAddress(e.target.value)}
+                        />
+                        <Button variant="contained" color="primary" onClick={realizarReserva} sx={{ mt: 2 }}>
                             Realizar Reserva
                         </Button>
                     </CardContent>
@@ -128,10 +182,14 @@ const CompraHospedaje = () => {
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>Reserva realizada con éxito</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>Tu reserva ha sido completada exitosamente. Pronto recibirás más información.</DialogContentText>
+                    <DialogContentText>
+                        Tu reserva ha sido completada exitosamente. Pronto recibirás más información.
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => navigate('/')} color="primary">Volver al inicio</Button>
+                    <Button onClick={() => navigate('/')} color="primary">
+                        Volver al inicio
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Footer />
