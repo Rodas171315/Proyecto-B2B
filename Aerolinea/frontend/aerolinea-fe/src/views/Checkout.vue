@@ -81,17 +81,19 @@ const confirmarReserva = async () => {
 
   try {
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
-      usuarioId,
-      vueloId: vuelo.value._id,
-      tipoAsiento: tipoAsiento.value,
-      cantidad 
+        usuarioId,
+        vueloId: vuelo.value._id,
+        tipoAsiento: tipoAsiento.value,
+        cantidad 
     });
     alert('Reserva confirmada con éxito.');
-    cargarAsientosDisponibles(vuelo.value._id); // Recarga la disponibilidad actualizada
+    await cargarAsientosDisponibles(vuelo.value._id);
     router.push({ name: 'HistorialReservas' });
-  } catch (error) {
+} catch (error) {
+    console.error('Error al confirmar la reserva:', error);
     alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
-  }
+}
+
 };
 </script>
 

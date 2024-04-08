@@ -1,40 +1,43 @@
 <template>
   <div class="container">
     <h2 class="mb-4 text-center">Vuelos Disponibles</h2>
-    <!--  Filtros -->
+    <!-- Filtros -->
     <div class="filters mb-4">
       <input v-model="filtroOrigen" type="text" placeholder="Origen" class="form-control me-2">
       <input v-model="filtroDestino" type="text" placeholder="Destino" class="form-control me-2">
       <input v-model="filtroFecha" type="date" class="form-control me-2">
       <button @click="aplicarFiltros" class="btn btn-success">Filtrar</button>
     </div>
-    <div v-if="!load" class="alert alert-warning" role="alert">
-      Cargando vuelos.
-    </div>
-    <div v-else-if="vuelosFiltrados.length === 0" class="alert alert-warning" role="alert">
-      No hay vuelos disponibles en este momento.
-    </div>
-    <div v-else class="d-flex">
-      <div v-for="(vuelo, index) in vuelosFiltrados" :key="vuelo._id" class="card">
+    <div v-if="!load" class="alert alert-warning" role="alert">Cargando vuelos.</div>
+    <div v-else-if="vuelosFiltrados.length === 0" class="alert alert-warning" role="alert">No hay vuelos disponibles en este momento.</div>
+    <div v-else class="d-flex flex-wrap justify-content-center">
+      <div v-for="(vuelo, index) in vuelosFiltrados" :key="vuelo._id" class="card m-2" style="width: 18rem;">
+        <div v-if="vuelo.imagenesUrl && vuelo.imagenesUrl.length">
+          <!-- Mostrar solo las primeras 2 imágenes -->
+          <img :src="vuelo.imagenesUrl[0]" class="card-img-top" alt="Imagen del vuelo">
+          <img v-if="vuelo.imagenesUrl[1]" :src="vuelo.imagenesUrl[1]" class="card-img-top" alt="Imagen secundaria del vuelo">
+        </div>
         <div class="card-body">
           <h5 class="card-title">{{ vuelo.ciudad_origen }} - {{ vuelo.ciudad_destino }}</h5>
-          <h6 class="card-subtitle">{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</h6>
+          <h6 class="card-subtitle mb-2 text-muted">{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</h6>
           <p class="card-text">Precio: Q{{ vuelo.precio }}</p>
           <p class="card-text">Valoración: {{ vuelo.valuacion }}/5</p>
-          <button class="btn btn-primary" @click="reservarVuelo(vuelo._id)">Reservar</button>
+          <button @click="reservarVuelo(vuelo._id)" class="btn btn-primary">Reservar</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
+
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
 import { confirmation, fechayhoraFormateada } from '../functions';
-import { useRouter } from 'vue-router'; // Importa useRouter
+import { useRouter } from 'vue-router'; 
 
-const router = useRouter(); // Utiliza useRouter para obtener la instancia del router
+const router = useRouter();
 const vuelos = ref([]);
 const load = ref(false);
 const filtroOrigen = ref('');
