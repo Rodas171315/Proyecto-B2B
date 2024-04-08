@@ -28,12 +28,10 @@ const VueloSchema = new mongoose.Schema({
 asientosTuristaDisponibles: {
     type: Number,
     required: true,
-    default: 50 
 },
 asientosEjecutivosDisponibles: {
     type: Number,
     required: true,
-    default: 20 
 }
 
 

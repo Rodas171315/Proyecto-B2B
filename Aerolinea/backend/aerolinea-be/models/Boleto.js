@@ -28,7 +28,6 @@ const BoletoSchema = new mongoose.Schema({
         type: Boolean,
         default: true // true para reservado, false para cancelado
     },
-    // Detalles del vuelo duplicados en el boleto para consulta directa
     ciudad_origen: {
         type: String,
         required: true
