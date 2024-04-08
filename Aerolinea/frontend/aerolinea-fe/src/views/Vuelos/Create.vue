@@ -9,6 +9,7 @@ const form = ref({
   precio: '',
   asientosTuristaDisponibles: '',
   asientosEjecutivosDisponibles: '',
+  imagenesUrl: [],
 });
 const ciudad_origenInput = ref('');
 const ciudad_destinoInput = ref('');
@@ -16,11 +17,19 @@ const fecha_salidaInput = ref('');
 const precioInput = ref('');
 const asientosTuristaInput = ref('');
 const asientosEjecutivoInput = ref('');
+const imagenUrl1 = ref(''); 
+const imagenUrl2 = ref(''); 
 
 const save = async () => {
   form.value.fecha_salida = fechayhoraFormateada(form.value.fecha_salida, 'create');
+  form.value.imagenesUrl = [imagenUrl1.value, imagenUrl2.value].filter(url => url); 
   await sendRequest('POST', form.value, import.meta.env.VITE_BACKEND_URL + '/vuelos');
-  form.value = { ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '', asientosTuristaDisponibles: 50, asientosEjecutivosDisponibles: 20 };
+  form.value = {
+    ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '', 
+    asientosTuristaDisponibles: 50, asientosEjecutivosDisponibles: 20, imagenesUrl: []
+  };
+  imagenUrl1.value = '';
+  imagenUrl2.value = '';
   nextTick(() => ciudad_origenInput.value.focus());
 };
 </script>
@@ -93,6 +102,9 @@ const save = async () => {
 
 
 
+
+
+
                         <div class="input-group mb-3">
     <span class="input-group-text"><i class="fas fa-chair"></i> Asientos Turista</span>
     <input type="number" v-model="form.asientosTuristaDisponibles" placeholder="Asientos Turista Disponibles" class="form-control" required ref="asientosTuristaInput" />
@@ -102,6 +114,17 @@ const save = async () => {
     <input type="number" v-model="form.asientosEjecutivosDisponibles" placeholder="Asientos Ejecutivo Disponibles" class="form-control" required ref="asientosEjecutivoInput" />
   </div>
 
+
+
+
+<div class="input-group mb-3">
+  <span class="input-group-text">URL Imagen 1</span>
+  <input type="text" v-model="imagenUrl1" placeholder="URL de la imagen 1" class="form-control" />
+</div>
+<div class="input-group mb-3">
+  <span class="input-group-text">URL Imagen 2</span>
+  <input type="text" v-model="imagenUrl2" placeholder="URL de la imagen 2" class="form-control" />
+</div>
 
 
 

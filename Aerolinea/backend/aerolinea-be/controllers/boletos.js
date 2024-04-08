@@ -87,7 +87,6 @@ export const getAllBoletos = async (req, res, next) => {
 
 
 
-// En tu controlador de boletos
 export const cancelarBoleto = async (req, res) => {
     try {
         const boleto = await Boleto.findById(req.params.boletoId);
