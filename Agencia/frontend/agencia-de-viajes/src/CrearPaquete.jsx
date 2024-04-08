@@ -55,6 +55,7 @@ const CrearPaquete = () => {
       idHotel: parseInt(hotelSeleccionado, 10), 
       idHabitacion: parseInt(habitacionSeleccionada, 10), 
       idVuelo: vueloSeleccionado,
+      estadoPaquete: "Disponible",
     };
     
   

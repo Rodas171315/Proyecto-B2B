@@ -34,7 +34,7 @@ const VuelosDisponibles = () => {
                                     <CardContent>
                                         <Typography variant="h5" component="div">{`${vuelo.ciudad_origen} - ${vuelo.ciudad_destino}`}</Typography>
                                         <Typography>{`Fecha y Hora: ${new Date(vuelo.fecha_salida).toLocaleString()}`}</Typography>
-                                        <Typography>{`Aerolínea: ${vuelo.aerolinea}`}</Typography>
+                                        
                                         <Typography>{`Precio: $${vuelo.precio}`}</Typography>
                                     </CardContent>
                                     <CardActions>

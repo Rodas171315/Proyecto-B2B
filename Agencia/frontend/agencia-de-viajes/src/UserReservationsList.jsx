@@ -8,11 +8,13 @@ import 'jspdf-autotable';
 
 const UserReservationsList = () => {
     const [reservations, setReservations] = useState([]);
+    const [flightReservations, setFlightReservations] = useState([]);
     const { user } = useUser();
 
     useEffect(() => {
       if (user) {
         fetchReservations();
+        fetchFlightReservations();
       }
     }, [user]);
 
@@ -29,6 +31,21 @@ const UserReservationsList = () => {
         console.error("Error fetching reservations:", error);
       }
     };
+
+    const fetchFlightReservations = () => {
+      const storedReservations = localStorage.getItem('reservasVuelosAgencia');
+      if (storedReservations) {
+        const reservations = JSON.parse(storedReservations);
+        
+        const userFlightReservations = reservations.filter(reservation => reservation.usuarioId === user.id);
+        console.log("Reservas de vuelo encontradas:", userFlightReservations);
+        setFlightReservations(userFlightReservations);
+      } else {
+        console.log("No hay reservas de vuelos almacenadas en localStorage.");
+      }
+    };
+    
+    
 
     const calculateNights = (checkIn, checkOut) => {
       const checkInDate = new Date(checkIn);
@@ -72,12 +89,44 @@ const UserReservationsList = () => {
       doc.save(`Reserva_${reservation.idReserva}.pdf`);
     };
 
+
+    const downloadFlightReservationPdf = (reservation) => {
+      
+      if (!reservation.detallesVuelo) {
+        console.error('Detalles de vuelo no definidos para esta reserva:', reservation);
+        return; 
+      }
+    
+      const doc = new jsPDF();
+      doc.text("Detalle de Reserva de Vuelo", 14, 16);
+      doc.setFontSize(10);
+    
+     
+      const flightDetails = [
+        ["Origen", reservation.detallesVuelo.origen],
+        ["Destino", reservation.detallesVuelo.destino],
+        ["Fecha y Hora", new Date(reservation.detallesVuelo.fechaSalida).toLocaleString()],
+        ["Precio", `$${reservation.detallesVuelo.precio}`],
+        ["Tipo de Asiento", reservation.tipoAsiento],
+        ["Cantidad", reservation.cantidad.toString()],
+      ];
+    
+      doc.autoTable({
+        head: [['Detalle', 'Información']],
+        body: flightDetails,
+        startY: 22,
+      });
+    
+      doc.save(`ReservaVuelo_${new Date().getTime()}.pdf`);
+    };
+    
+
     return (
       <div>
           <Header />
               <Container maxWidth="md">
                   <Typography variant="h4" gutterBottom>
-                      Historial de Reservas
+                      Historial de Reservas de Hospedajes
                   </Typography>
                   {reservations.length > 0 ? (
                       <Grid container spacing={4}>
@@ -112,7 +161,52 @@ const UserReservationsList = () => {
                       <Typography>No se encontraron reservas.</Typography>
                   )}
               </Container>
-          <Footer />
+        <Container maxWidth="md">
+          <Typography variant="h4" gutterBottom>
+            Historial de Reservas de Vuelos
+          </Typography>
+          {flightReservations.length > 0 ? (
+            <Grid container spacing={4}>
+              {flightReservations.map((reservation, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={`https://source.unsplash.com/random?flight&sig=${index}`}
+                      alt="Imagen de vuelo"
+                    />
+                    <CardContent>
+                      {reservation.detallesVuelo ? (
+                        <>
+                          <Typography variant="h6">
+                            {reservation.detallesVuelo.origen} - {reservation.detallesVuelo.destino}
+                          </Typography>
+                          <Typography color="textSecondary">
+                            Fecha y Hora: {new Date(reservation.detallesVuelo.fechaSalida).toLocaleString()}
+                          </Typography>
+                          <Typography color="textSecondary">
+                            Precio: ${reservation.detallesVuelo.precio}
+                          </Typography>
+                          <Button onClick={() => downloadFlightReservationPdf(reservation)}>
+                            Descargar Reserva
+                          </Button>
+                        </>
+                      ) : (
+                        <Typography variant="body2" color="error">
+                          Detalle de vuelo no disponible.
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography>No se encontraron reservas de vuelos.</Typography>
+          )}
+        </Container>
+        <Footer />
       </div>
     );
 };

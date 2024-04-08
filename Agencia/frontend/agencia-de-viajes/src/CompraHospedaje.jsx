@@ -17,7 +17,7 @@ const CompraHospedaje = () => {
     const [cardNumber, setCardNumber] = useState('');
     const [cvv, setCvv] = useState('');
     const [cardName, setCardName] = useState('');
-    const [billingAddress, setBillingAddress] = useState('');
+    const [address, setAddress] = useState('');
 
     const precioConDescuento = (precio) => precio - precio * 0.20;
     const realizarReserva = async () => {
@@ -138,7 +138,7 @@ const CompraHospedaje = () => {
                             value={checkOut}
                             onChange={(e) => setCheckOut(e.target.value)}
                         />
-                        {/* Campos de información de pago */}
+                        
                         <TextField
                             label="Número de Tarjeta"
                             fullWidth
@@ -170,8 +170,8 @@ const CompraHospedaje = () => {
                             label="Dirección de Cobro"
                             fullWidth
                             margin="normal"
-                            value={billingAddress}
-                            onChange={(e) => setBillingAddress(e.target.value)}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
                         />
                         <Button variant="contained" color="primary" onClick={realizarReserva} sx={{ mt: 2 }}>
                             Realizar Reserva

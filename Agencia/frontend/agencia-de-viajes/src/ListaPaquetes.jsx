@@ -153,7 +153,7 @@ const ListaPaquetes = () => {
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
-                            {paquete.estadoPaquete === 'Disponible' && (
+                            {paquete.estadoPaquete === 'Comprado' && (
                               <Button size="small" color="secondary" onClick={() => cancelarPaquete(paquete.idPaquete)}>
                                 Cancelar
                               </Button>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Container, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CardMedia } from '@mui/material';
+import { Typography, Button, Container, Select, FormControl, InputLabel, MenuItem, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CardMedia } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
 import emailjs from 'emailjs-com';
@@ -14,6 +14,12 @@ const CompraPaquete = () => {
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
     const { user } = useUser();
+    const [cardNumber, setCardNumber] = useState('');
+    const [cvv, setCvv] = useState('');
+    const [cardName, setCardName] = useState('');
+    const [address, setAddress] = useState('');
+    const [tipoAsiento, setTipoAsiento] = useState('turista');
+    const [cantidad, setCantidad] = useState(1);
     
 
     const realizarReserva = async () => {
@@ -23,6 +29,29 @@ const CompraPaquete = () => {
         
         try {
             
+            const apiUrl = 'http://35.211.214.127:8800/boletos'; 
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usuarioId: '65fe775efd03e7de767d50e7', 
+                    vueloId: paquete.idVuelo, 
+                    tipoAsiento,
+                    cantidad,
+                    datosCompra: {
+                        cardNumber,
+                        cvv,
+                        cardName,
+                        address
+                    }
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('No se pudo completar la compra del vuelo.');
+            }
+
+
             const responseHabitacion = await fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`);
             if (!responseHabitacion.ok) {
                 throw new Error('Error al obtener detalles de la habitación');
@@ -198,6 +227,18 @@ const CompraPaquete = () => {
                             value={checkOut}
                             onChange={(e) => setCheckOut(e.target.value)}
                         />
+                        <TextField label="Número de Tarjeta" fullWidth margin="normal" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
+                        <TextField label="CVV" fullWidth margin="normal" value={cvv} onChange={(e) => setCvv(e.target.value)} />
+                        <TextField label="Nombre en la Tarjeta" fullWidth margin="normal" value={cardName} onChange={(e) => setCardName(e.target.value)} />
+                        <TextField label="Dirección de Facturación" fullWidth margin="normal" value={address} onChange={(e) => setAddress(e.target.value)} />
+                        <FormControl fullWidth margin="normal">
+                            <InputLabel>Tipo de Asiento</InputLabel>
+                            <Select value={tipoAsiento} label="Tipo de Asiento" onChange={(e) => setTipoAsiento(e.target.value)}>
+                                <MenuItem value="turista">Turista</MenuItem>
+                                <MenuItem value="ejecutiva">Ejecutiva</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <TextField fullWidth label="Cantidad" type="number" margin="normal" value={cantidad} onChange={(e) => setCantidad(parseInt(e.target.value) || 1)} />
                         <Button
                             variant="contained"
                             color="primary"
@@ -209,6 +250,7 @@ const CompraPaquete = () => {
                     </CardContent>
                 </Card>
             </Container>
+            
             <Dialog
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
