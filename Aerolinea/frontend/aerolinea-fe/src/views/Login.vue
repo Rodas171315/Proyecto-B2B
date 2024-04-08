@@ -1,48 +1,61 @@
 <template>
     <div class="login-container">
-        <h1>Iniciar sesión</h1>
-        <form @submit.prevent="handleLogin">
-            <div class="form-group">
-                <label for="email">Correo electrónico:</label>
-                <input v-model="email" type="email" id="email" required />
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input v-model="password" type="password" id="password" required />
-            </div>
-            <button type="submit">Iniciar sesión</button>
-        </form>
+      <h1>Iniciar sesión</h1>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="email">Correo electrónico:</label>
+          <input v-model="email" type="email" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <input v-model="password" type="password" id="password" required />
+        </div>
+        <button type="submit">Iniciar sesión</button>
+      </form>
     </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-
-const email = ref('');
-const password = ref('');
-const router = useRouter();
-
-const handleLogin = async () => {
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  import axios from 'axios';
+  import { useRouter } from 'vue-router';
+  
+  const email = ref('');
+  const password = ref('');
+  const router = useRouter();
+  
+  const handleLogin = async () => {
     try {
-        await axios
-            .post(import.meta.env.VITE_BACKEND_URL + '/auth/login', {
-                email: email.value,
-                password: password.value,
-            })
-            .then(
-                (response) => (
-                    localStorage.setItem('user_id', response.data.details._id),
-                    localStorage.setItem('isAdmin', response.data.isAdmin)
-                ),
-            );
-        router.push('/perfil');
+      const response = await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/login', {
+        email: email.value,
+        password: password.value,
+      });
+  
+      localStorage.setItem('user_id', response.data.details._id);
+      localStorage.setItem('isAdmin', response.data.isAdmin.toString()); // Convertir booleano a string para almacenamiento
+  
+      // Redirigir al perfil y recargar la página para reflejar la sesión
+      router.push('/perfil').then(() => {
+        window.location.reload();
+      });
     } catch (error) {
-        console.error('Error de inicio de sesión:', error);
+      console.error('Error de inicio de sesión:', error);
     }
+  };
+
+
+  const handleLogout = () => {
+  localStorage.removeItem('user_id');
+  localStorage.removeItem('isAdmin');
+  router.push('/login').then(() => {
+    window.location.reload();
+  });
 };
-</script>
+
+
+
+
+  </script>
 
 <style scoped>
 .login-container {

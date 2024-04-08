@@ -67,6 +67,8 @@ async function cargarAsientosDisponibles(vueloId) {
 const confirmarReserva = async () => {
   const usuarioId = localStorage.getItem('user_id');
   if (!usuarioId) {
+    alert('Por favor, inicia sesi.');
+
     console.error('Usuario no logueado');
     return;
   }
