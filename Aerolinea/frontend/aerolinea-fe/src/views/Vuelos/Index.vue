@@ -29,7 +29,7 @@ const deleteVuelo = (id) => {
         </div>
     </div>
     <div class="row mt-3">
-        <div class="col-md-6 offset-md-3">
+        <div class="col-md-* offset-md-0">
             <div class="card border border-white text-center" v-if="!load">
                 <div class="card-body">
                     <img src="/flight-loader.gif" class="img-fluid" />
@@ -43,7 +43,12 @@ const deleteVuelo = (id) => {
                             <th>Origen</th>
                             <th>Destino</th>
                             <th>Fecha y hora de salida</th>
+                            <th>Duracion</th>
                             <th>Precio</th>
+                            <th>Asientos Turista Disponibles</th>
+                            <th>Asientos Ejecutivo Disponibles</th>
+                            <th>Ciudad de Escala</th>
+                            <th>Duracion de Escala</th>
                             <th>Valuacion</th>
                         </tr>
                     </thead>
@@ -53,7 +58,12 @@ const deleteVuelo = (id) => {
                             <td>{{ vuelo.ciudad_origen }}</td>
                             <td>{{ vuelo.ciudad_destino }}</td>
                             <td>{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</td>
+                            <td>{{ vuelo.duracion }} Horas</td>
                             <td>Q{{ vuelo.precio }}</td>
+                            <td>{{ vuelo.asientosTuristaDisponibles }}</td>
+                            <td>{{ vuelo.asientosEjecutivosDisponibles }}</td>
+                            <td>{{ vuelo.ciudad_escala }}</td>
+                            <td>{{ vuelo.duracion_escala }} Horas</td>
                             <td>{{ vuelo.valuacion }}</td>
                             <td>
                                 <RouterLink

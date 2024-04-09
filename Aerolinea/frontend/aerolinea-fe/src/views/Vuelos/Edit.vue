@@ -5,7 +5,20 @@ import { sendRequest, fechayhoraFormateada } from '../../functions';
 import axios from 'axios';
 
 const route = useRoute();
-const form = ref({ id: '', ciudad_origen: '', ciudad_destino: '', fecha_salida: '', precio: '' });
+const form = ref({
+    id: '',
+    ciudad_origen: '',
+    ciudad_destino: '',
+    fecha_salida: '',
+    duracion: '',
+    precio: '',
+    asientosTuristaDisponibles: '',
+    asientosEjecutivosDisponibles: '',
+    imagenesUrl: [],
+    esDirecto: false,
+    ciudad_escala: '',
+    duracion_escala: '',
+});
 const id = ref(route.params.id);
 onMounted(() => {
     getVuelo();
@@ -21,11 +34,21 @@ const getVuelo = () => {
                     response.data.fecha_salida,
                     'edit',
                 )),
-                (form.value.precio = response.data.precio)
+                (form.value.duracion = response.data.duracion),
+                (form.value.precio = response.data.precio),
+                (form.value.asientosTuristaDisponibles = response.data.asientosTuristaDisponibles),
+                (form.value.asientosEjecutivosDisponibles =
+                    response.data.asientosEjecutivosDisponibles),
+                (form.value.imagenesUrl[0] = response.data.imagenesUrl[0]),
+                (form.value.imagenesUrl[1] = response.data.imagenesUrl[1]),
+                (form.value.esDirecto = response.data.esDirecto),
+                (form.value.ciudad_escala = response.data.ciudad_escala),
+                (form.value.duracion_escala = response.data.duracion_escala)
             ),
         );
 };
 const save = () => {
+    // BUG: Si al actualizar un usuario no cambiamos la fecha, esta falla
     form.value.fecha_salida = fechayhoraFormateada(form.value.fecha_salida, 'create');
     sendRequest(
         'PUT',
@@ -87,6 +110,18 @@ const save = () => {
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">
+                                <i class="fa-solid fa-clock"></i>
+                            </span>
+                            <input
+                                type="number"
+                                v-model="form.duracion"
+                                placeholder="Duracion del vuelo en horas"
+                                class="form-control"
+                                required
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
                                 <i class="fa-solid fa-money-bill"></i>
                             </span>
                             <input
@@ -97,12 +132,101 @@ const save = () => {
                                 required
                             />
                         </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-chair"></i>
+                            </span>
+                            <input
+                                type="number"
+                                v-model="form.asientosTuristaDisponibles"
+                                placeholder="Capacidad de asientos turistas"
+                                class="form-control"
+                                required
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-couch"></i>
+                            </span>
+                            <input
+                                type="number"
+                                v-model="form.asientosEjecutivosDisponibles"
+                                placeholder="Capacidad de asientos ejecutivos"
+                                class="form-control"
+                                required
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-image"></i>
+                            </span>
+                            <input
+                                type="text"
+                                v-model="form.imagenesUrl[0]"
+                                placeholder="URL de la imagen 1"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-image"></i>
+                            </span>
+                            <input
+                                type="text"
+                                v-model="form.imagenesUrl[1]"
+                                placeholder="URL de la imagen 2"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-plane-circle-exclamation"></i>
+                            </span>
+                            <div class="form-check form-check-reverse">
+                                <input
+                                    type="checkbox"
+                                    v-model="form.esDirecto"
+                                    class="form-check-input"
+                                    id="esDirecto"
+                                />
+                                <label class="form-check-label" for="esDirecto"
+                                    >¿Es vuelo Directo?</label
+                                >
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-building"></i>
+                            </span>
+                            <input
+                                type="text"
+                                v-model="form.ciudad_escala"
+                                placeholder="Ciudad de escala"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fa-solid fa-clock"></i>
+                            </span>
+                            <input
+                                type="number"
+                                v-model="form.duracion_escala"
+                                placeholder="Duracion de la escala en horas"
+                                class="form-control"
+                            />
+                        </div>
                         <div class="d-grid col-10 mx-auto">
                             <button class="btn btn-success">
                                 <i class="fa-solid fa-save"></i> Guardar
                             </button>
                         </div>
                     </form>
+                </div>
+                <div class="card-footer">
+                    <RouterLink :to="{ path: '../vuelos' }" class="btn btn-dark">
+                        <i class="fa-solid fa-arrow-left"></i> Regresar
+                    </RouterLink>
                 </div>
             </div>
         </div>

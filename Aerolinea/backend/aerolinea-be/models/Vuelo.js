@@ -13,6 +13,10 @@ const VueloSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  duracion: {
+    type: Number,
+    required: true,
+  },
   precio: {
     type: Number,
     required: true,
@@ -31,23 +35,21 @@ const VueloSchema = new mongoose.Schema({
     required: true,
   },
   imagenesUrl: [String], // Array de strings para URLs de imágenes
-  duracion: {
-    type: Number,
-    required: true,
-  },
   esDirecto: {
     type: Boolean,
-    default: false,
+    default: true,
     required: true,
   },
-  escala: {
+  //escala: {
     ciudad_escala: {
       type: String,
+      //default: "Washington",
     },
     duracion_escala: {
       type: Number,
+      //default: 1,
     },
-  },
+  //},
 },
   { timestamps: true }
 );  
