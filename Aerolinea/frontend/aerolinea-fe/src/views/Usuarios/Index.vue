@@ -127,6 +127,7 @@ const save = async () => {
             <div class="card border border-white text-center" v-if="!load">
                 <div class="card-body">
                     <img src="/flight-loader.gif" class="img-fluid" />
+                    <h3>Cargando...</h3>
                 </div>
             </div>
             <div class="table-responsive" v-else>

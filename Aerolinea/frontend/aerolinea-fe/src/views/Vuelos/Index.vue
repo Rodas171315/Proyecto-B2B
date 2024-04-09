@@ -33,6 +33,7 @@ const deleteVuelo = (id) => {
             <div class="card border border-white text-center" v-if="!load">
                 <div class="card-body">
                     <img src="/flight-loader.gif" class="img-fluid" />
+                    <h3>Cargando...</h3>
                 </div>
             </div>
             <div class="table-responsive" v-else>
@@ -45,8 +46,7 @@ const deleteVuelo = (id) => {
                             <th>Fecha y hora de salida</th>
                             <th>Duracion</th>
                             <th>Precio</th>
-                            <th>Asientos Turista Disponibles</th>
-                            <th>Asientos Ejecutivo Disponibles</th>
+                            <th>Asientos Disponibles</th>
                             <th>Ciudad de Escala</th>
                             <th>Duracion de Escala</th>
                             <th>Valuacion</th>
@@ -60,8 +60,10 @@ const deleteVuelo = (id) => {
                             <td>{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</td>
                             <td>{{ vuelo.duracion }} Horas</td>
                             <td>Q{{ vuelo.precio }}</td>
-                            <td>{{ vuelo.asientosTuristaDisponibles }}</td>
-                            <td>{{ vuelo.asientosEjecutivosDisponibles }}</td>
+                            <td>
+                                {{ vuelo.asientosTuristaDisponibles }} de Turista.<br />
+                                {{ vuelo.asientosEjecutivosDisponibles }} de Ejecutiva.
+                            </td>
                             <td>{{ vuelo.ciudad_escala }}</td>
                             <td>{{ vuelo.duracion_escala }} Horas</td>
                             <td>{{ vuelo.valuacion }}</td>

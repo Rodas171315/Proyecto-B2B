@@ -18,6 +18,7 @@ export const createUsuario = async (req, res, next) => {
     }
 };
 
+// BUG: Actualizar el usuario no hashea el password
 export const updateUsuario = async (req,res,next) => {
     try {
         const updatedUsuario = await Usuario.findByIdAndUpdate(
