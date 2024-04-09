@@ -26,17 +26,23 @@ const CompraVuelo = () => {
 
   const completarCompra = async () => {
     try {
+      
+      const precioConDescuento = tipoAsiento === 'ejecutivo'
+        ? vuelo.precio * 1.5 * cantidad * 0.8 
+        : vuelo.precio * cantidad * 0.8; 
+  
       const response = await fetch('http://35.211.214.127:8800/boletos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          usuarioId: '65fe775efd03e7de767d50e7', 
+          usuarioId: '65fe775efd03e7de767d50e7',
           vueloId: vuelo._id,
           tipoAsiento,
-          cantidad
+          cantidad,
+          precioFinal: precioConDescuento, 
         }),
       });
-
+  
       if (!response.ok) {
         throw new Error('No se pudo completar la compra del vuelo');
       }
@@ -87,7 +93,15 @@ const CompraVuelo = () => {
                         <Typography variant="body1">Origen: {vuelo.ciudad_origen}</Typography>
                         <Typography variant="body1">Destino: {vuelo.ciudad_destino}</Typography>
                         <Typography>{`Fecha y Hora: ${new Date(vuelo.fecha_salida).toLocaleString()}`}</Typography>
-                        <Typography variant="body1">Precio: {vuelo.precio} c/u</Typography>
+                        <Typography variant="body1">
+                          Precio: 
+                          <span style={{ textDecoration: 'line-through' }}>{vuelo.precio}</span>
+                          {' '}c/u{' '}
+                          <span style={{ color: 'green' }}>
+                            {Math.round(vuelo.precio * 0.8 * 100) / 100} c/u (20% de descuento aplicado)
+                          </span>
+                        </Typography>
+
                         <Typography variant="body1">Asientos Dispoibles: Turista{vuelo.asientosTuristaDisponibles} - Ejecutivo{vuelo.asientosEjecutivosDisponibles}</Typography>
                         
                         <TextField

@@ -1,13 +1,24 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Container, Grid, Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import React, { useState } from 'react';
+import { Typography, Button, Container, Grid, Card, CardContent, CardMedia, CardActions, TextField } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const VuelosDisponibles = () => {
     const location = useLocation();
     const { vuelos } = location.state || { vuelos: [] };
     const navigate = useNavigate();
+
+    const [precioMin, setPrecioMin] = useState('');
+    const [precioMax, setPrecioMax] = useState('');
+
+    const filtrarVuelos = () => {
+        return vuelos.filter(vuelo => {
+            const precio = vuelo.precio;
+            return (!precioMin || precio >= precioMin) &&
+                   (!precioMax || precio <= precioMax);
+        });
+    };
 
     const comprarVuelo = (vuelo) => {
         navigate('/compra-vuelo', { state: { vuelo } });
@@ -20,9 +31,31 @@ const VuelosDisponibles = () => {
                 <Typography variant="h4" component="h2" gutterBottom>
                     Vuelos Disponibles
                 </Typography>
-                {vuelos.length > 0 ? (
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="Precio Mínimo"
+                            type="number"
+                            variant="outlined"
+                            value={precioMin}
+                            onChange={(e) => setPrecioMin(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="Precio Máximo"
+                            type="number"
+                            variant="outlined"
+                            value={precioMax}
+                            onChange={(e) => setPrecioMax(e.target.value)}
+                        />
+                    </Grid>
+                </Grid>
+                {filtrarVuelos().length > 0 ? (
                     <Grid container spacing={4}>
-                        {vuelos.map((vuelo, index) => (
+                        {filtrarVuelos().map((vuelo, index) => (
                             <Grid item key={index} xs={12} sm={6} md={4}>
                                 <Card>
                                     <CardMedia

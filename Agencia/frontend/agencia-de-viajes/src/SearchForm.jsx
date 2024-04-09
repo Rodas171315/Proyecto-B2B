@@ -116,33 +116,24 @@ const SearchForm = () => {
             if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
             let paquetesData = await resPaquetes.json();
     
-            paquetesData = await Promise.all(paquetesData.map(async (paquete) => {
-                const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
-                    fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
-                    fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-                    fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
-                ]);
+            // Solicitar los datos de vuelos para cada paquete
+            const vuelosRequests = paquetesData.map(paquete =>
+                fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`)
+            );
+            const vuelosResponses = await Promise.all(vuelosRequests);
+            const vuelosData = await Promise.all(vuelosResponses.map(res => res.json()));
     
-                const [hotel, habitacion, vuelo] = await Promise.all([
-                    hotelRes.json(),
-                    habitacionRes.json(),
-                    vueloRes.json(),
-                ]);
+            // Asignar datos de vuelo a cada paquete
+            paquetesData.forEach((paquete, index) => {
+                paquete.datosVuelo = vuelosData[index];
+            });
     
-                return {
-                    ...paquete,
-                    hotel: hotel.nombre, 
-                    habitacion: habitacion.tipo_habitacion, 
-                    precioH: habitacion.precioxnoche,
-                    vuelo: `${vuelo.ciudad_origen} a ${vuelo.ciudad_destino}`,
-                    precioA: vuelo.precio,
-                    fecha: vuelo.fecha_salida,
-                };
-            }));
-    
-           
+            // Filtrar paquetes según los criterios de búsqueda
             const paquetesFiltrados = paquetesData.filter(paquete =>
-                paquete.vuelo.includes(origen) && paquete.vuelo.includes(destino) 
+                paquete.datosVuelo.ciudad_origen === origen &&
+                paquete.datosVuelo.ciudad_destino === destino &&
+                new Date(paquete.datosVuelo.fecha_salida) >= new Date(fechaIda) &&
+                (tipoViaje === 'sencillo' || new Date(paquete.datosVuelo.fecha_salida) <= new Date(fechaVuelta))
             );
     
             if (paquetesFiltrados.length === 0) {
@@ -157,6 +148,7 @@ const SearchForm = () => {
             setOpenDialog(true);
         }
     };
+    
     
     
     return (
@@ -294,8 +286,8 @@ const SearchForm = () => {
                                 value={claseVuelo}
                                 onChange={(e) => setClaseVuelo(e.target.value)}
                             >
-                                <FormControlLabel value="economica" control={<Radio />} label="Económica" />
-                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutiva" />
+                                <FormControlLabel value="economica" control={<Radio />} label="Turista" />
+                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutivo" />
                                 
                             </RadioGroup>
                         </FormControl>
@@ -357,6 +349,21 @@ const SearchForm = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <FormControl component="fieldset">
+                            <FormLabel component="legend">Tipo de Viaje</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="tipo de viaje"
+                                name="tipo-viaje"
+                                value={tipoViaje}
+                                onChange={(e) => setTipoViaje(e.target.value)}
+                            >
+                                <FormControlLabel value="sencillo" control={<Radio />} label="Sencillo" />
+                                <FormControlLabel value="redondo" control={<Radio />} label="Redondo" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
                             <FormLabel component="legend">Clase</FormLabel>
                             <RadioGroup
                                 row
@@ -365,8 +372,8 @@ const SearchForm = () => {
                                 value={claseVuelo}
                                 onChange={(e) => setClaseVuelo(e.target.value)}
                             >
-                                <FormControlLabel value="economica" control={<Radio />} label="Económica" />
-                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutiva" />
+                                <FormControlLabel value="economica" control={<Radio />} label="Turista" />
+                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutivo" />
                                 
                             </RadioGroup>
                         </FormControl>

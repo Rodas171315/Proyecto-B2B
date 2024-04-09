@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Container, Select, FormControl, InputLabel, MenuItem, TextField, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CardMedia } from '@mui/material';
+import { Typography, Button, Container, TextField, Card, FormControl, Select, MenuItem, InputLabel, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, CardMedia } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
 import emailjs from 'emailjs-com';
@@ -20,12 +20,41 @@ const CompraPaquete = () => {
     const [address, setAddress] = useState('');
     const [tipoAsiento, setTipoAsiento] = useState('turista');
     const [cantidad, setCantidad] = useState(1);
-    
+    const [precioVuelo, setPrecioVuelo] = useState(0);
+    const [precioHabitacion, setPrecioHabitacion] = useState(0);
+
+    useEffect(() => {
+        
+        if (paquete) {
+            const fetchDatosPaquete = async () => {
+                try {
+                    const [resVuelo, resHabitacion] = await Promise.all([
+                        fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+                        fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`)
+                    ]);
+                    if (!resVuelo.ok || !resHabitacion.ok) {
+                        throw new Error('Error al obtener datos del paquete');
+                    }
+                    const dataVuelo = await resVuelo.json();
+                    const dataHabitacion = await resHabitacion.json();
+                    setPrecioVuelo(dataVuelo.precio);
+                    setPrecioHabitacion(dataHabitacion.precioxnoche);
+                } catch (error) {
+                    console.error('Error al obtener datos del paquete:', error);
+                }
+            };
+            fetchDatosPaquete();
+        }
+    }, [paquete]);
+
+
+
 
     const realizarReserva = async () => {
         const formattedCheckIn = new Date(checkIn).toISOString().split('T')[0];
         const formattedCheckOut = new Date(checkOut).toISOString().split('T')[0];
         const codigoReserva = Math.floor(Math.random() * 1000000).toString();
+        
         
         try {
             
@@ -61,7 +90,7 @@ const CompraPaquete = () => {
     
             
             const capacidadPersonas = habitacion.capacidad_personas;
-    
+            
             
             const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
                 method: 'POST',
@@ -89,7 +118,7 @@ const CompraPaquete = () => {
             const checkOutDate = new Date(formattedCheckOut);
             const timeDiff = checkOutDate - checkInDate;
             const noches = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-
+            
             if (noches <= 0) {
                 alert("Las fechas de check-in y check-out no son válidas.");
                 return;
@@ -193,6 +222,8 @@ const CompraPaquete = () => {
         return <Typography variant="h6">Cargando información del paquete...</Typography>;
     }
 
+    const precioTotalSinDescuento = precioHabitacion + precioVuelo;
+    const precioTotalConDescuento = precioTotalSinDescuento * 0.8; 
 
     return (
         <div>
@@ -209,7 +240,17 @@ const CompraPaquete = () => {
                         <Typography variant="h5" component="h2">Reserva de Paquete</Typography>
                         <Typography variant="body1">Paquete: {paquete.nombrePaquete}</Typography>
                         <Typography variant="body1">Descripcion: {paquete.descripcion}</Typography>
-                        
+                        <Typography variant="body1">
+                            Precio Habitación: ${precioHabitacion}
+                        </Typography>
+                        <Typography variant="body1">
+                            Precio Vuelo: ${precioVuelo}
+                        </Typography>
+                        <Typography variant="body1">
+                            Precio Total: <span style={{ textDecoration: 'line-through' }}>${precioTotalSinDescuento}</span> {' '}
+                            <span style={{ color: 'green' }}>${precioTotalConDescuento} (20% de descuento aplicado)</span>
+                        </Typography>
+
                         
                         <TextField
                             type="date"

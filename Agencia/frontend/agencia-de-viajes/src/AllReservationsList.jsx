@@ -7,9 +7,11 @@ import emailjs from 'emailjs-com';
 const AllReservationsList = () => {
   const [reservations, setReservations] = useState([]);
   const [agencyUsers, setAgencyUsers] = useState([]);
+  const [flightReservations, setFlightReservations] = useState([]);
 
   useEffect(() => {
     fetchAgencyUsersAndReservations();
+    fetchFlightReservations();
   }, []);
 
   const fetchAgencyUsersAndReservations = async () => {
@@ -33,6 +35,22 @@ const AllReservationsList = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+
+  const fetchFlightReservations = async () => {
+    try {
+      
+      const response = await fetch(`http://35.211.214.127:8800/boletos`);
+      if (!response.ok) {
+        throw new Error('Error al cargar reservas de vuelos');
+      }
+      const data = await response.json();
+      setFlightReservations(data); 
+    } catch (error) {
+      console.error('Error al cargar reservas de vuelos:', error);
+    }
+  };
+
 
   const calculateNights = (checkIn, checkOut) => {
     const checkInDate = new Date(checkIn);
@@ -79,6 +97,73 @@ const AllReservationsList = () => {
       alert('Error al cancelar la reserva');
     }
   };
+
+  const cancelarBoletoVuelo = async (idBoleto) => {
+    const url = `http://35.211.214.127:8800/boletos/cancelar/${idBoleto}`; 
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) {
+        throw new Error('No se pudo cancelar el boleto de vuelo');
+      }
+  
+      
+  
+      alert('Boleto de vuelo cancelado con éxito');
+      fetchAgencyUsersAndReservations(); 
+    } catch (error) {
+      console.error('Error al cancelar el boleto de vuelo:', error);
+      alert('Error al cancelar el boleto de vuelo');
+    }
+  };
+
+  function renderFlightReservations() {
+    if (flightReservations.length > 0) {
+        return (
+            <Grid container spacing={4}>
+                {flightReservations.map((reservation, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={`https://source.unsplash.com/random?airplane&sig=${index}`}
+                                alt="Imagen de vuelo"
+                            />
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom>
+                                    {`Vuelo: ${reservation.ciudad_origen} a ${reservation.ciudad_destino}`}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    Fecha y Hora: {new Date(reservation.fecha_salida).toLocaleString()}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    Precio: ${reservation.precioFinal}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    Estado: {reservation.estadoReserva ? "Confirmada" : "Cancelada"}
+                                </Typography>
+                                {reservation.estadoReserva && (
+                                    <Button 
+                                        color="secondary" 
+                                        onClick={() => cancelarBoletoVuelo(reservation._id)}
+                                    >
+                                        Cancelar Reserva
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    } else {
+        return <Typography>No se encontraron reservas de vuelos.</Typography>;
+    }
+}
+
   return (
     <div>
         <Header />
@@ -121,6 +206,12 @@ const AllReservationsList = () => {
                 <Typography>No se encontraron reservas.</Typography>
             )}
             </Container>
+            <Container maxWidth="md">
+            <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
+              Todas las Reservas de Vuelos
+          </Typography>
+          {renderFlightReservations()}
+        </Container>
         <Footer />
     </div>
   );
