@@ -30,6 +30,27 @@ const HomePage = () => {
   }, []);
 
 
+  const [filterCapacity, setFilterCapacity] = useState('');
+
+  // Función para filtrar habitaciones por capacidad de personas
+  const filterRoomsByCapacity = (capacity) => {
+    if (!capacity) return; // Si no se ha proporcionado capacidad, no se hace nada
+
+    // Filtra los hoteles cuyas habitaciones coincidan con la capacidad de personas
+    const filteredHotels = hotels.map(hotel => {
+      const filteredRooms = hotel.rooms.filter(room => room.capacidad_personas === parseInt(capacity));
+      return { ...hotel, rooms: filteredRooms };
+    }).filter(hotel => hotel.rooms.length > 0); // Filtra hoteles sin habitaciones que coincidan
+
+    setHotels(filteredHotels);
+  };
+
+  const handleFilterRooms = (e) => {
+    e.preventDefault();
+    filterRoomsByCapacity(filterCapacity);
+  };
+
+
 
 
   //IMAGENES
@@ -136,7 +157,21 @@ const HomePage = () => {
                 ))}
               </Form.Control>
             </Form.Group>
-            <Button variant="primary" type="submit">Buscar</Button>
+  
+            <Form.Group controlId="capacidadPersonas">
+              <Form.Label>Capacidad de Personas en Habitación</Form.Label>
+              <Form.Control 
+                type="number" 
+                placeholder="Ingrese la capacidad de personas" 
+                value={filterCapacity} 
+                onChange={(e) => setFilterCapacity(e.target.value)}
+              />
+            </Form.Group>
+  
+            <Button variant="primary" type="submit">Buscar Hoteles</Button>
+            <Button variant="secondary" type="button" onClick={handleFilterRooms} className="ml-2">
+              Filtrar Habitaciones
+            </Button>
           </Form>
         </Col>
       </Row>
