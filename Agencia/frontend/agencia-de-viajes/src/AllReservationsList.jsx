@@ -1,13 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Card, CardContent, Typography, Button, CardMedia } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, Button, CardMedia, Tab, Tabs, Box } from '@mui/material';
 import Header from './Header'; 
 import Footer from './Footer'; 
 import emailjs from 'emailjs-com';
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+      <div
+          role="tabpanel"
+          hidden={value !== index}
+          id={`simple-tabpanel-${index}`}
+          aria-labelledby={`simple-tab-${index}`}
+          {...other}
+      >
+          {value === index && (
+              <Box sx={{ p: 3 }}>
+                  <Typography>{children}</Typography>
+              </Box>
+          )}
+      </div>
+  );
+}
 
 const AllReservationsList = () => {
   const [reservations, setReservations] = useState([]);
   const [agencyUsers, setAgencyUsers] = useState([]);
   const [flightReservations, setFlightReservations] = useState([]);
+  const [tabValue, setTabValue] = useState(0);
+
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+};
 
   useEffect(() => {
     fetchAgencyUsersAndReservations();
@@ -167,6 +192,12 @@ const AllReservationsList = () => {
   return (
     <div>
         <Header />
+        <Tabs value={tabValue} onChange={handleTabChange} centered>
+                <Tab label="Hospedaje" />
+                <Tab label="Vuelos" />
+                <Tab label="Paquetes" />
+            </Tabs>
+            <TabPanel value={tabValue} index={0}>
             <Container maxWidth="md">
             <Typography variant="h4" gutterBottom>
                 Todas las Reservas
@@ -206,12 +237,15 @@ const AllReservationsList = () => {
                 <Typography>No se encontraron reservas.</Typography>
             )}
             </Container>
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
             <Container maxWidth="md">
             <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
               Todas las Reservas de Vuelos
           </Typography>
           {renderFlightReservations()}
         </Container>
+        </TabPanel>
         <Footer />
     </div>
   );

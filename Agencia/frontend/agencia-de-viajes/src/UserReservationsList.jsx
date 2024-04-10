@@ -1,16 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Card, CardContent, Typography, CardMedia, Button } from '@mui/material';
+import { Container, Grid, Card, CardContent, Typography, CardMedia, Button, Tab, Tabs, Box } from '@mui/material';
 import { useUser } from './UserContext';
 import Header from './Header'; 
 import Footer from './Footer';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+      <div
+          role="tabpanel"
+          hidden={value !== index}
+          id={`simple-tabpanel-${index}`}
+          aria-labelledby={`simple-tab-${index}`}
+          {...other}
+      >
+          {value === index && (
+              <Box sx={{ p: 3 }}>
+                  <Typography>{children}</Typography>
+              </Box>
+          )}
+      </div>
+  );
+}
+
 const UserReservationsList = () => {
     const [reservations, setReservations] = useState([]);
     const [flightReservations, setFlightReservations] = useState([]);
     const { user } = useUser();
+    const [tabValue, setTabValue] = useState(0);
 
+
+    const handleTabChange = (event, newValue) => {
+      setTabValue(newValue);
+  };
     useEffect(() => {
       if (user) {
         fetchReservations();
@@ -124,6 +148,12 @@ const UserReservationsList = () => {
     return (
       <div>
           <Header />
+          <Tabs value={tabValue} onChange={handleTabChange} centered>
+                <Tab label="Hospedaje" />
+                <Tab label="Vuelos" />
+                <Tab label="Paquetes" />
+            </Tabs>
+            <TabPanel value={tabValue} index={0}>
               <Container maxWidth="md">
                   <Typography variant="h4" gutterBottom>
                       Historial de Reservas de Hospedajes
@@ -161,51 +191,54 @@ const UserReservationsList = () => {
                       <Typography>No se encontraron reservas.</Typography>
                   )}
               </Container>
-        <Container maxWidth="md">
-          <Typography variant="h4" gutterBottom>
-            Historial de Reservas de Vuelos
-          </Typography>
-          {flightReservations.length > 0 ? (
-            <Grid container spacing={4}>
-              {flightReservations.map((reservation, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image={`https://source.unsplash.com/random?flight&sig=${index}`}
-                      alt="Imagen de vuelo"
-                    />
-                    <CardContent>
-                      {reservation.detallesVuelo ? (
-                        <>
-                          <Typography variant="h6">
-                            {reservation.detallesVuelo.origen} - {reservation.detallesVuelo.destino}
-                          </Typography>
-                          <Typography color="textSecondary">
-                            Fecha y Hora: {new Date(reservation.detallesVuelo.fechaSalida).toLocaleString()}
-                          </Typography>
-                          <Typography color="textSecondary">
-                            Precio: ${reservation.detallesVuelo.precio}
-                          </Typography>
-                          <Button onClick={() => downloadFlightReservationPdf(reservation)}>
-                            Descargar Reserva
-                          </Button>
-                        </>
-                      ) : (
-                        <Typography variant="body2" color="error">
-                          Detalle de vuelo no disponible.
-                        </Typography>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <Typography>No se encontraron reservas de vuelos.</Typography>
-          )}
-        </Container>
+              </TabPanel>
+              <TabPanel value={tabValue} index={1}>
+              <Container maxWidth="md">
+                <Typography variant="h4" gutterBottom>
+                  Historial de Reservas de Vuelos
+                </Typography>
+                {flightReservations.length > 0 ? (
+                  <Grid container spacing={4}>
+                    {flightReservations.map((reservation, index) => (
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Card>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            image={`https://source.unsplash.com/random?flight&sig=${index}`}
+                            alt="Imagen de vuelo"
+                          />
+                          <CardContent>
+                            {reservation.detallesVuelo ? (
+                              <>
+                                <Typography variant="h6">
+                                  {reservation.detallesVuelo.origen} - {reservation.detallesVuelo.destino}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                  Fecha y Hora: {new Date(reservation.detallesVuelo.fechaSalida).toLocaleString()}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                  Precio: ${reservation.detallesVuelo.precio}
+                                </Typography>
+                                <Button onClick={() => downloadFlightReservationPdf(reservation)}>
+                                  Descargar Reserva
+                                </Button>
+                              </>
+                            ) : (
+                              <Typography variant="body2" color="error">
+                                Detalle de vuelo no disponible.
+                              </Typography>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Typography>No se encontraron reservas de vuelos.</Typography>
+                )}
+              </Container>
+              </TabPanel>
         <Footer />
       </div>
     );
