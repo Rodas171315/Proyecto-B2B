@@ -44,6 +44,7 @@ public class PaquetesService {
         Paquetes paqueteExistente = paquetesRepository.findById(id);
         if (paqueteExistente != null) {
             paqueteExistente.setEstadoPaquete(paquete.getEstadoPaquete());
+            paqueteExistente.setIdUsuario(paquete.getIdUsuario());
             paquetesRepository.persist(paqueteExistente);
             return Response.ok(paqueteExistente).build();
         } else {

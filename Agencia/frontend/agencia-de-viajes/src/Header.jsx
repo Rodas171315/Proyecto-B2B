@@ -20,7 +20,7 @@ const Header = () => {
                 <Button color="inherit" onClick={() => navigate('/afiliados')}>Hoteles y Aereolineas Afiliados</Button>
                 {user && <Button color="inherit" onClick={() => navigate('/userprofile')}>Perfil</Button>}
                 {user && <Button color="inherit" onClick={() => navigate('/reservations')}>Lista de Reservas</Button>}
-                {user && user.rol === 2 && <Button color="inherit" onClick={() => navigate('/lista-paquetes')}>Lista de Paquetes</Button>}
+                {user && user.rol === 2 && <Button color="inherit" onClick={() => navigate('/lista-paquetes')}>Administrar Paquetes</Button>}
                 {user && user.rol === 2 && <Button color="inherit" onClick={() => navigate('/allreservations')}>Administrar Reservas</Button>}
             </Toolbar>
         </AppBar>

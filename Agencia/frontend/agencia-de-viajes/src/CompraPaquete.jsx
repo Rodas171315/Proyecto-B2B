@@ -165,7 +165,8 @@ const CompraPaquete = () => {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             ...paquete, 
-                            estadoPaquete: 'Comprado' 
+                            estadoPaquete: 'Comprado',
+                            idUsuario: user.id
                         }),
                     });
             
