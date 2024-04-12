@@ -30,8 +30,8 @@ const HomePage = () => {
     fetchRoomTypes();
     fetchPaises();
     fetchCapacidades();
-    fetchHotelsAndRooms(paisSeleccionado, fechaIngreso, fechaSalida, numeroPersonas);
-  }, [paisSeleccionado, fechaIngreso, fechaSalida, numeroPersonas]);
+    fetchInitialHotelsAndRooms();
+  }, []);
 
 
 
@@ -101,44 +101,65 @@ const HomePage = () => {
     }
   };
 
-  const fetchHotelsAndRooms = async (pais = '') => {
-    let url = pais ? `http://localhost:8080/hoteles/por-pais/${pais}` : `http://localhost:8080/hoteles`;
+  const fetchInitialHotelsAndRooms = async () => {
     try {
-      const hotelsResponse = await fetch(url);
+      const hotelsResponse = await fetch('http://localhost:8080/hoteles');
       if (!hotelsResponse.ok) throw new Error('Error al cargar hoteles');
       const hotelsData = await hotelsResponse.json();
   
       const roomTypesResponse = await fetch('http://localhost:8080/tipos_habitacion');
+      if (!roomTypesResponse.ok) throw new Error('Error al cargar tipos de habitación');
       const roomTypesData = await roomTypesResponse.json();
+  
       const roomTypesMap = roomTypesData.reduce((acc, roomType) => {
         acc[roomType.id_tipo] = roomType.imagenUrl || defaultRoomImage;
         return acc;
       }, {});
   
       const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
-        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`); // Cambiado de hotel.id a hotel.id_hotel
+        if (!roomsResponse.ok) {
+          console.error('Error fetching rooms for hotel', hotel.id_hotel); // Cambiado de hotel.id a hotel.id_hotel
+          return { ...hotel, rooms: [] }; // Devuelve el hotel sin modificarlo si hay un error
+        }
         const roomsData = await roomsResponse.json();
         const roomsWithImages = roomsData.map(room => ({
           ...room,
-          imagenUrl: roomTypesMap[room.tipo_habitacion]
+          imagenUrl: roomTypesMap[room.tipo_habitacion] || defaultRoomImage
         }));
         return { ...hotel, rooms: roomsWithImages };
       }));
   
       setHotels(hotelsWithRooms);
     } catch (error) {
-      setError('Error al cargar hoteles y habitaciones: ' + error.message);
+      console.error('Error loading initial hotels and rooms:', error);
+      setError('Error al cargar hoteles y habitaciones iniciales: ' + error.message);
     }
   };
   
   
   
-  
+
+  const fetchHotelsAndRoomsFiltered = async () => {
+    let queryParams = '';
+    if (paisSeleccionado || fechaIngreso || fechaSalida || numeroPersonas) {
+      queryParams = `?pais=${paisSeleccionado}&fechaIngreso=${fechaIngreso}&fechaSalida=${fechaSalida}&numeroPersonas=${numeroPersonas}`;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8080/habitaciones/buscar${queryParams}`);
+      if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
+      const filteredHotels = await response.json();
+      setHotels(filteredHotels);
+    } catch (error) {
+      setError('Error al cargar hoteles y habitaciones filtradas: ' + error.message);
+    }
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchHotelsAndRooms(paisSeleccionado);
+    fetchHotelsAndRoomsFiltered();
   };
-  
 
   return (
     <Container className="my-5">
