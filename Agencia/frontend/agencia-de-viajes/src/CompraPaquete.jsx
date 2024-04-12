@@ -22,6 +22,7 @@ const CompraPaquete = () => {
     const [cantidad, setCantidad] = useState(1);
     const [precioVuelo, setPrecioVuelo] = useState(0);
     const [precioHabitacion, setPrecioHabitacion] = useState(0);
+    const [fechaSalidaVuelo, setFechaSalidaVuelo] = useState('');
 
     useEffect(() => {
         
@@ -39,6 +40,7 @@ const CompraPaquete = () => {
                     const dataHabitacion = await resHabitacion.json();
                     setPrecioVuelo(dataVuelo.precio);
                     setPrecioHabitacion(dataHabitacion.precioxnoche);
+                    setFechaSalidaVuelo(dataVuelo.fecha_salida);
                 } catch (error) {
                     console.error('Error al obtener datos del paquete:', error);
                 }
@@ -59,12 +61,12 @@ const CompraPaquete = () => {
         try {
             
             const apiUrl = 'http://35.211.214.127:8800/boletos'; 
-            const response = await fetch(apiUrl, {
+            const responseBoleto = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     usuarioId: '65fe775efd03e7de767d50e7', 
-                    vueloId: paquete.idVuelo, 
+                    vueloId: paquete.idVuelo,
                     tipoAsiento,
                     cantidad,
                     datosCompra: {
@@ -75,11 +77,16 @@ const CompraPaquete = () => {
                     }
                 }),
             });
-
-            if (!response.ok) {
+            
+            if (!responseBoleto.ok) {
                 throw new Error('No se pudo completar la compra del vuelo.');
             }
-
+            
+            const boletoData = await responseBoleto.json();
+            console.log("Respuesta completa del boleto:", boletoData); 
+            const idBoleto = boletoData[0]._id;   
+            console.log("ID del Boleto:", idBoleto);
+            
 
             const responseHabitacion = await fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`);
             if (!responseHabitacion.ok) {
@@ -158,6 +165,9 @@ const CompraPaquete = () => {
                 body: JSON.stringify(reservaData),
             });
             
+            const reservaHabitacion = await responseReserva.json();
+            const idReservaHabitacion = reservaHabitacion.idReserva; 
+
             const actualizarEstadoPaquete = async () => {
                 try {
                     const response = await fetch(`http://localhost:8081/paquetes/${paquete.idPaquete}`, {
@@ -166,7 +176,9 @@ const CompraPaquete = () => {
                         body: JSON.stringify({
                             ...paquete, 
                             estadoPaquete: 'Comprado',
-                            idUsuario: user.id
+                            idUsuario: user.id,
+                            idReservaHabitacion: idReservaHabitacion,
+                            idBoleto: idBoleto,
                         }),
                     });
             
@@ -245,6 +257,9 @@ const CompraPaquete = () => {
                             Precio Habitación: ${precioHabitacion}
                         </Typography>
                         <Typography variant="body1">
+                        Fecha de Salida del Vuelo: {new Date(fechaSalidaVuelo).toLocaleDateString()} 
+                        </Typography>
+                        <Typography variant="body1">
                             Precio Vuelo: ${precioVuelo}
                         </Typography>
                         <Typography variant="body1">
@@ -280,7 +295,19 @@ const CompraPaquete = () => {
                                 <MenuItem value="ejecutiva">Ejecutiva</MenuItem>
                             </Select>
                         </FormControl>
-                        <TextField fullWidth label="Cantidad" type="number" margin="normal" value={cantidad} onChange={(e) => setCantidad(parseInt(e.target.value) || 1)} />
+                        <TextField
+                        fullWidth
+                        label="Cantidad"
+                        type="number"
+                        margin="normal"
+                        value={cantidad}  
+                        onChange={(e) => setCantidad(1)}  
+                        InputProps={{
+                            readOnly: true,  
+                        }}
+                        />
+
+
                         <Button
                             variant="contained"
                             color="primary"
@@ -315,3 +342,4 @@ const CompraPaquete = () => {
 };
 
 export default CompraPaquete;
+

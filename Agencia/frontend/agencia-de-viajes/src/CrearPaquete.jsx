@@ -40,6 +40,16 @@ const CrearPaquete = () => {
     }
   }, [hotelSeleccionado]);
 
+  const translateTipoHabitacion = (tipoHabitacion) => {
+    const tipoHabitacionMap = {
+      1: "Doble",
+      2: "Junior Suite",
+      3: "Suite",
+      4: "Gran Suite",
+    };
+    return tipoHabitacionMap[tipoHabitacion] || "Desconocida";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
   
@@ -48,7 +58,9 @@ const CrearPaquete = () => {
       console.error('El nombre del paquete es requerido');
       return; 
     }
-  
+    
+
+
     const paqueteData = {
       nombrePaquete,
       descripcion: descripcionPaquete,
@@ -158,7 +170,7 @@ const CrearPaquete = () => {
                 >
                   {habitaciones.map((habitacion) => (
                     <MenuItem key={habitacion.id_habitacion} value={habitacion.id_habitacion}>
-                      Tipo:{habitacion.tipo_habitacion} - Precio:${habitacion.precioxnoche} - Personas:{habitacion.capacidad_personas}
+                      Tipo: {translateTipoHabitacion(habitacion.tipo_habitacion)} - Precio:${habitacion.precioxnoche} - Personas:{habitacion.capacidad_personas}
                     </MenuItem>
                   ))}
                 </Select>
@@ -175,7 +187,7 @@ const CrearPaquete = () => {
                 >
                   {vuelos.map((vuelo) => (
                     <MenuItem key={vuelo._id} value={vuelo._id}>
-                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio})
+                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio})  {vuelo.fecha_salida}
                     </MenuItem>
                   ))}
                 </Select>

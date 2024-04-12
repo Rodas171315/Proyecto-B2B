@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Typography, Container, Grid, Card, CardContent, CardActions, Button, CardMedia, TextField } from '@mui/material';
 import Header from './Header'; 
 import Footer from './Footer'; 
 
 const PaquetesDisponibles = () => {
     const navigate = useNavigate();
-    const [paquetes, setPaquetes] = useState([]);
+    const location = useLocation();
+    const [paquetes, setPaquetes] = useState(location.state?.paquetes || []);
     const [precioMin, setPrecioMin] = useState('');
     const [precioMax, setPrecioMax] = useState('');
+
+    const filtrarPaquetes = () => {
+        return paquetes.filter(paquete => {
+            const precioPaquete = paquete.precioA + paquete.precioH;
+            return (!precioMin || precioPaquete >= precioMin) &&
+                   (!precioMax || precioPaquete <= precioMax);
+        });
+    };
 
     useEffect(() => {
         const fetchPaquetes = async () => {
@@ -52,13 +61,6 @@ const PaquetesDisponibles = () => {
         fetchPaquetes();
     }, []);
 
-    const filtrarPaquetes = () => {
-        return paquetes.filter(paquete => {
-            const precioPaquete = paquete.precioA + paquete.precioH;
-            return (!precioMin || precioPaquete >= precioMin) &&
-                   (!precioMax || precioPaquete <= precioMax);
-        });
-    };
 
     return (
         <div>
@@ -96,7 +98,7 @@ const PaquetesDisponibles = () => {
                                 <CardMedia
                                     component="img"
                                     height="140"
-                                    image={`https://source.unsplash.com/random?airport&sig=${index}`}
+                                    image={`https://source.unsplash.com/random?hotelRoom&sig=${index}`}
                                     alt="Imagen del aeropuerto"
                                 />
                                 <CardContent>

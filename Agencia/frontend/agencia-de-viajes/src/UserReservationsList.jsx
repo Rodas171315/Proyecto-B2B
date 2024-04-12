@@ -28,6 +28,7 @@ function TabPanel(props) {
 const UserReservationsList = () => {
     const [reservations, setReservations] = useState([]);
     const [flightReservations, setFlightReservations] = useState([]);
+    const [packages, setPackages] = useState([]);
     const { user } = useUser();
     const [tabValue, setTabValue] = useState(0);
 
@@ -39,6 +40,7 @@ const UserReservationsList = () => {
       if (user) {
         fetchReservations();
         fetchFlightReservations();
+        fetchPackages();
       }
     }, [user]);
 
@@ -69,7 +71,41 @@ const UserReservationsList = () => {
       }
     };
     
-    
+    const fetchPackages = async () => {
+      try {
+          const resPaquetes = await fetch('http://localhost:8081/paquetes');
+          if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
+          let paquetesData = await resPaquetes.json();
+
+          paquetesData = paquetesData.filter(paquete => paquete.idUsuario === user.id);
+
+          const detailedPackages = await Promise.all(paquetesData.map(async (paquete) => {
+              const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
+                  fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
+                  fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
+                  fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+              ]);
+          
+              const hotel = await hotelRes.json();
+              const habitacion = await habitacionRes.json();
+              const vuelo = await vueloRes.json();
+              
+              return {
+                  ...paquete,
+                  hotel: hotel.nombre, 
+                  habitacion: habitacion.tipo_habitacion, 
+                  precioH: habitacion.precioxnoche,
+                  vuelo: `${vuelo.ciudad_origen} a ${vuelo.ciudad_destino}`,
+                  precioA: vuelo.precio,
+                  fecha: vuelo.fecha_salida,
+              };
+          }));
+          
+          setPackages(detailedPackages);
+      } catch (error) {
+          console.error('Error al obtener los paquetes:', error);
+      }
+  };
 
     const calculateNights = (checkIn, checkOut) => {
       const checkInDate = new Date(checkIn);
@@ -144,6 +180,31 @@ const UserReservationsList = () => {
       doc.save(`ReservaVuelo_${new Date().getTime()}.pdf`);
     };
     
+    const downloadPackagePdf = (paquete) => {
+      const doc = new jsPDF();
+      doc.text("Detalle del Paquete", 14, 16);
+      doc.setFontSize(10);
+  
+      const packageDetails = [
+          ["Nombre del Paquete", paquete.nombrePaquete],
+          ["Descripción", paquete.descripcion],
+          ["Hotel", paquete.hotel],
+          ["Habitación", `${paquete.habitacion}, $${paquete.precioH} por noche`],
+          ["Vuelo", `${paquete.vuelo}, $${paquete.precioA}`],
+          ["Fecha de Salida del Vuelo", new Date(paquete.fecha).toLocaleDateString()],
+          ["Precio Total del Paquete", `$${parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10)}`],
+          ["Estado del Paquete", paquete.estadoPaquete],
+      ];
+  
+      doc.autoTable({
+          head: [['Detalle', 'Descripción']],
+          body: packageDetails,
+          startY: 22,
+      });
+  
+      doc.save(`Paquete_${paquete.id}.pdf`);
+  };
+  
 
     return (
       <div>
@@ -239,6 +300,63 @@ const UserReservationsList = () => {
                 )}
               </Container>
               </TabPanel>
+              <TabPanel value={tabValue} index={2}> 
+            <Container maxWidth="md">
+                <Typography variant="h4" gutterBottom>
+                    Paquetes Comprados
+                </Typography>
+                {packages.length > 0 ? (
+                    <Grid container spacing={4}>
+                        {packages.map((paquete, index) => (
+                            <Grid item xs={12} sm={6} md={4} key={paquete.id}>
+                                <Card>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        image={`https://source.unsplash.com/random?flight&sig=${index}`}
+                                        alt="Paquete"
+                                    />
+                                    <CardContent>
+                                    <Typography variant="h5" component="h2">
+                                        {paquete.nombrePaquete}
+                                    </Typography>
+                                    <Typography>
+                                        Hotel: {paquete.hotel}
+                                    </Typography>
+                                    <Typography>
+                                        Habitación: {paquete.habitacion}
+                                    </Typography>
+                                    <Typography>
+                                        Precio por Noche: ${paquete.precioH}
+                                    </Typography>
+                                    <Typography>
+                                        Vuelo: {paquete.vuelo}
+                                    </Typography>
+                                    <Typography>
+                                        Descripcion: {paquete.descripcion}
+                                    </Typography>
+                                    <Typography>
+                                        Estado del paquete: {paquete.estadoPaquete}
+                                    </Typography>
+                                    <Typography>
+                                        Precio de vuelo: ${paquete.precioA}
+                                    </Typography>
+                                    <Typography>
+                                        Fecha Salida: {paquete.fecha}
+                                    </Typography>
+                                    <Button onClick={() => downloadPackagePdf(paquete)}>
+                                        Descargar Detalles del Paquete
+                                    </Button>
+                                </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : (
+                    <Typography>No se encontraron paquetes comprados.</Typography>
+                )}
+            </Container>
+        </TabPanel>
         <Footer />
       </div>
     );

@@ -64,17 +64,22 @@ const AllReservationsList = () => {
 
   const fetchFlightReservations = async () => {
     try {
-      
-      const response = await fetch(`http://35.211.214.127:8800/boletos`);
-      if (!response.ok) {
-        throw new Error('Error al cargar reservas de vuelos');
-      }
-      const data = await response.json();
-      setFlightReservations(data); 
+        const response = await fetch(`http://35.211.214.127:8800/boletos`);
+        if (!response.ok) {
+            throw new Error('Error al cargar reservas de vuelos');
+        }
+        const data = await response.json();
+
+        
+        const filteredData = data.filter(reserva => reserva.usuarioId._id === '65fe775efd03e7de767d50e7');
+        setFlightReservations(filteredData);
     } catch (error) {
-      console.error('Error al cargar reservas de vuelos:', error);
+        console.error('Error al cargar reservas de vuelos:', error);
     }
-  };
+};
+
+
+
 
 
   const calculateNights = (checkIn, checkOut) => {
@@ -195,7 +200,6 @@ const AllReservationsList = () => {
         <Tabs value={tabValue} onChange={handleTabChange} centered>
                 <Tab label="Hospedaje" />
                 <Tab label="Vuelos" />
-                <Tab label="Paquetes" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
             <Container maxWidth="md">

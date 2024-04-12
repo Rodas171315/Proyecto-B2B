@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import jakarta.inject.Inject;
 
 @Path("/paquetes")
@@ -37,6 +38,17 @@ public class PaquetesService {
         return Response.ok(paquete).build();
     }
 
+    @GET
+    @Path("/usuario/{userId}")
+    public Response getPaquetesPorUsuario(@PathParam("userId") Long userId) {
+        List<Paquetes> paquetes = paquetesRepository.find("idUsuario", userId).list();
+        if (paquetes.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(paquetes).build();
+    }
+
+    
     @PUT
     @Path("/{id}")
     @Transactional
@@ -45,6 +57,8 @@ public class PaquetesService {
         if (paqueteExistente != null) {
             paqueteExistente.setEstadoPaquete(paquete.getEstadoPaquete());
             paqueteExistente.setIdUsuario(paquete.getIdUsuario());
+            paqueteExistente.setIdReservaHabitacion(paquete.getIdReservaHabitacion());
+            paqueteExistente.setIdBoleto(paquete.getIdBoleto());
             paquetesRepository.persist(paqueteExistente);
             return Response.ok(paqueteExistente).build();
         } else {

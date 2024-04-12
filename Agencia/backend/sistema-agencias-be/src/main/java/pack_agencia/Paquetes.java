@@ -37,6 +37,11 @@ public class Paquetes {
     @Column(name = "id_Usuario")
     private Long idUsuario;
 
+    @Column(name = "id_ReservaHatibacion")
+    private Long idReservaHabitacion;
+
+    @Column(name = "id_Boleto")
+    private String idBoleto;
     
     public Long getIdPaquete() {
         return idPaquete;
@@ -70,6 +75,14 @@ public class Paquetes {
         return idUsuario;
     }
 
+    public Long getIdReservaHabitacion() {
+        return idReservaHabitacion;
+    }
+
+    public String getIdBoleto() {
+        return idBoleto;
+    }
+
  
     public void setIdPaquete(Long idPaquete) {
         this.idPaquete = idPaquete;
@@ -101,5 +114,13 @@ public class Paquetes {
 
     public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public void setIdReservaHabitacion(Long idReservaHabitacion) {
+        this.idReservaHabitacion = idReservaHabitacion;
+    }
+
+    public void setIdBoleto(String idBoleto) {
+        this.idBoleto = idBoleto;
     }
 }

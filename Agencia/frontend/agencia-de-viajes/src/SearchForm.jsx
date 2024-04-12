@@ -116,19 +116,19 @@ const SearchForm = () => {
             if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
             let paquetesData = await resPaquetes.json();
     
-            // Solicitar los datos de vuelos para cada paquete
+            
             const vuelosRequests = paquetesData.map(paquete =>
                 fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`)
             );
             const vuelosResponses = await Promise.all(vuelosRequests);
             const vuelosData = await Promise.all(vuelosResponses.map(res => res.json()));
     
-            // Asignar datos de vuelo a cada paquete
+            
             paquetesData.forEach((paquete, index) => {
                 paquete.datosVuelo = vuelosData[index];
             });
     
-            // Filtrar paquetes según los criterios de búsqueda
+            
             const paquetesFiltrados = paquetesData.filter(paquete =>
                 paquete.datosVuelo.ciudad_origen === origen &&
                 paquete.datosVuelo.ciudad_destino === destino &&

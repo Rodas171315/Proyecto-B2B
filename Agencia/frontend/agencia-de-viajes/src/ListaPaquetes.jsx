@@ -3,10 +3,14 @@ import { Container, Grid, Card, CardContent, Typography, Button, CardActions, Ca
 import Header from './Header';
 import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
+import emailjs from 'emailjs-com';
+import { useUser } from './UserContext';
+
 
 const ListaPaquetes = () => {
   const [paquetes, setPaquetes] = useState([]);
   const navigate = useNavigate();
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchPaquetes = async () => {
@@ -75,29 +79,75 @@ const ListaPaquetes = () => {
   
   const cancelarPaquete = async (idPaquete) => {
     try {
-     
-      const response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
-        method: 'PUT', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
         
-        body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
-      });
-      if (!response.ok) {
-        throw new Error('No se pudo cancelar el paquete.');
-      }
-      
-      const updatedPaquetes = paquetes.map(paquete => 
-        paquete.idPaquete === idPaquete ? { ...paquete, estadoPaquete: 'Cancelado' } : paquete
-      );
-      setPaquetes(updatedPaquetes);
-      alert('Paquete cancelado con éxito.');
+        let response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
+        });
+        if (!response.ok) throw new Error('No se pudo cancelar el paquete.');
+
+        
+        const paqueteActualizado = paquetes.find(p => p.idPaquete === idPaquete);
+        if (!paqueteActualizado) throw new Error('Paquete no encontrado');
+
+        
+        if (paqueteActualizado.idReservaHabitacion) {
+          const responseCancelarReservaHabitacion = await fetch(`http://localhost:8080/reservas/${paqueteActualizado.idReservaHabitacion}/cancelar`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        
+          if (!responseCancelarReservaHabitacion.ok) {
+            throw new Error('No se pudo cancelar la reserva de habitación.');
+          }
+        }
+        if (!response.ok) throw new Error('No se pudo cancelar la reserva de hospedaje.');
+
+        
+        response = await fetch(`http://35.211.214.127:8800/boletos/cancelar/${paqueteActualizado.idBoleto}`, {
+            method: 'PUT', 
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (!response.ok) throw new Error('No se pudo cancelar la reserva de vuelo.');
+
+        
+        const updatedPaquetes = paquetes.map(p => p.idPaquete === idPaquete ? { ...p, estadoPaquete: 'Cancelado' } : p);
+        setPaquetes(updatedPaquetes);
+
+        const emailParams = {
+          to_name: user.name, 
+          to_email: user.email, 
+          package_name: paqueteActualizado.nombrePaquete,
+          package_description: paqueteActualizado.descripcion,
+          hotel_name: paqueteActualizado.hotel,
+          room_type: paqueteActualizado.habitacion,
+          room_price: paqueteActualizado.precioH,
+          flight: paqueteActualizado.vuelo,
+          flight_date: paqueteActualizado.fecha,
+          ticket_price: paqueteActualizado.precioA,
+          total_paid: (parseInt(paqueteActualizado.precioH, 10) + parseInt(paqueteActualizado.precioA, 10)).toString()
+      };
+      await emailjs.send('your_service_id', 'your_template_id', emailParams, 'your_user_id')
+          .then((response) => {
+              console.log('Email sent successfully', response.status, response.text);
+              alert('Paquete cancelado y correo de confirmación enviado.');
+          }, (err) => {
+              console.log('Failed to send email. Error: ', err);
+          });
+
+        alert('Paquete y reservas asociadas canceladas con éxito.');
     } catch (error) {
-      console.error('Error al cancelar el paquete:', error);
-      alert('Error al cancelar el paquete. Por favor, intenta de nuevo.');
+        console.error('Error al cancelar el paquete y enviar correo:', error);
+        alert('Error al cancelar el paquete. Por favor, intenta de nuevo.');
     }
-  };
+
+
+
+};
+
   
 
   return (
@@ -150,14 +200,21 @@ const ListaPaquetes = () => {
                               </Typography>
                             </CardContent>
                             <CardActions>
+                            {paquete.estadoPaquete === 'Disponible' && user.rol === 2 &&(
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
-                            {paquete.estadoPaquete === 'Comprado' && (
+                            )}
+                            {paquete.estadoPaquete === 'Comprado' && user.rol === 2 && (
                               <Button size="small" color="secondary" onClick={() => cancelarPaquete(paquete.idPaquete)}>
                                 Cancelar
                               </Button>
                             )}
+                            {paquete.estadoPaquete === 'Disponible' && (
+                                        <Button size="small" onClick={() => navigate('/compra-paquete', { state: { paquete } })}>
+                                            Comprar
+                                        </Button>
+                                    )}
                             </CardActions>
                         </Card>
                     </Grid>
