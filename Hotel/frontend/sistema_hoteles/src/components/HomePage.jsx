@@ -20,21 +20,37 @@ const HomePage = () => {
 
 // PAL SEGUNDO FILTRO:
 
-const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
 const [selectedRoomType, setSelectedRoomType] = useState('');
-const [selectedRating, setSelectedRating] = useState(0);
+const [selectedRating, setSelectedRating] = useState('0'); 
+const [showFilters, setShowFilters] = useState(false);
+const [orderByPrice, setOrderByPrice] = useState('');
+
 
 const applyAdditionalFilters = () => {
-  const filteredHotels = hotels.map(hotel => {
-    const filteredRooms = hotel.rooms.filter(room => {
-      const priceCondition = room.precioxnoche >= priceRange.min && room.precioxnoche <= priceRange.max;
-      const typeCondition = selectedRoomType ? room.tipo_habitacion === selectedRoomType : true;
-      const ratingCondition = room.valuacion >= selectedRating;
-      return priceCondition && typeCondition && ratingCondition;
-    });
+  let filteredHotels = [...hotels]; // Copia del estado actual
 
-    return { ...hotel, rooms: filteredRooms };
-  }).filter(hotel => hotel.rooms.length > 0);
+  if (orderByPrice === 'asc') {
+    filteredHotels.forEach(hotel => {
+      hotel.rooms.sort((a, b) => a.precioxnoche - b.precioxnoche);
+    });
+  } else if (orderByPrice === 'desc') {
+    filteredHotels.forEach(hotel => {
+      hotel.rooms.sort((a, b) => b.precioxnoche - a.precioxnoche);
+    });
+  }
+
+  if (selectedRoomType) {
+    filteredHotels = filteredHotels.map(hotel => ({
+      ...hotel,
+      rooms: hotel.rooms.filter(room => room.tipo_habitacion.toString() === selectedRoomType)
+    }));
+  }
+
+  if (selectedRating > 0) {
+    filteredHotels.forEach(hotel => {
+      hotel.rooms = hotel.rooms.filter(room => room.valuacion >= selectedRating);
+    });
+  }
 
   setHotels(filteredHotels);
 };
@@ -140,9 +156,9 @@ const applyAdditionalFilters = () => {
       }, {});
   
       const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
-        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`); // Cambiado de hotel.id a hotel.id_hotel
+        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`); 
         if (!roomsResponse.ok) {
-          console.error('Error fetching rooms for hotel', hotel.id_hotel); // Cambiado de hotel.id a hotel.id_hotel
+          console.error('Error fetching rooms for hotel', hotel.id_hotel); 
           return { ...hotel, rooms: [] }; // Devuelve el hotel sin modificarlo si hay un error
         }
         const roomsData = await roomsResponse.json();
@@ -170,11 +186,11 @@ const applyAdditionalFilters = () => {
       if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
       const filteredRooms = await response.json();
   
-      // Transformamos las habitaciones filtradas en una estructura de hoteles con habitaciones
+      // trasn las habitaciones filtradas en una estructura de hoteles con habitaciones
       const hotelsMap = {};
       for (const room of filteredRooms) {
         if (!hotelsMap[room.id_hotel]) {
-          // Si el hotel no está en el mapa, lo buscamos en los hoteles cargados inicialmente
+          // Si el hotel no está en el mapa, regresa y basicmente lo busca en los hoteles cargados inicialmente
           const hotelData = hotels.find(hotel => hotel.id_hotel === room.id_hotel);
           hotelsMap[room.id_hotel] = {
             ...hotelData,
@@ -197,6 +213,8 @@ const applyAdditionalFilters = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     fetchHotelsAndRoomsFiltered();
+    setShowFilters(true);
+
   };
 
   return (
@@ -244,11 +262,54 @@ const applyAdditionalFilters = () => {
         </Row>
       </Form>
 
+
+
+      {showFilters && (
+        <>
+          <Row className="mb-4">
+            <Col>
+            <Form.Label>Ordenar Precio</Form.Label>
+            <Form.Control as="select" value={orderByPrice} onChange={e => setOrderByPrice(e.target.value)}>
+              <option value="">Seleccione orden</option>
+              <option value="asc">Menor a Mayor</option>
+              <option value="desc">Mayor a Menor</option>
+            </Form.Control>
+            </Col>
+            <Col>
+              <Form.Group controlId="roomType">
+                <Form.Label>Tipo de Habitación</Form.Label>
+                <Form.Control as="select" value={selectedRoomType} onChange={e => setSelectedRoomType(e.target.value)}>
+                  <option value="">Todos los tipos</option>
+                  {Object.entries(tiposHabitacion).map(([key, value]) => (
+                    <option key={key} value={key}>{value}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              </Col>
+          <Col>
+            <Form.Label>Rating mínimo</Form.Label>
+            <Form.Control as="select" value={selectedRating} onChange={e => setSelectedRating(e.target.value)}>
+              <option value="0">Todos los ratings</option>
+              {[1, 2, 3, 4, 5].map(rating => (
+                <option key={rating} value={rating}>{rating}</option>
+              ))}
+            </Form.Control>
+          </Col>
+          <Col>
+              <Button variant="primary" onClick={applyAdditionalFilters}>Aplicar Filtros Adicionales</Button>
+            </Col>
+          </Row>
+        </>
+      )}
       <Row>
-      {hotels.length > 0 ? (
-  hotels.map((hotel, index) => (
-    //  Combinación del id del hotel y el índice para garantizar que la key sea única
-    <React.Fragment key={`${hotel.id_hotel}-${index}`}>
+        {hotels.length > 0 ? (
+          hotels.map((hotel, index) => (
+            <React.Fragment key={`${hotel.id_hotel}-${index}`}>
+
+
+
+
+
       <Col md={10} className="mt-4">
         <h3>Hotel: {hotel.nombre}</h3>
         <p>{hotel.ciudad}, {hotel.pais}</p>
@@ -268,6 +329,9 @@ const applyAdditionalFilters = () => {
           </Carousel>
         )}
       </Col>
+
+
+
       {hotel.rooms && hotel.rooms.map((room, roomIndex) => (
         // ACA, SE combina id de habitación con un índice para las claves de las habitaciones
         <Col key={`${room.id_habitacion}-${roomIndex}`} md={6}>
