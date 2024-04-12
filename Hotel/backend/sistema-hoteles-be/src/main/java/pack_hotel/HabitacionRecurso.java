@@ -12,8 +12,18 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+
+
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import jakarta.inject.Inject;
+
+
 
 @Path("/habitaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -86,6 +96,54 @@ public class HabitacionRecurso {
     }
     
     
-    
-    
+
+    @GET
+@Path("/capacidades")
+public List<Integer> capacidadesUnicas() {
+    // Obtiene todas las habitaciones, extrae sus capacidades y las convierte en un conjunto para eliminar duplicados, finalmente vuelve a convertirlo en una lista
+    List<Integer> capacidades = habitacionesRepositorio.listAll().stream()
+                                                        .map(Habitaciones::getCapacidad_personas)
+                                                        .distinct()
+                                                        .collect(Collectors.toList());
+    return capacidades;
 }
+    
+    
+
+
+
+
+@GET
+@Path("/buscar")
+public Response buscarPorPaisYDisponibilidad(
+        @QueryParam("pais") String pais,
+        @QueryParam("fechaIngreso") String fechaIngresoStr,
+        @QueryParam("fechaSalida") String fechaSalidaStr,
+        @QueryParam("numeroPersonas") int numeroPersonas) {
+    
+    LocalDate fechaIngreso = null;
+    LocalDate fechaSalida = null;
+    
+    // Manejo de las fechas
+    try {
+        if (fechaIngresoStr != null && !fechaIngresoStr.isEmpty()) {
+            fechaIngreso = LocalDate.parse(fechaIngresoStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        }
+        if (fechaSalidaStr != null && !fechaSalidaStr.isEmpty()) {
+            fechaSalida = LocalDate.parse(fechaSalidaStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        }
+    } catch (DateTimeParseException e) {
+        return Response.status(Response.Status.BAD_REQUEST).entity("Formato de fecha inválido. Use formato ISO_LOCAL_DATE.").build();
+    }
+    
+    List<Habitaciones> habitacionesDisponibles = habitacionesRepositorio.buscarPorPaisYDisponibilidad(pais, fechaIngreso, fechaSalida, numeroPersonas);
+    if (habitacionesDisponibles.isEmpty()) {
+        return Response.status(Response.Status.NOT_FOUND).entity("No se encontraron habitaciones disponibles para los parámetros dados.").build();
+    }
+    
+    return Response.ok(habitacionesDisponibles).build();
+}
+}
+
+
+

@@ -7,12 +7,15 @@ import Comentarios from './Comentarios';
 const HomePage = () => {
   const [hotels, setHotels] = useState([]);
   const [paises, setPaises] = useState([]);
+  const [capacidades, setCapacidades] = useState([]);
   const [paisSeleccionado, setPaisSeleccionado] = useState('');
+  const [fechaIngreso, setFechaIngreso] = useState('');
+  const [fechaSalida, setFechaSalida] = useState('');
+  const [numeroPersonas, setNumeroPersonas] = useState(1);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [hotelImages, setHotelImages] = useState({}); 
+  const [hotelImages, setHotelImages] = useState({});
   const [roomTypes, setRoomTypes] = useState({});
-
 
 
   const tiposHabitacion = {
@@ -26,28 +29,24 @@ const HomePage = () => {
   useEffect(() => {
     fetchRoomTypes();
     fetchPaises();
-    fetchHotelsAndRooms(paisSeleccionado);
-  }, []);
+    fetchCapacidades();
+    fetchHotelsAndRooms(paisSeleccionado, fechaIngreso, fechaSalida, numeroPersonas);
+  }, [paisSeleccionado, fechaIngreso, fechaSalida, numeroPersonas]);
 
 
-  const [filterCapacity, setFilterCapacity] = useState('');
 
-  // Función para filtrar habitaciones por capacidad de personas
-  const filterRoomsByCapacity = (capacity) => {
-    if (!capacity) return; // Si no se ha proporcionado capacidad, no se hace nada
 
-    // Filtra los hoteles cuyas habitaciones coincidan con la capacidad de personas
-    const filteredHotels = hotels.map(hotel => {
-      const filteredRooms = hotel.rooms.filter(room => room.capacidad_personas === parseInt(capacity));
-      return { ...hotel, rooms: filteredRooms };
-    }).filter(hotel => hotel.rooms.length > 0); // Filtra hoteles sin habitaciones que coincidan
-
-    setHotels(filteredHotels);
-  };
-
-  const handleFilterRooms = (e) => {
-    e.preventDefault();
-    filterRoomsByCapacity(filterCapacity);
+  const fetchCapacidades = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/habitaciones');
+      if (!response.ok) throw new Error('No se pudieron cargar las capacidades de las habitaciones');
+      const habitaciones = await response.json();
+      const capacidadesUnicas = [...new Set(habitaciones.map(habitacion => habitacion.capacidad_personas))];
+      setCapacidades(capacidadesUnicas.sort((a, b) => a - b));
+    } catch (error) {
+      console.error('Error al cargar capacidades:', error);
+      setError('Error al cargar las capacidades de las habitaciones.');
+    }
   };
 
 
@@ -143,38 +142,49 @@ const HomePage = () => {
 
   return (
     <Container className="my-5">
-      <Row>
-        <Col md={12}>
-          <h2>Buscar Hoteles Disponibles</h2>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleSearch}>
+      {/* Filtro de búsqueda */}
+      <Form onSubmit={handleSearch}>
+        <Row className="mb-4">
+          <Col>
             <Form.Group controlId="pais">
               <Form.Label>País</Form.Label>
-              <Form.Control as="select" value={paisSeleccionado} onChange={(e) => setPaisSeleccionado(e.target.value)}>
+              <Form.Control as="select" value={paisSeleccionado} onChange={e => setPaisSeleccionado(e.target.value)}>
                 <option value="">Seleccione un país</option>
-                {paises.map((pais, index) => (
-                  <option key={index} value={pais}>{pais}</option>
+                {paises.map(pais => (
+                  <option key={pais} value={pais}>{pais}</option>
                 ))}
               </Form.Control>
             </Form.Group>
-  
-            <Form.Group controlId="capacidadPersonas">
-              <Form.Label>Capacidad de Personas en Habitación</Form.Label>
-              <Form.Control 
-                type="number" 
-                placeholder="Ingrese la capacidad de personas" 
-                value={filterCapacity} 
-                onChange={(e) => setFilterCapacity(e.target.value)}
-              />
+          </Col>
+          <Col>
+            <Form.Group controlId="fechaIngreso">
+              <Form.Label>Fecha de Ingreso</Form.Label>
+              <Form.Control type="date" value={fechaIngreso} onChange={e => setFechaIngreso(e.target.value)} />
             </Form.Group>
-  
-            <Button variant="primary" type="submit">Buscar Hoteles</Button>
-            <Button variant="secondary" type="button" onClick={handleFilterRooms} className="ml-2">
-              Filtrar Habitaciones
-            </Button>
-          </Form>
-        </Col>
-      </Row>
+          </Col>
+          <Col>
+            <Form.Group controlId="fechaSalida">
+              <Form.Label>Fecha de Salida</Form.Label>
+              <Form.Control type="date" value={fechaSalida} onChange={e => setFechaSalida(e.target.value)} />
+            </Form.Group>
+          </Col>
+         <Col>
+            <Form.Group controlId="capacidadPersonas">
+              <Form.Label>Capacidad de Personas</Form.Label>
+              <Form.Control as="select" value={numeroPersonas} onChange={e => setNumeroPersonas(e.target.value)}>
+                <option value="">Seleccione capacidad</option>
+                {capacidades.map((capacidad, index) => (
+                  <option key={index} value={capacidad}>{capacidad} personas</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Button variant="primary" type="submit">Buscar</Button>
+          </Col>
+        </Row>
+      </Form>
+
       <Row>
       {hotels.length > 0 ? (
   hotels.map((hotel) => (
