@@ -33,6 +33,12 @@ public class HabitacionRecurso {
     
     @Inject
     private HabitacionRepositorio habitacionesRepositorio;
+
+
+    @Inject
+    private HotelRepositorio hotelesRepositorio;
+
+
     
     @GET
     public List<Habitaciones> index(@QueryParam("hotelId") Long hotelId) {
@@ -143,6 +149,34 @@ public Response buscarPorPaisYDisponibilidad(
     
     return Response.ok(habitacionesDisponibles).build();
 }
+
+
+
+
+@PUT
+@Path("/{idHabitacion}/estado/{estado}")
+public Response cambiarEstadoHabitacion(@PathParam("idHabitacion") Long idHabitacion, @PathParam("estado") String estado) {
+    Habitaciones habitacion = habitacionesRepositorio.findById(idHabitacion);
+    if (habitacion == null) {
+        throw new NoSuchElementException("No hay habitación con el ID " + idHabitacion + ".");
+    }
+    
+    estado = estado.toLowerCase(); // Asegura que el estado está en minúscula.
+    if (!"activo".equals(estado) && !"inactivo".equals(estado)) {
+        return Response.status(Response.Status.BAD_REQUEST).entity("Estado no válido. Los estados válidos son 'activo' o 'inactivo'.").build();
+    }
+  
+    habitacion.setEstado(estado);
+    habitacionesRepositorio.persist(habitacion);
+    
+    return Response.ok(habitacion).build();
+}
+
+
+
+
+
+
 }
 
 

@@ -38,6 +38,8 @@ public class Hoteles {
 
     private String imagenUrl;
 
+    private String estado = "activo"; 
+
 
     public Long getId_hotel() {
         return id_hotel;
@@ -110,6 +112,16 @@ public class Hoteles {
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
     }
+
+    public String getEstado() {
+        return estado;
+    }
+    
+    public void setEstado(String estado) {
+        this.estado = estado.toLowerCase();
+    }
+    
+    
 
     @Override
     public int hashCode() {

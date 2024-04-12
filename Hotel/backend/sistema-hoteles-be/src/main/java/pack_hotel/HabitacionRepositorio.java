@@ -28,7 +28,13 @@ import java.util.stream.Collectors;
     EntityManager em;
 
 
+    public List<Habitaciones> findByHotelIdAndEstado(Long hotelId, String estado) {
+        return find("id_hotel = ?1 and estado = ?2", hotelId, estado).list();
+    }
 
+    public List<Habitaciones> findByHotelId(Long hotelId) {
+        return find("id_hotel", hotelId).list();
+    }
 
      public List<Habitaciones> buscarPorHotelId(Long hotelId) {
          return find("id_hotel", hotelId).list();
@@ -78,4 +84,24 @@ import java.util.stream.Collectors;
         }
         return habitacionesDisponibles;
     }
+
+
+
+
+
+
+    // ESTAODS
+
+
+    @Transactional
+    public void cambiarEstadoPorHotelId(Long hotelId, String estado) {
+        List<Habitaciones> habitaciones = findByHotelId(hotelId);
+        for (Habitaciones habitacion : habitaciones) {
+            habitacion.setEstado(estado);
+            persist(habitacion); 
+        }
+    }
+
+
+
 }
