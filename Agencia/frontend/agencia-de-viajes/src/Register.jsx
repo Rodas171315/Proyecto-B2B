@@ -5,6 +5,7 @@ import { MenuItem } from '@mui/material';
 import emailjs from 'emailjs-com';
 import Header from './Header'; 
 import Footer from './Footer'; 
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -44,6 +45,8 @@ const Register = () => {
                     "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
                     "Zambia", "Zimbabwe"];
 
+
+    const [captchaToken, setCaptchaToken] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
@@ -227,11 +230,17 @@ const Register = () => {
                         />
 
                         
+                        <ReCAPTCHA
+                            sitekey="6Lc2g6UpAAAAAJacvQNmo6OvOXyN-hJ2qs3hEkA0"
+                            onChange={setCaptchaToken}
+                        />
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            disabled={!captchaToken}  
                         >
                             Registrarse
                         </Button>

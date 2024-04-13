@@ -66,6 +66,19 @@ public class PaquetesService {
         }
     }
     
+    @PUT
+    @Path("/cancelar/{id}")
+    @Transactional
+    public Response cancelarEstadoPaquete(@PathParam("id") Long id, Paquetes paquete) {
+        Paquetes paqueteExistente = paquetesRepository.findById(id);
+        if (paqueteExistente != null) {
+            paqueteExistente.setEstadoPaquete(paquete.getEstadoPaquete());
+            paquetesRepository.persist(paqueteExistente);
+            return Response.ok(paqueteExistente).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
     
     
     

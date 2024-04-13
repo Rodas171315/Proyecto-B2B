@@ -80,7 +80,7 @@ const ListaPaquetes = () => {
   const cancelarPaquete = async (idPaquete) => {
     try {
         
-        let response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
+        let response = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
@@ -200,7 +200,7 @@ const ListaPaquetes = () => {
                               </Typography>
                             </CardContent>
                             <CardActions>
-                            {paquete.estadoPaquete === 'Disponible' && user.rol === 2 &&(
+                            {user.rol === 2 &&(
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
