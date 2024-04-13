@@ -37,7 +37,7 @@ function Comentarios({ idHabitacion }) {
   const fetchComentarios = async () => {
     try {
       console.log(`Cargando comentarios para la habitación ${idHabitacion}`);
-      const response = await fetch(`http://35.211.214.127:8080/comentarios/por-habitacion/${idHabitacion}`);
+      const response = await fetch(`http://localhost:8080/comentarios/por-habitacion/${idHabitacion}`);
       if (response.ok) {
         const data = await response.json();
         
@@ -68,7 +68,7 @@ function Comentarios({ idHabitacion }) {
     };
 
     try {
-      const response = await fetch('http://35.211.214.127:8080/comentarios', {
+      const response = await fetch('http://localhost:8080/comentarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(comentarioData)

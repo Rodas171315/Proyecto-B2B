@@ -29,12 +29,12 @@ const HospedajesDisponibles = () => {
 
     const fetchHotelsAndRooms = async (pais) => {
         try {
-            const responseHoteles = await fetch(`http://35.211.214.127:8080/hoteles/por-pais/${pais}`);
+            const responseHoteles = await fetch(`http://localhost:8080/hoteles/por-pais/${pais}`);
             if (!responseHoteles.ok) throw new Error('Error al cargar hoteles');
             const hoteles = await responseHoteles.json();
 
             const hotelesConHabitacionesPromesas = hoteles.map(async (hotel) => {
-                const respuestaHabitaciones = await fetch(`http://35.211.214.127:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+                const respuestaHabitaciones = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
                 if (!respuestaHabitaciones.ok) {
                     console.error(`Error al cargar habitaciones para el hotel: ${hotel.nombre}`);
                     return { ...hotel, habitaciones: [] };

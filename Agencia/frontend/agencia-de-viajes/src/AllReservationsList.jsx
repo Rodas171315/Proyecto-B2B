@@ -41,8 +41,8 @@ const AllReservationsList = () => {
 
   const fetchAgencyUsersAndReservations = async () => {
     try {
-      const reservationsPromise = fetch(`http://35.211.214.127:8080/reservas/detalle/todas`);
-      const usersPromise = fetch(`http://35.211.214.127:8100/usuarios`);
+      const reservationsPromise = fetch(`http://localhost:8080/reservas/detalle/todas`);
+      const usersPromise = fetch(`http://localhost:8081/usuarios`);
       const [reservationsResponse, usersResponse] = await Promise.all([reservationsPromise, usersPromise]);
 
       if (reservationsResponse.ok && usersResponse.ok) {
@@ -91,7 +91,7 @@ const AllReservationsList = () => {
 
   const cancelarReserva = async (idReserva) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/${idReserva}/cancelar`, {
+      const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });

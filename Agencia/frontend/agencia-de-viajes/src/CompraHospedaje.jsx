@@ -45,7 +45,7 @@ const CompraHospedaje = () => {
         console.log("Datos de reserva a enviar:", reservaData);
         try {
 
-            const responseDisponibilidad = await fetch('http://35.211.214.127:8080/reservas/verificar-disponibilidad', {
+            const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -68,7 +68,7 @@ const CompraHospedaje = () => {
                 throw new Error('No se pudo verificar la disponibilidad de la habitación');
             }
 
-            const responseReserva = await fetch('http://35.211.214.127:8080/reservas', {
+            const responseReserva = await fetch('http://localhost:8080/reservas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reservaData),

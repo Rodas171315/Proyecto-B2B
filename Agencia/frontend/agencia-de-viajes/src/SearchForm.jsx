@@ -50,7 +50,7 @@ const SearchForm = () => {
         
         const fetchPaises = async () => {
             try {
-                const response = await fetch('http://35.211.214.127:8080/hoteles/pais');
+                const response = await fetch('http://localhost:8080/hoteles/pais');
                 if (!response.ok) throw new Error('Error al cargar los países');
                 const data = await response.json();
                 setPaises(data);
@@ -65,7 +65,7 @@ const SearchForm = () => {
 
     const handleBuscarHospedaje = async () => {
         try {
-            const response = await fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionado}`);
+            const response = await fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionado}`);
             if (!response.ok) throw new Error('Error al buscar hoteles');
             const hoteles = await response.json();
     
@@ -112,7 +112,7 @@ const SearchForm = () => {
     
     const handleBuscarPaquetes = async () => {
         try {
-            const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
+            const resPaquetes = await fetch('http://localhost:8081/paquetes');
             if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
             let paquetesData = await resPaquetes.json();
     

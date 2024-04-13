@@ -19,7 +19,7 @@ const CrearPaquete = () => {
 
   useEffect(() => {
     if (destino) {
-      fetch(`http://35.211.214.127:8080/hoteles/por-pais/${destino}`)
+      fetch(`http://localhost:8080/hoteles/por-pais/${destino}`)
         .then(response => response.json())
         .then(data => setHoteles(data))
         .catch(error => console.log(error));
@@ -33,7 +33,7 @@ const CrearPaquete = () => {
 
   useEffect(() => {
     if (hotelSeleccionado) {
-      fetch(`http://35.211.214.127:8080/habitaciones?hotelId=${hotelSeleccionado}`)
+      fetch(`http://localhost:8080/habitaciones?hotelId=${hotelSeleccionado}`)
         .then(response => response.json())
         .then(data => setHabitaciones(data))
         .catch(error => console.log(error));
@@ -73,7 +73,7 @@ const CrearPaquete = () => {
   
     console.log('Paquete a crear:', paqueteData);
   
-    fetch('http://35.211.214.127:8100/paquetes', {
+    fetch('http://localhost:8081/paquetes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
