@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "nombre": "El Refugio de la Patagonia",
+    "ciudad": "Bariloche",
+    "pais": "Argentina",
+    "precio_por_noche": 150,
+    "calificacion": 5,
+    "imagen": "https://source.unsplash.com/random?bariloche",
+    "descripcion": "Disfruta de la naturaleza y la tranquilidad de la Patagonia en este acogedor hotel."
+  },
+  {
+    "id": 2,
+    "nombre": "Paraíso Tropical",
+    "ciudad": "Rio de Janeiro",
+    "pais": "Brasil",
+    "precio_por_noche": 180,
+    "calificacion": 5,
+    "imagen": "https://source.unsplash.com/random?rio",
+    "descripcion": "Vive la vibrante cultura de Rio en este hotel con vista espectacular a la playa de Copacabana."
+  }
+]
