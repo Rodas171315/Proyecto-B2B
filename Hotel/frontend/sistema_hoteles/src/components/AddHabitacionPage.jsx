@@ -341,12 +341,12 @@ onChange={handleChangeNuevaHabitacion}
           <>
             <Button variant="primary" onClick={() => iniciarEdicion(habitacion)}>Editar</Button>
             <Button
-        variant={habitacion.estado === 'activo' ? 'warning' : 'success'}
-        onClick={() => cambiarEstadoHabitacion(habitacion.id_habitacion, habitacion.estado)}
-        style={{ marginLeft: '5px' }}
-      >
-        {habitacion.estado === 'activo' ? 'Desactivar' : 'Activar'}
-      </Button>
+                      variant={habitacion.estado === 'activo' ? 'warning' : 'success'}
+                      onClick={() => cambiarEstadoHabitacion(habitacion.id_habitacion, habitacion.estado)}
+                      style={{ marginLeft: '5px' }}
+                    >
+                      {habitacion.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                    </Button>
             <Button variant="danger" onClick={() => eliminarHabitacion(habitacion.id_habitacion)} style={{ marginLeft: '5px' }}>Eliminar</Button>
           </>
         )}

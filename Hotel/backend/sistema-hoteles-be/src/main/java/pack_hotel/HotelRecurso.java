@@ -39,7 +39,8 @@ public class HotelRecurso {
     @Inject
     private ImagenAmenidadRepositorio imagenAmenidadRepositorio;
     
-
+    @Inject
+    private ReservasRepositorio reservasRepositorio;
 
     
     @GET
@@ -172,31 +173,35 @@ public class HotelRecurso {
     }
   }
 
-
   @PUT
   @Path("/{id}/estado/{estado}")
   public Response cambiarEstadoHotel(@PathParam("id") Long idHotel, @PathParam("estado") String estado) {
-    estado = estado.toLowerCase();    Hoteles hotel = hotelesRepositorio.findById(idHotel);
+      estado = estado.toLowerCase();
+      Hoteles hotel = hotelesRepositorio.findById(idHotel);
       if (hotel == null) {
           throw new NoSuchElementException("No hay hotel con el ID " + idHotel + ".");
       }
       
-      if (!"activo".equalsIgnoreCase(estado) && !"inactivo".equalsIgnoreCase(estado)) {
+      if (!"activo".equals(estado) && !"inactivo".equals(estado)) {
           return Response.status(Response.Status.BAD_REQUEST).entity("Estado no válido. Los estados válidos son 'activo' o 'inactivo'.").build();
       }
   
-      hotel.setEstado(estado.toUpperCase());
+      hotel.setEstado(estado);
       hotelesRepositorio.persist(hotel);
   
+      // este para actualizar el estado de todas las habitaciones del hotel
       List<Habitaciones> habitaciones = habitacionRepositorio.findByHotelId(idHotel);
       for (Habitaciones habitacion : habitaciones) {
           habitacion.setEstado(estado);
           habitacionRepositorio.persist(habitacion);
+          
+          if ("inactivo".equals(estado)) {
+              reservasRepositorio.cancelarReservasPorHabitacionSiNecesario(habitacion.getId_habitacion());
+          }
       }
-      
+  
       return Response.ok(hotel).build();
   }
-  
   
   
   
