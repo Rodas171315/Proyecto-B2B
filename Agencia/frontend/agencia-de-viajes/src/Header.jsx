@@ -1,11 +1,11 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext'; 
+import { useUser } from './UserContext';
 
 const Header = () => {
     const navigate = useNavigate();
-    const { user } = useUser(); 
+    const { user } = useUser();
 
     return (
         <AppBar position="static">
@@ -19,11 +19,15 @@ const Header = () => {
                 <Button color="inherit" onClick={() => navigate('/aboutus')}>Acerca de Nosotros</Button>
                 <Button color="inherit" onClick={() => navigate('/afiliados')}>Hoteles y Aereolineas Afiliados</Button>
                 {user && <Button color="inherit" onClick={() => navigate('/userprofile')}>Perfil</Button>}
+                {user && <Button color="inherit" onClick={() => navigate('/reservations')}>Lista de Reservas</Button>}
+                {user && <Button color="inherit" onClick={() => navigate('/lista-paquetes')}>Paquetes</Button>}
+                {user && user.rol === 2 && <Button color="inherit" onClick={() => navigate('/allreservations')}>Administrar Reservas</Button>}
             </Toolbar>
         </AppBar>
     );
 };
 
 export default Header;
+
 
 

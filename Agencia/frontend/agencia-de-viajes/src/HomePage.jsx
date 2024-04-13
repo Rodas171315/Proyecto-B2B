@@ -13,24 +13,36 @@ const HomePage = () => {
     const [hospedajesFavoritos, setHospedajesFavoritos] = useState([]);
 
     useEffect(() => {
+        const paisSeleccionadoDestinos = 'Estados Unidos'; 
+        const paisSeleccionadoFavoritos = 'Guatemala'; 
+        const paisSeleccionadoOfertas = 'Mexico'; 
         
-        fetch('http://localhost:8080/contenido-estatico//destinos-populares')
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoDestinos}`)
             .then((response) => response.json())
-            .then(setDestinosPopulares)
-            .catch((error) => console.error("Error al cargar destinos populares:", error));
-
-        
-        fetch('http://localhost:8080/contenido-estatico//promociones-ofertas-especiales')
+            .then(data => {
+                console.log(data); 
+                setDestinosPopulares(data.slice(0, 3));
+            })
+            .catch((error) => console.error("Error al cargar destinos populares para " + paisSeleccionadoDestinos + ":", error));
+    
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoOfertas}`)
             .then((response) => response.json())
-            .then(setOfertasEspeciales)
-            .catch((error) => console.error("Error al cargar ofertas especiales:", error));
-
-        
-        fetch('http://localhost:8080/contenido-estatico//descubre-hospedaje')
+            .then(data => {
+                console.log(data); 
+                setOfertasEspeciales(data.slice(0, 3));
+            })
+            .catch((error) => console.error("Error al cargar ofertas especiales:" + paisSeleccionadoOfertas + ":", error));
+    
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoFavoritos}`)
             .then((response) => response.json())
-            .then(setHospedajesFavoritos)
-            .catch((error) => console.error("Error al cargar hospedajes favoritos:", error));
+            .then(data => {
+                console.log(data); 
+                setHospedajesFavoritos(data.slice(0, 3));
+            })
+            .catch((error) => console.error("Error al cargar hospedajes favoritos para " + paisSeleccionadoFavoritos + ":", error));
     }, []);
+    
+    
 
     return (
         <div>
@@ -41,63 +53,78 @@ const HomePage = () => {
             </Box>
 
             <Container maxWidth="md" sx={{ mt: 4 }}>
-                <Typography variant="h4" component="h2" gutterBottom>
-                    Destinos Populares
-                </Typography>
-                <Grid container spacing={4}>
-                    {destinosPopulares.map((destino, index) => (
-                        <Grid item key={index} xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    image={destino.imagen}
-                                    alt={destino.ciudad}
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {destino.ciudad}, {destino.pais}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {destino.descripcion}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Button size="small" onClick={() => navigate(`/destinos-populares/${destino.id}`)}>Ver Detalles</Button>
-
-
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+            <Typography variant="h4" component="h2" gutterBottom>
+                Destinos Populares
+            </Typography>
+            <Grid container spacing={4}>
+                {destinosPopulares.map((hotel, index) => (
+                    
+                    <Grid item key={index} xs={12} sm={6} md={4}>
+                        <Card>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={`https://source.unsplash.com/random?estadosunidos&sig=${index}`}
+                                alt="Imagen del aeropuerto"
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {hotel.nombre}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Ubicado en {hotel.ciudad}, {hotel.pais}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Dirección: {hotel.direccion}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Check-in: {hotel.checkin?.toString().substr(0,5)} / Check-out: {hotel.checkout?.toString().substr(0,5)}
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                            <Button size="small" onClick={() => navigate(`/hospedajes-disponibles`, { state: { paisSeleccionado: hotel.pais, hoteles: [hotel] } })}>
+                                        Ver Detalles
+                                    </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
 
                 <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 4 }}>
                     Ofertas Especiales y Promociones
                 </Typography>
                 <Grid container spacing={4}>
-                    {ofertasEspeciales.map((oferta, index) => (
+                    {ofertasEspeciales.map((hotel, index) => (
                         <Grid item key={index} xs={12} sm={6} md={4}>
-                            <Card>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    image={oferta.imagen}
-                                    alt={oferta.paquete}
-                                />
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="div">
-                                        {oferta.paquete}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {oferta.descripcion}
-                                    </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <Button size="small" onClick={() => navigate(`/promocion/${oferta.id}`)}>Ver Detalles</Button>
-                                </CardActions>
-                            </Card>
-                        </Grid>
+                        <Card>
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={`https://source.unsplash.com/random?mexico&sig=${index}`}
+                                alt="Imagen del aeropuerto"
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {hotel.nombre}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Ubicado en {hotel.ciudad}, {hotel.pais}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Dirección: {hotel.direccion}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Check-in: {hotel.checkin?.toString().substr(0,5)} / Check-out: {hotel.checkout?.toString().substr(0,5)}
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                            <Button size="small" onClick={() => navigate(`/hospedajes-disponibles`, { state: { paisSeleccionado: hotel.pais, hoteles: [hotel] } })}>
+                                        Ver Detalles
+                                    </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
                     ))}
                 </Grid>
 
@@ -105,27 +132,39 @@ const HomePage = () => {
                     Descubre tu hospedaje favorito
                 </Typography>
                 <Grid container spacing={4}>
-                    {hospedajesFavoritos.map((hospedaje, index) => (
+                    {hospedajesFavoritos.map((hotel, index) => (
                         <Grid item key={index} xs={12} sm={6} md={4}>
                             <Card>
                                 <CardMedia
                                     component="img"
                                     height="140"
-                                    image={hospedaje.imagen}
-                                    alt={hospedaje.nombre}
+                                    image={`https://source.unsplash.com/random?guatemala&sig=${index}`}
+                                    alt="Imagen del aeropuerto"
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
-                                        {hospedaje.nombre}
+                                        {hotel.nombre}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        {hospedaje.descripcion}
+                                        Ubicado en {hotel.ciudad}, {hotel.pais}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Dirección: {hotel.direccion}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Check-in: {hotel.checkin?.toString().substr(0,5)} / Check-out: {hotel.checkout?.toString().substr(0,5)}
                                     </Typography>
                                 </CardContent>
+                                <CardActions>
+                                <Button size="small" onClick={() => navigate(`/hospedajes-disponibles`, { state: { paisSeleccionado: hotel.pais, hoteles: [hotel] } })}>
+                                        Ver Detalles
+                                    </Button>
+                                </CardActions>
                             </Card>
                         </Grid>
                     ))}
                 </Grid>
+
             </Container>
 
             <Footer />

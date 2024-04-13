@@ -1,43 +1,9 @@
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/org/acme/GreetingResource.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/org/acme/MyEntity.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Comentario.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ComentarioDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ComentarioRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ComentarioRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/DetalleReservaDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/DisponibilidadDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/FaqRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Faqs.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/FaqsRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HabitacionRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HabitacionRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Habitaciones.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HotelRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HotelRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Hoteles.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ImagenAmenidad.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ImagenAmenidadRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/LoginResource.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/NoSuchElementExceptionMapper.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/RecaptchaResponse.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/RecaptchaService.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Reservas.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ReservasRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/ReservasRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Rol.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/RolRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/RolRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Secciones_Generales.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Secciones_GeneralesRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Secciones_GeneralesRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Tipo_habitacionRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Tipo_habitacionRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Tipos_habitacion.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioCreacionDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioDetalleDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioEdicionDTO.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioRecurso.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioRecursoCaptcha.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioRepositorio.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Usuarios.java
-/home/pmorales/Downloads/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/VerificarDisponibilidadDTO.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/org/acme/GreetingResource.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/org/acme/MyEntity.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HotelRecurso.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/HotelRepositorio.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Hoteles.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/NoSuchElementExceptionMapper.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioRecurso.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/UsuarioRepositorio.java
+/root/Desktop/Proyecto SBD2/Proyecto-B2B/Hotel/backend/sistema-hoteles-be/src/main/java/pack_hotel/Usuarios.java

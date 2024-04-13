@@ -12,7 +12,7 @@ const PromocionOfertaEspecialDetalles = () => {
   useEffect(() => {
     const fetchOferta = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/contenido-estatico/promociones-ofertas-especiales/${id}`);
+        const response = await fetch(`http://localhost:8081/contenido-estatico/promociones-ofertas-especiales/${id}`);
         if (!response.ok) throw new Error('No se pudo obtener la oferta especial');
         const data = await response.json();
         setOferta(data);

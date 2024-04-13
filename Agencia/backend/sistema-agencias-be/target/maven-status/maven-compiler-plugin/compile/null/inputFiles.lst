@@ -16,8 +16,9 @@
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/HotelesService.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Login.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/NoSuchElementExceptionMapper.java
-/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Paquete.java
-/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/PaqueteService.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/Paquetes.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/PaquetesRepository.java
+/home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/PaquetesService.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/PromocionOfertaEspecial.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/StaticContentResource.java
 /home/sebastian/Documents/Proyecto-B2B/Agencia/backend/sistema-agencias-be/src/main/java/pack_agencia/StaticContentService.java

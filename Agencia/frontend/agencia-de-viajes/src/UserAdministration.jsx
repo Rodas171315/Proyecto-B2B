@@ -25,7 +25,7 @@ const UserAdministration = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:8080/usuarios');
+                const response = await fetch('http://localhost:8081/usuarios');
                 if (!response.ok) throw new Error('Error al cargar usuarios');
                 const data = await response.json();
                 setUsers(data);
@@ -40,7 +40,7 @@ const UserAdministration = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:8080/usuarios/${userId}`, {
+            const response = await fetch(`http://localhost:8081/usuarios/${userId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) throw new Error('Error al eliminar usuario');
@@ -74,7 +74,7 @@ const UserAdministration = () => {
         if (userId) {
             console.log(`Actualizando usuario con ID: ${userId}`, editFormData);
             try {
-                const response = await fetch(`http://localhost:8080/usuarios/${userId}`, {
+                const response = await fetch(`http://localhost:8081/usuarios/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(editFormData),
@@ -130,13 +130,14 @@ const UserAdministration = () => {
                     autoFocus
                     margin="dense"
                     id="password"
-                    label="Contrasena"
-                    type="text"
+                    label="Contraseña"
+                    type="password" 
                     fullWidth
                     name="password"
                     value={editFormData.password || ''}
                     onChange={handleEditFormChange} 
                 />
+
                 <TextField
                     autoFocus
                     margin="dense"

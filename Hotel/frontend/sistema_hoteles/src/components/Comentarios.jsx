@@ -14,13 +14,13 @@ function Comentarios({ idHabitacion }) {
   }, [idHabitacion]);
 
   const estructurarComentarios = (comentarios) => {
-    //  map almacena la referencia de cada comentario por su ID
+   
     const comentariosMap = comentarios.reduce((map, comentario) => {
       map[comentario.idComentario] = { ...comentario, respuestas: [] };
       return map;
     }, {});
 
-    //  bucle asigna cada comentario a su respectivo padre
+    
     comentarios.forEach(comentario => {
       if (comentario.idComentarioPadre) {
         const padre = comentariosMap[comentario.idComentarioPadre];
@@ -30,7 +30,7 @@ function Comentarios({ idHabitacion }) {
       }
     });
 
-    // Filtra solo los comentarios de nivel superior
+    
     return Object.values(comentariosMap).filter(comentario => !comentario.idComentarioPadre);
   };
 
@@ -40,9 +40,9 @@ function Comentarios({ idHabitacion }) {
       const response = await fetch(`http://localhost:8080/comentarios/por-habitacion/${idHabitacion}`);
       if (response.ok) {
         const data = await response.json();
-        // Se estructuran los comentarios una sola vez
+        
         const comentariosEstructurados = estructurarComentarios(data);
-        setComentarios(comentariosEstructurados); // Utiliza solo comentarios estructurados
+        setComentarios(comentariosEstructurados); 
         console.log("Comentarios estructurados exitosamente:", comentariosEstructurados);
       } else {
         console.error('Error al recuperar los comentarios', response);
@@ -79,7 +79,7 @@ function Comentarios({ idHabitacion }) {
         setTextoComentario('');
         setRating(1);
         setIdComentarioPadre(null);
-        fetchComentarios(); // Refresca los comentarios después de agregar uno nuevo
+        fetchComentarios(); 
       } else {
         console.error('Error al crear el comentario', response);
       }
@@ -130,12 +130,6 @@ function Comentarios({ idHabitacion }) {
             </Form.Control>
           </Form.Group>
 
-                  {/* Comentado para no mostrar a qué comentario se está respondiendo */}
-        {/* {idComentarioPadre && (
-          <div>Respondiendo al comentario #{idComentarioPadre}</div>
-        )} */}
-
-          {/* Muestra un botón diferente si el usuario está respondiendo a un comentario */}
           {idComentarioPadre ? (
             <>
               <div>Respondiendo al comentario</div>

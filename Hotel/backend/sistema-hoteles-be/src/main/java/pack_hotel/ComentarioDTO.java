@@ -16,7 +16,7 @@ public class ComentarioDTO {
     // Constructor vacío
     public ComentarioDTO() {}
 
-    // Getters y Setters
+    
     public Long getIdComentario() {
         return idComentario;
     }
