@@ -208,23 +208,26 @@ const HotelDetailsPage = () => {
                       <Card.Text>Capacidad máxima: {room.capacidad_personas} personas</Card.Text>
                       <Card.Text>Precio por noche: ${room.precioxnoche}</Card.Text>
                       <Card.Text>Valoración: {room.valuacion} estrellas</Card.Text>
-                      <Button variant="primary" onClick={() => {
-                      console.log("Navigating with hotelDetails:", hotel);
-                      navigate('/checkout', {
-                        state: {
-                          hotelDetails: { ...hotel },
-                          roomDetails: {
-                            ...room,
-                            idHabitacion: room.id_habitacion,
-                            roomType: tiposHabitacion[room.tipo_habitacion],
-                            roomPrice: room.precioxnoche,
-                            capacidadPersonas: room.capacidad_personas
-                          }
-                        }
-                      });
-                    }}>
-                      Reservar
-                    </Button>
+                      {room.estado === 'activo' && (
+          <Button variant="primary" onClick={() => {
+            console.log("Navigating with hotelDetails:", hotel);
+            navigate('/checkout', {
+              state: {
+                hotelDetails: { ...hotel },
+                roomDetails: {
+                  ...room,
+                  idHabitacion: room.id_habitacion,
+                  roomType: tiposHabitacion[room.tipo_habitacion],
+                  roomPrice: room.precioxnoche,
+                  capacidadPersonas: room.capacidad_personas
+                }
+              }
+            });
+          }}>
+            Reservar
+          </Button>
+                  )}
+
 
                     <Comentarios idHabitacion={room.id_habitacion} />
 
