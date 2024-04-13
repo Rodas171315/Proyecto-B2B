@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Agencia/backend/sistema-agencias-be/target/classes/application.properties
