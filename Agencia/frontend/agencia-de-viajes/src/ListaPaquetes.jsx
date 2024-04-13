@@ -15,7 +15,7 @@ const ListaPaquetes = () => {
   useEffect(() => {
     const fetchPaquetes = async () => {
       try {
-        const resPaquetes = await fetch('http://localhost:8081/paquetes');
+        const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
         if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
         let paquetesData = await resPaquetes.json();
 
@@ -24,8 +24,8 @@ const ListaPaquetes = () => {
           console.log(`Fetching vuelo with ID: ${paquete.idVuelo}`);
           console.log(`Fetching vuelo with ID: ${paquete.idHabitacion}`);
           const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
-            fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
-            fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
+            fetch(`http://35.211.214.127:8080/hoteles/${paquete.idHotel}`),
+            fetch(`http://35.211.214.127:8080/habitaciones/${paquete.idHabitacion}`),
             fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
           ]);
         
@@ -64,7 +64,7 @@ const ListaPaquetes = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
+      const response = await fetch(`http://35.211.214.127:8100/paquetes/${idPaquete}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -80,7 +80,7 @@ const ListaPaquetes = () => {
   const cancelarPaquete = async (idPaquete) => {
     try {
         
-        let response = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
+        let response = await fetch(`http://35.211.214.127:8100/paquetes/cancelar/${idPaquete}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
@@ -93,7 +93,7 @@ const ListaPaquetes = () => {
 
         
         if (paqueteActualizado.idReservaHabitacion) {
-          const responseCancelarReservaHabitacion = await fetch(`http://localhost:8080/reservas/${paqueteActualizado.idReservaHabitacion}/cancelar`, {
+          const responseCancelarReservaHabitacion = await fetch(`http://35.211.214.127:8080/reservas/${paqueteActualizado.idReservaHabitacion}/cancelar`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
