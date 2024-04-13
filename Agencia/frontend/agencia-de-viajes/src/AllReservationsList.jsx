@@ -140,14 +140,33 @@ const AllReservationsList = () => {
       }
   
       
+      const boletoData = await response.json();
   
-      alert('Boleto de vuelo cancelado con éxito');
-      fetchAgencyUsersAndReservations(); 
+      
+      const emailParams = {
+        to_name: boletoData.usuarioNombre,
+        to_email: boletoData.usuarioEmail,
+        origen: boletoData.ciudad_origen,
+        destino: boletoData.ciudad_destino,
+        fecha_salida: new Date(boletoData.fecha_salida).toLocaleDateString(),
+        tipo_asiento: boletoData.tipoAsiento
+      };
+  
+      emailjs.send('service_4adadnq', 'template_wcg3wz7', emailParams, 'lJbXMAjWOnj53YJai')
+        .then((result) => {
+            console.log('Email sent:', result.text);
+        }, (error) => {
+            console.error('Email send error:', error.text);
+        });
+  
+      alert('Boleto de vuelo cancelado con éxito y correo de confirmación enviado.');
+      fetchFlightReservations(); 
     } catch (error) {
       console.error('Error al cancelar el boleto de vuelo:', error);
       alert('Error al cancelar el boleto de vuelo');
     }
   };
+  
 
   function renderFlightReservations() {
     if (flightReservations.length > 0) {

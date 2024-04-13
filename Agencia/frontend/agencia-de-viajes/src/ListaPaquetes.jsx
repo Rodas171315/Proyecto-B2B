@@ -130,7 +130,7 @@ const ListaPaquetes = () => {
           ticket_price: paqueteActualizado.precioA,
           total_paid: (parseInt(paqueteActualizado.precioH, 10) + parseInt(paqueteActualizado.precioA, 10)).toString()
       };
-      await emailjs.send('your_service_id', 'your_template_id', emailParams, 'your_user_id')
+      await emailjs.send('service_521uswb', 'template_8uqs7l7', emailParams, 'BaaC73U6PfMwmi5uk')
           .then((response) => {
               console.log('Email sent successfully', response.status, response.text);
               alert('Paquete cancelado y correo de confirmación enviado.');
@@ -143,9 +143,6 @@ const ListaPaquetes = () => {
         console.error('Error al cancelar el paquete y enviar correo:', error);
         alert('Error al cancelar el paquete. Por favor, intenta de nuevo.');
     }
-
-
-
 };
 
   

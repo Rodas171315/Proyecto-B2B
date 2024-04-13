@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "AcmeComentarios")
 public class Comentarios extends PanacheEntityBase {
 
     @Id
