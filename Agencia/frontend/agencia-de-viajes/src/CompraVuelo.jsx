@@ -9,6 +9,7 @@ import {
 import Header from './Header';
 import Footer from './Footer';
 import { useUser } from './UserContext';
+import emailjs from 'emailjs-com';
 
 const CompraVuelo = () => {
   const { vuelo } = useLocation().state;
@@ -62,6 +63,9 @@ const CompraVuelo = () => {
         }
       });
 
+      const responseData = await response.json();
+      enviarCorreoConfirmacion(responseData._id);
+
       setDialogMessage('Tu compra ha sido completada exitosamente. Pronto recibirás más información.');
       setOpenDialog(true);
     } catch (error) {
@@ -69,6 +73,29 @@ const CompraVuelo = () => {
       setDialogMessage('Ocurrió un error al completar la compra del vuelo: ' + error.message);
       setOpenDialog(true);
     }
+  };
+
+  const enviarCorreoConfirmacion = (boletoId) => {
+    const templateParams = {
+      to_name: user.primer_nombre,
+      to_email: user.email,
+      boleto_id: boletoId,
+      origen: vuelo.ciudad_origen,
+      destino: vuelo.ciudad_destino,
+      fecha_salida: new Date(vuelo.fecha_salida).toLocaleDateString(),
+      tipo_asiento: tipoAsiento,
+      cantidad_asientos: cantidad,
+      precio_total: tipoAsiento === 'ejecutivo'
+        ? vuelo.precio * 1.5 * cantidad * 0.8 
+        : vuelo.precio * cantidad * 0.8
+    };
+
+    emailjs.send('service_4adadnq', 'template_yzzo538', templateParams, 'lJbXMAjWOnj53YJai')
+      .then((result) => {
+          console.log('Correo enviado exitosamente', result.text);
+      }, (error) => {
+          console.log('Error al enviar correo', error.text);
+      });
   };
 
   const guardarReservaLocal = (reserva) => {

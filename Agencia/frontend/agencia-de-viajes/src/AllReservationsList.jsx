@@ -41,8 +41,8 @@ const AllReservationsList = () => {
 
   const fetchAgencyUsersAndReservations = async () => {
     try {
-      const reservationsPromise = fetch(`http://localhost:8080/reservas/detalle/todas`);
-      const usersPromise = fetch(`http://localhost:8081/usuarios`);
+      const reservationsPromise = fetch(`http://35.211.214.127:8080/reservas/detalle/todas`);
+      const usersPromise = fetch(`http://35.211.214.127:8100/usuarios`);
       const [reservationsResponse, usersResponse] = await Promise.all([reservationsPromise, usersPromise]);
 
       if (reservationsResponse.ok && usersResponse.ok) {
@@ -91,7 +91,7 @@ const AllReservationsList = () => {
 
   const cancelarReserva = async (idReserva) => {
     try {
-      const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
+      const response = await fetch(`http://35.211.214.127:8080/reservas/${idReserva}/cancelar`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -140,14 +140,33 @@ const AllReservationsList = () => {
       }
   
       
+      const boletoData = await response.json();
   
-      alert('Boleto de vuelo cancelado con éxito');
-      fetchAgencyUsersAndReservations(); 
+      
+      const emailParams = {
+        to_name: boletoData.usuarioNombre,
+        to_email: boletoData.usuarioEmail,
+        origen: boletoData.ciudad_origen,
+        destino: boletoData.ciudad_destino,
+        fecha_salida: new Date(boletoData.fecha_salida).toLocaleDateString(),
+        tipo_asiento: boletoData.tipoAsiento
+      };
+  
+      emailjs.send('service_4adadnq', 'template_wcg3wz7', emailParams, 'lJbXMAjWOnj53YJai')
+        .then((result) => {
+            console.log('Email sent:', result.text);
+        }, (error) => {
+            console.error('Email send error:', error.text);
+        });
+  
+      alert('Boleto de vuelo cancelado con éxito y correo de confirmación enviado.');
+      fetchFlightReservations(); 
     } catch (error) {
       console.error('Error al cancelar el boleto de vuelo:', error);
       alert('Error al cancelar el boleto de vuelo');
     }
   };
+  
 
   function renderFlightReservations() {
     if (flightReservations.length > 0) {

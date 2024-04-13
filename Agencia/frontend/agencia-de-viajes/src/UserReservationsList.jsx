@@ -46,7 +46,7 @@ const UserReservationsList = () => {
 
     const fetchReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
+        const response = await fetch(`http://35.211.214.127:8080/reservas/detalle/usuario/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setReservations(data);
@@ -73,7 +73,7 @@ const UserReservationsList = () => {
     
     const fetchPackages = async () => {
       try {
-          const resPaquetes = await fetch('http://localhost:8081/paquetes');
+          const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
           if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
           let paquetesData = await resPaquetes.json();
 
@@ -81,8 +81,8 @@ const UserReservationsList = () => {
 
           const detailedPackages = await Promise.all(paquetesData.map(async (paquete) => {
               const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
-                  fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
-                  fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
+                  fetch(`http://35.211.214.127:8080/hoteles/${paquete.idHotel}`),
+                  fetch(`http://35.211.214.127:8080/habitaciones/${paquete.idHabitacion}`),
                   fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
               ]);
           

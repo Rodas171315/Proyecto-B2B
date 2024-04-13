@@ -31,7 +31,7 @@ const CompraPaquete = () => {
                 try {
                     const [resVuelo, resHabitacion] = await Promise.all([
                         fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
-                        fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`)
+                        fetch(`http://35.211.214.127:8080/habitaciones/${paquete.idHabitacion}`)
                     ]);
                     if (!resVuelo.ok || !resHabitacion.ok) {
                         throw new Error('Error al obtener datos del paquete');
@@ -88,7 +88,7 @@ const CompraPaquete = () => {
             console.log("ID del Boleto:", idBoleto);
             
 
-            const responseHabitacion = await fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`);
+            const responseHabitacion = await fetch(`http://35.211.214.127:8080/habitaciones/${paquete.idHabitacion}`);
             if (!responseHabitacion.ok) {
                 throw new Error('Error al obtener detalles de la habitación');
             }
@@ -99,7 +99,7 @@ const CompraPaquete = () => {
             const capacidadPersonas = habitacion.capacidad_personas;
             
             
-            const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
+            const responseDisponibilidad = await fetch('http://35.211.214.127:8080/reservas/verificar-disponibilidad', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -159,7 +159,7 @@ const CompraPaquete = () => {
             console.log("Datos de reserva a enviar:", reservaData);
     
             
-            const responseReserva = await fetch('http://localhost:8080/reservas', {
+            const responseReserva = await fetch('http://35.211.214.127:8080/reservas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reservaData),
@@ -170,7 +170,7 @@ const CompraPaquete = () => {
 
             const actualizarEstadoPaquete = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8081/paquetes/${paquete.idPaquete}`, {
+                    const response = await fetch(`http://35.211.214.127:8100/paquetes/${paquete.idPaquete}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
