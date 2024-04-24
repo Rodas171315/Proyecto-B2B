@@ -29,7 +29,7 @@ const Analiticos = () => {
 
 
     const [searchResults, setSearchResults] = useState([]);
-    const [filters, setFilters] = useState({ fechaDesde: '', fechaHasta: '', tipoAcceso: '' });
+    const [filters, setFilters] = useState({ fechaDesde: '', fechaHasta: '', tipoAcceso: '', esAutenticado: '' });
 
     useEffect(() => {
         const fetchGraphData = async () => {
@@ -91,10 +91,13 @@ const Analiticos = () => {
     };
 
     const handleFilterChange = e => {
-        setFilters({ ...filters, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        // Use the checkbox value if it's the 'esAutenticado' filter
+        setFilters({ ...filters, [name]: type === 'checkbox' ? checked : value });
     };
 
     const handleSearch = async () => {
+        const esAutenticadoValue = filters.esAutenticado ? 'true' : 'false'; 
 
         const offset = new Date().getTimezoneOffset() * 60000;
         const formattedFromDate = filters.fechaDesde ? (new Date(new Date(filters.fechaDesde).getTime() - offset)).toISOString() : '';
@@ -104,8 +107,13 @@ const Analiticos = () => {
         const params = new URLSearchParams({
             fechaDesde: formattedFromDate,
             fechaHasta: formattedToDate,
-            tipoAcceso: filters.tipoAcceso
+            tipoAcceso: filters.tipoAcceso,
         });
+    
+        // Add the esAutenticado parameter conditionally based on the checkbox
+        if (filters.esAutenticado !== '') {
+            params.append('esAutenticado', esAutenticadoValue);
+        }
     
         try {
             const response = await axios.get(`http://localhost:8080/analiticos/filtrar?${params}`);
@@ -117,7 +125,7 @@ const Analiticos = () => {
                 })
             }));
             setSearchResults(formattedResults);
-            setCurrentPage(1); 
+            setCurrentPage(1);
         } catch (error) {
             console.error('Error fetching search results:', error);
             setSearchResults([]);
@@ -157,6 +165,17 @@ const Analiticos = () => {
                                         <option value="web">Web</option>
                                         <option value="REST">REST</option
                                     ></Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col md={3}>
+                                <Form.Group controlId="esAutenticado">
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Authenticated"
+                                        name="esAutenticado"
+                                        checked={filters.esAutenticado}
+                                        onChange={handleFilterChange}
+                                    />
                                 </Form.Group>
                             </Col>
                             <Col md={3} className="d-flex align-items-end">
