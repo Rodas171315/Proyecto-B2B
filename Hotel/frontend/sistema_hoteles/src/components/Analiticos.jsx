@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Table } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Table, Pagination } from 'react-bootstrap';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement, ArcElement } from 'chart.js';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import axios from 'axios';
@@ -21,18 +21,26 @@ const Analiticos = () => {
     const [barChartData, setBarChartData] = useState({});
     const [lineChartData, setLineChartData] = useState({});
     const [pieChartData, setPieChartData] = useState({});
+
+    // paginacion
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [recordsPerPage] = useState(25);
+
+
     const [searchResults, setSearchResults] = useState([]);
     const [filters, setFilters] = useState({ fechaDesde: '', fechaHasta: '', tipoAcceso: '' });
 
     useEffect(() => {
+        const fetchGraphData = async () => {
+            await fetchBusquedasPorPais();
+            await fetchEvolucionBusquedas();
+            await fetchTipoAcceso();
+        };
+    
         fetchGraphData();
-    }, []);
-
-    const fetchGraphData = () => {
-        fetchBusquedasPorPais();
-        fetchEvolucionBusquedas();
-        fetchTipoAcceso();
-    };
+    }, []); // Assuming no dependencies
+    
 
     const fetchBusquedasPorPais = async () => {
         const response = await axios.get('http://localhost:8080/analiticos/registros/paises');
@@ -87,29 +95,42 @@ const Analiticos = () => {
     };
 
     const handleSearch = async () => {
-        // Correcting timezone offset for backend compatibility
+
         const offset = new Date().getTimezoneOffset() * 60000;
         const formattedFromDate = filters.fechaDesde ? (new Date(new Date(filters.fechaDesde).getTime() - offset)).toISOString() : '';
         const formattedToDate = filters.fechaHasta ? (new Date(new Date(filters.fechaHasta).getTime() - offset)).toISOString() : '';
-
+    
         console.log(`Searching from ${formattedFromDate} to ${formattedToDate}`);
         const params = new URLSearchParams({
             fechaDesde: formattedFromDate,
             fechaHasta: formattedToDate,
             tipoAcceso: filters.tipoAcceso
         });
-
-        const response = await axios.get(`http://localhost:8080/analiticos/filtrar?${params}`);
-        const formattedResults = response.data.map(item => ({
-            ...item,
-            fechaHora: new Date(item.fechaHora).toLocaleString('en-US', {
-                year: 'numeric', month: 'numeric', day: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-            })
-        }));
-        setSearchResults(formattedResults);
+    
+        try {
+            const response = await axios.get(`http://localhost:8080/analiticos/filtrar?${params}`);
+            const formattedResults = response.data.map(item => ({
+                ...item,
+                fechaHora: new Date(item.fechaHora).toLocaleString('en-US', {
+                    year: 'numeric', month: 'numeric', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                })
+            }));
+            setSearchResults(formattedResults);
+            setCurrentPage(1); 
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+            setSearchResults([]);
+        }
     };
-
+    
+    const indexOfLastRecord = currentPage * recordsPerPage;
+    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+    const currentRecords = searchResults.slice(indexOfFirstRecord, indexOfLastRecord);
+    
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    
+   
     return (
         <Container fluid className="analiticos-container">
             <Row>
@@ -154,17 +175,30 @@ const Analiticos = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {searchResults.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.id}</td>
-                                    <td>{item.usuarioId || 'No Autenticado'}</td>
-                                    <td>{item.fechaHora}</td>
-                                    <td>{item.parametrosBusqueda}</td>
-                                    <td>{item.tipoAcceso}</td>
-                                </tr>
-                            ))}
-                        </tbody>
+    {currentRecords.map((item, index) => (
+        <tr key={index}>
+            <td>{item.id}</td>
+            <td>{item.usuarioId || 'No Autenticado'}</td>
+            <td>{item.fechaHora}</td>
+            <td>{item.parametrosBusqueda}</td>
+            <td>{item.tipoAcceso}</td>
+        </tr>
+    ))}
+</tbody>
+
                     </Table>
+                    
+
+
+                    <Pagination>{Array.from({ length: Math.ceil(searchResults.length / recordsPerPage) }, (_, i) => (
+                        <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => paginate(i + 1)}>
+                            {i + 1}
+                        </Pagination.Item>
+                    ))}</Pagination>
+
+
+
+
                 </Col>
             </Row>
             <Row>
@@ -186,7 +220,7 @@ const Analiticos = () => {
                 </Col>
             </Row>
         </Container>
-    );
+    ); 
 };
 
 export default Analiticos;
