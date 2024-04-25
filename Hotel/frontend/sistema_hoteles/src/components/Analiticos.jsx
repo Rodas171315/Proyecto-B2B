@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Table, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Table, Pagination, InputGroup, FormControl } from 'react-bootstrap';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement, ArcElement } from 'chart.js';
 import { Bar, Line, Pie } from 'react-chartjs-2';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import emailjs from 'emailjs-com';
+
 
 ChartJS.register(
   CategoryScale,
@@ -30,6 +32,7 @@ const Analiticos = () => {
 
     const [searchResults, setSearchResults] = useState([]);
     const [filters, setFilters] = useState({ fechaDesde: '', fechaHasta: '', tipoAcceso: '', esAutenticado: '' });
+
 
     useEffect(() => {
         const fetchGraphData = async () => {
@@ -132,12 +135,130 @@ const Analiticos = () => {
         }
     };
     
+
+    // PAGINEO
     const indexOfLastRecord = currentPage * recordsPerPage;
     const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
     const currentRecords = searchResults.slice(indexOfFirstRecord, indexOfLastRecord);
     
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     
+
+
+
+// CORREO
+const [file, setFile] = useState(null);
+const [email, setEmail] = useState(''); // correo
+const [driveLink, setDriveLink] = useState(''); // Enlace de Google Drive
+
+
+const handleLinkChange = (event) => {
+    setDriveLink(event.target.value);
+};
+
+const convertToCSV = (data) => {
+    if (!data || data.length === 0) {
+        console.error('No data available to convert to CSV');
+        return ''; // Return an empty string or handle this case as needed
+    }
+    const replacer = (key, value) => value === null ? '' : value;
+    const header = Object.keys(data[0]);
+    let csv = data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+    csv.unshift(header.join(','));
+    return csv.join('\r\n');
+};
+
+
+const toBase64 = (csvData) => {
+    return btoa(unescape(encodeURIComponent(csvData)));
+};
+
+
+const downloadCSV = (csvData) => {
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'download.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
+
+const handleDownload = () => {
+    if (!currentRecords || currentRecords.length === 0) {
+        console.error('No records to download');
+        return; // Optionally alert the user or handle this scenario appropriately.
+    }
+    const csvData = convertToCSV(currentRecords);
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'searchResults.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+    console.log("CSV file has been downloaded.");
+};
+
+
+
+
+const sendEmail = () => {
+    if (!driveLink) {
+        console.error("No Google Drive link provided");
+        alert("Please enter a Google Drive link before sending the email.");
+        return;
+    }
+
+    const templateParams = {
+        to_email: email,
+        drive_link: driveLink, // Enviando solo el enlace de Google Drive
+    };
+
+    emailjs.send('service_db-dw2', 'template_rq1e8jw', templateParams, '83TAqc_7hHgnfdESC')
+        .then((response) => {
+            console.log('Email successfully sent!', response.status, response.text);
+            alert("Email successfully sent!");
+        }, (error) => {
+            console.error('Failed to send email:', error);
+            alert("Failed to send email. Check the console for more details.");
+        });
+};
+
+
+
+
+
+
+
+const handleExport = () => {
+    const csvData = convertToCSV(currentRecords);
+    sendEmail(csvData);
+};
+
+
+const handleUploadToDrive = () => {
+    const folderId = '1nihlBuTFBe11gQ5fDxHi0AQ_SWGA7E6x';
+    axios.post('http://localhost:8080/uploadToDrive', {
+        filePath: '/home/pmorales/Downloads/searchResults.csv',
+        fileName: 'searchResults.csv',
+        folderId: folderId  
+    }).then(response => {
+        alert('File successfully uploaded to Google Drive. Link: ' + response.data.fileLink);
+    }).catch(error => {
+        console.error('Error uploading file:', error);
+        alert('Failed to upload file: ' + error.message);
+    });
+};
+
+
+
+
+
+
+
    
     return (
         <Container fluid className="analiticos-container">
@@ -171,7 +292,7 @@ const Analiticos = () => {
                                 <Form.Group controlId="esAutenticado">
                                     <Form.Check
                                         type="checkbox"
-                                        label="Authenticated"
+                                        label="Autenticado"
                                         name="esAutenticado"
                                         checked={filters.esAutenticado}
                                         onChange={handleFilterChange}
@@ -220,6 +341,42 @@ const Analiticos = () => {
 
                 </Col>
             </Row>
+
+
+
+            <Row>
+                <Col md={12}>
+                    <Form>
+                        <Button onClick={handleDownload}>Descargar CSV</Button>
+                    </Form>
+
+
+                    <InputGroup className="mb-3">
+                        <FormControl
+                            placeholder="Recipient's email"
+                            aria-label="Recipient's email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <FormControl
+                            placeholder="Enter Google Drive link"
+                            value={driveLink}
+                            onChange={handleLinkChange}
+                        />
+                        <Button variant="outline-secondary" onClick={sendEmail}>Enviar Coreeo</Button>
+                    </InputGroup>
+                </Col>
+            </Row>
+
+
+            <Row>
+                <Col md={12}>
+                    <Button variant="primary" onClick={handleUploadToDrive}>Subir a la carpeta del Hotel</Button>
+                </Col>
+            </Row>
+
+
+
             <Row>
                 <Col md={12}>
                     <h2 className="chart-title">Análisis de Búsquedas por País</h2>
@@ -238,6 +395,12 @@ const Analiticos = () => {
                     {pieChartData.labels && <Pie data={pieChartData} options={{ responsive: true }} />}
                 </Col>
             </Row>
+
+
+
+
+
+            
         </Container>
     ); 
 };
