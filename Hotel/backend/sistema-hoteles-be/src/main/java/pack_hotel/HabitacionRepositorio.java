@@ -1,16 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pack_hotel;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 
 /**
@@ -21,6 +22,20 @@ import java.util.stream.Collectors;
  @ApplicationScoped
  public class HabitacionRepositorio implements PanacheRepository<Habitaciones> {
      
+
+
+    @Inject
+    EntityManager em;
+
+
+    public List<Habitaciones> findByHotelIdAndEstado(Long hotelId, String estado) {
+        return find("id_hotel = ?1 and estado = ?2", hotelId, estado).list();
+    }
+
+    public List<Habitaciones> findByHotelId(Long hotelId) {
+        return find("id_hotel", hotelId).list();
+    }
+
      public List<Habitaciones> buscarPorHotelId(Long hotelId) {
          return find("id_hotel", hotelId).list();
      }
@@ -48,5 +63,45 @@ import java.util.stream.Collectors;
     }
     
     
-    
- }
+
+    public List<Habitaciones> buscarPorPaisYDisponibilidad(String pais, LocalDate fechaIngreso, LocalDate fechaSalida, int numeroPersonas) {
+        List<Long> hotelIds = em.createQuery("SELECT h.id FROM Hoteles h WHERE h.pais = :pais", Long.class)
+                                .setParameter("pais", pais)
+                                .getResultList();
+        List<Habitaciones> habitacionesDisponibles = new ArrayList<>();
+        for (Long hotelId : hotelIds) {
+            List<Habitaciones> habitaciones = list("id_hotel = ?1 and capacidad_personas >= ?2", hotelId, numeroPersonas);
+            for (Habitaciones habitacion : habitaciones) {
+                long reservas = em.createQuery("SELECT COUNT(r) FROM Reservas r WHERE r.idHabitacion = :idHabitacion AND r.estadoReserva = 'confirmada' AND NOT (r.fechaSalida <= :fechaIngreso OR r.fechaIngreso >= :fechaSalida)", Long.class)
+                                  .setParameter("idHabitacion", habitacion.getId_habitacion())
+                                  .setParameter("fechaIngreso", fechaIngreso)
+                                  .setParameter("fechaSalida", fechaSalida)
+                                  .getSingleResult();
+                if (reservas == 0) {
+                    habitacionesDisponibles.add(habitacion);
+                }
+            }
+        }
+        return habitacionesDisponibles;
+    }
+
+
+
+
+
+
+    // ESTAODS
+
+
+    @Transactional
+    public void cambiarEstadoPorHotelId(Long hotelId, String estado) {
+        List<Habitaciones> habitaciones = findByHotelId(hotelId);
+        for (Habitaciones habitacion : habitaciones) {
+            habitacion.setEstado(estado);
+            persist(habitacion); 
+        }
+    }
+
+
+
+}

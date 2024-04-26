@@ -30,5 +30,14 @@ public class HotelRepositorio implements PanacheRepository<Hoteles> {
                 .getResultList();
 
     }
+    public void cambiarEstado(Long idHotel, String estado) {
+        Hoteles hotel = findById(idHotel);
+        if (hotel != null) {
+            hotel.setEstado(estado.toLowerCase());
+            persist(hotel);
+        }
+    }
+
+    
 
 }

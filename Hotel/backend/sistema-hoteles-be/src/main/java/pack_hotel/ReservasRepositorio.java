@@ -90,6 +90,27 @@ private LocalDate convertToLocalDate(Object dbData) {
     }
 
 
+
+
+public List<Reservas> findByHabitacionAndEstado(Long idHabitacion, String estado) {
+    return list("idHabitacion = ?1 and estadoReserva = ?2", idHabitacion, estado);
+}
+
+// En ReservasRepositorio.java
+public void cancelarReservasPorHabitacionSiNecesario(Long idHabitacion) {
+    List<Reservas> reservasConfirmadas = em.createQuery("SELECT r FROM Reservas r WHERE r.idHabitacion = :idHabitacion AND r.estadoReserva = 'confirmada'", Reservas.class)
+                                           .setParameter("idHabitacion", idHabitacion)
+                                           .getResultList();
+    for (Reservas reserva : reservasConfirmadas) {
+        reserva.setEstadoReserva("Cancelada");
+        persist(reserva);
+    }
+}
+
+
+
+
+    
 }
     
 

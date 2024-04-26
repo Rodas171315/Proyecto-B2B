@@ -27,13 +27,15 @@ public class Habitaciones {
     
     private int capacidad_personas;
     
-    private Integer tipo_habitacion; // Changed from 'int' to 'Integer' to allow null values
+    private Integer tipo_habitacion; 
     
     private double precioxpersona;
     
     private double precioxnoche;
     
     private int valuacion;
+    
+    private String estado = "activo"; 
 
     // Getters and setters
     public Long getId_habitacion() {
@@ -106,6 +108,14 @@ public class Habitaciones {
 
     public void setValuacion(int valuacion) {
         this.valuacion = valuacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+    
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     @Override

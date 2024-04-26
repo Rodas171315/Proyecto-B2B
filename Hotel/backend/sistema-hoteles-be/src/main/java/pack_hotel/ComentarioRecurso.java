@@ -105,7 +105,7 @@ public class ComentarioRecurso {
         comentario.setTextoComentario(comentarioDto.getTextoComentario());
         comentario.setRating(comentarioDto.getRating());
         comentario.setIdComentarioPadre(comentarioDto.getIdComentarioPadre()); 
-        comentario.setFechaComentario(LocalDateTime.now()); 
+        comentario.setFechaComentario(LocalDateTime.now()); // esto assume la fecha actual para el comentario
         comentarioRepositorio.persist(comentario);
         
        
