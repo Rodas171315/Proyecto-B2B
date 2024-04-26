@@ -187,7 +187,7 @@ const CrearPaquete = () => {
                 >
                   {vuelos.map((vuelo) => (
                     <MenuItem key={vuelo._id} value={vuelo._id}>
-                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio})  {vuelo.fecha_salida}
+                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio})  {vuelo.fecha_salida} {vuelo.ciudad_escala}
                     </MenuItem>
                   ))}
                 </Select>
