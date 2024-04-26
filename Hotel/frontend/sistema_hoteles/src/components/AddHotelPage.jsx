@@ -19,6 +19,7 @@ const AddHotelPage = () => {
   const [editandoId, setEditandoId] = useState(null);
   const [hotelEditado, setHotelEditado] = useState({});
   const [hotelImages, setHotelImages] = useState({});
+  const [estadoHotel, setEstadoHotel] = useState('');
 
   const fetchHoteles = async () => {
     try {
@@ -170,6 +171,37 @@ useEffect(() => {
 
 
 
+// MANEJO DEL ESTADO
+
+
+const cambiarEstadoHotel = async (idHotel, estadoActual) => {
+  const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+  
+  try {
+    const response = await fetch(`http://localhost:8080/hoteles/${idHotel}/estado/${nuevoEstado}`, {
+      method: 'PUT',
+    });
+    if (!response.ok) {
+      throw new Error('Error al cambiar el estado del hotel');
+    }
+    // Actualiza la UI inmediatamente después del cambio de estado exitoso
+    const hotelesActualizados = hoteles.map(hotel => {
+      if (hotel.id_hotel === idHotel) {
+        return { ...hotel, estado: nuevoEstado }; // Actualiza el estado del hotel específico
+      }
+      return hotel;
+    });
+    setHoteles(hotelesActualizados);
+    setSuccessMessage(`Hotel ${nuevoEstado} exitosamente`);
+  } catch (error) {
+    console.error(error);
+    setErrorMessage('Error al cambiar el estado: ' + error.message);
+  }
+};
+
+
+
+
 
 
   return (
@@ -310,6 +342,9 @@ useEffect(() => {
             </td>
                   <td>
                     <Button variant="secondary" onClick={() => iniciarEdicion(hotel)}>Editar</Button>
+                    <Button variant={hotel.estado === 'warning' ? 'danger' : 'success'} onClick={() => cambiarEstadoHotel(hotel.id_hotel, hotel.estado)}>
+        {hotel.estado === 'activo' ? 'Desactivar' : 'Activar'}
+      </Button>
                     <Button variant="danger" onClick={() => eliminarHotel(hotel.id_hotel)} style={{marginLeft: '5px'}}>Eliminar</Button>
                   </td>
                 </>

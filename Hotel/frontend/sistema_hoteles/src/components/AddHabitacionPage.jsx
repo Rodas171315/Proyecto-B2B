@@ -6,6 +6,7 @@ import TipoHabitacionImagenesEditor from './TipoHabitacionImagenesEditor';
 const AddHabitacionPage = () => {
   const [hoteles, setHoteles] = useState([]);
   const [habitaciones, setHabitaciones] = useState([]);
+  const [estadoHabitacion, setEstadoHabitacion] = useState('');
   const [selectedHotel, setSelectedHotel] = useState('');
   const [nuevaHabitacion, setNuevaHabitacion] = useState({
     numero_habitacion: '',
@@ -52,7 +53,6 @@ const AddHabitacionPage = () => {
     } catch (error) {
       console.error('Error al cargar las habitaciones:', error);
       setErrorMessage('Error al cargar las habitaciones');
-      // rror al cargar las habitaciones, asegúrate de limpiar el estado
       setHabitaciones([]);
     }
   };
@@ -136,9 +136,7 @@ const iniciarEdicion = (habitacion) => {
   
   
 const cancelarEdicion = () => {
-  // Limpiar el estado que maneja la habitación actualmente siendo editada
   setHabitacionEditando(null);
-  // Resetear los datos de edición a sus valores por defecto
   setDatosEdicion({ precioxpersona: '', precioxnoche: '' });
 };
 
@@ -156,6 +154,40 @@ const eliminarHabitacion = async (idHabitacion) => {
       setErrorMessage('Error al eliminar la habitación');
     }
   };
+
+
+
+// ESTADOS
+
+
+const cambiarEstadoHabitacion = async (idHabitacion, estadoActual) => {
+  const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+
+  try {
+    const response = await fetch(`http://localhost:8080/habitaciones/${idHabitacion}/estado/${nuevoEstado}`, {
+      method: 'PUT',
+    });
+    if (!response.ok) {
+      throw new Error('Error al cambiar el estado de la habitación');
+    }
+    // minúsculas para la actualización de la UI
+    const habitacionesActualizadas = habitaciones.map((habitacion) => {
+      if (habitacion.id_habitacion === idHabitacion) {
+        return { ...habitacion, estado: nuevoEstado };
+      }
+      return habitacion;
+    });
+    setHabitaciones(habitacionesActualizadas);
+    setSuccessMessage(`Habitación ${nuevoEstado} exitosamente`);
+  } catch (error) {
+    console.error('Error al cambiar el estado de la habitación:', error);
+    setErrorMessage('Error al cambiar el estado de la habitación');
+  }
+};
+
+
+
+
   
   return (
     <Container>
@@ -308,6 +340,13 @@ onChange={handleChangeNuevaHabitacion}
         ) : (
           <>
             <Button variant="primary" onClick={() => iniciarEdicion(habitacion)}>Editar</Button>
+            <Button
+                      variant={habitacion.estado === 'activo' ? 'warning' : 'success'}
+                      onClick={() => cambiarEstadoHabitacion(habitacion.id_habitacion, habitacion.estado)}
+                      style={{ marginLeft: '5px' }}
+                    >
+                      {habitacion.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                    </Button>
             <Button variant="danger" onClick={() => eliminarHabitacion(habitacion.id_habitacion)} style={{ marginLeft: '5px' }}>Eliminar</Button>
           </>
         )}
@@ -325,7 +364,7 @@ onChange={handleChangeNuevaHabitacion}
   )}
      <div className="mt-5">
         <h2>Editar Imágenes de Tipos de Habitación</h2>
-        {["1", "2", "3", "4"].map((tipoId) => ( // Asegúrate de reemplazar estos IDs con los reales de tus tipos de habitación
+        {["1", "2", "3", "4"].map((tipoId) => ( 
           <div key={tipoId} className="mb-4">
             <TipoHabitacionImagenesEditor idTipoHabitacion={tipoId} />
           </div>
