@@ -400,6 +400,5 @@ FodyWeavers.xsd
 
 
 # Ignore specific backend build files and directories
-Aerolinea/backend/aerolinea-be/
 Agencia/backend/sistema-agencias-be/
 Hotel/backend/sistema-hoteles-be/target/
