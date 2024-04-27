@@ -7,6 +7,7 @@ import authRoute from "./routes/auth.js";
 import usuariosRoute from "./routes/usuarios.js";
 import vuelosRoute from "./routes/vuelos.js";
 import boletosRoute from "./routes/boletos.js";
+import comentariosRouter from './routes/comentarios.js'; 
 
 
 
@@ -63,6 +64,8 @@ app.use("/auth", authRoute);
 app.use("/usuarios", usuariosRoute);
 app.use("/vuelos", vuelosRoute);
 app.use("/boletos", boletosRoute);
+app.use('/comentarios', comentariosRouter); 
+
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

@@ -1,31 +1,57 @@
 <template>
-  <div class="container mt-5">
-    <h2 class="text-center mb-4">Confirmar Reserva</h2>
-    <div v-if="vuelo" class="card">
-      <div class="card-body">
-        <p class="card-text"><strong>Origen:</strong> {{ vuelo.ciudad_origen }}</p>
-        <p class="card-text"><strong>Destino:</strong> {{ vuelo.ciudad_destino }}</p>
-        <p class="card-text"><strong>Fecha de Salida:</strong> {{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</p>
-        <p class="card-text"><strong>Precio:</strong> Q{{ vuelo.precio }}</p>
-        <div class="mb-3">
-          <label for="tipoAsiento" class="form-label"><strong>Tipo de Asiento:</strong></label>
-          <select id="tipoAsiento" v-model="tipoAsiento" class="form-select" @change="cargarAsientosDisponibles(vuelo._id)">
-            <option value="turista">Turista</option>
-            <option value="ejecutivo">Ejecutivo</option>
-          </select>
-        </div>
-        <!-- Mostrar asientos disponibles -->
-        <div v-if="asientosDisponibles[tipoAsiento] > 0">
-          <p>Asientos disponibles: {{ asientosDisponibles[tipoAsiento] }}</p>
-          <input type="number" v-model.number="cantidadSeleccionada" :max="asientosDisponibles[tipoAsiento]" min="1" placeholder="Cantidad de asientos" required>
-        </div>
-        <button @click="confirmarReserva" class="btn btn-primary w-100">Confirmar Reserva</button>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Confirmar Reserva</h2>
+  <div v-if="vuelo" class="card">
+    <div class="card-body">
+      <p class="card-text"><strong>Origen:</strong> {{ vuelo.ciudad_origen }}</p>
+      <p class="card-text"><strong>Destino:</strong> {{ vuelo.ciudad_destino }}</p>
+      <p class="card-text"><strong>Fecha de Salida:</strong> {{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</p>
+      <p class="card-text"><strong>Precio:</strong> Q{{ vuelo.precio }}</p>
+      <div class="mb-3">
+        <label for="tipoAsiento" class="form-label"><strong>Tipo de Asiento:</strong></label>
+        <select id="tipoAsiento" v-model="tipoAsiento" class="form-select" @change="cargarAsientosDisponibles(vuelo._id)">
+          <option value="turista">Turista</option>
+          <option value="ejecutivo">Ejecutivo</option>
+        </select>
       </div>
+      <div v-if="asientosDisponibles[tipoAsiento] > 0">
+        <p>Asientos disponibles: {{ asientosDisponibles[tipoAsiento] }}</p>
+        <input type="number" v-model.number="cantidadSeleccionada" :max="asientosDisponibles[tipoAsiento]" min="1" placeholder="Cantidad de asientos" required>
+      </div>
+      <button @click="confirmarReserva" class="btn btn-primary w-100">Confirmar Reserva</button>
     </div>
-    <div v-else>
-      <p>Cargando detalles del vuelo...</p>
+    <!-- Comentarios y formulario para enviar comentarios -->
+    <div class="comentarios-container mt-4">
+      <h3>Comentarios del vuelo</h3>
+      <ul>
+
+
+        <ul>
+  <li v-for="comentario in comentarios" :key="comentario._id">
+    <strong>{{ comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ comentario.contenido }}
+  </li>
+  <li v-if="comentarios.length === 0">
+    <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+  </li>
+</ul>
+
+
+
+        <li v-if="comentarios.length === 0">
+          <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
+        </li>
+      </ul>
+      <form @submit.prevent="enviarComentario">
+        <textarea v-model="nuevoComentario" placeholder="Escribe tu comentario..." class="form-control mb-2"></textarea>
+        <button type="submit" class="btn btn-success">Enviar Comentario</button>
+      </form>
     </div>
   </div>
+  <div v-else>
+    <p>Cargando detalles del vuelo...</p>
+  </div>
+</div>
+
 </template>
 
 
@@ -39,63 +65,115 @@ const router = useRouter();
 const vuelo = ref(null);
 const tipoAsiento = ref('turista');
 const asientosDisponibles = ref({ turista: 0, ejecutivo: 0 });
-const cantidadSeleccionada = ref(); 
+const cantidadSeleccionada = ref(1);
+const comentarios = ref([]);
+const nuevoComentario = ref('');
 
-onMounted(() => {
-  const vueloSeleccionado = localStorage.getItem('vueloSeleccionado');
-  if (vueloSeleccionado) {
-    vuelo.value = JSON.parse(vueloSeleccionado);
-    cargarAsientosDisponibles(vuelo.value._id);
-  } else {
-    console.error('No se han proporcionado detalles del vuelo.');
-    router.push({ name: 'VuelosDisponibles' });
-  }
+onMounted(async () => {
+    const vueloSeleccionado = localStorage.getItem('vueloSeleccionado');
+    if (vueloSeleccionado) {
+        vuelo.value = JSON.parse(vueloSeleccionado);
+        cargarAsientosDisponibles(vuelo.value._id);
+        cargarComentarios(vuelo.value._id);
+    } else {
+        console.error('No se han proporcionado detalles del vuelo.');
+        router.push({ name: 'VuelosDisponibles' });
+    }
 });
 
-async function cargarAsientosDisponibles(vueloId) {
-  try {
-    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/vuelos/${vueloId}/asientos-disponibles`);
-    asientosDisponibles.value = {
-      turista: data.asientosTuristaDisponibles,
-      ejecutivo: data.asientosEjecutivosDisponibles
-    };
-  } catch (error) {
-    console.error('Error al cargar asientos disponibles:', error);
-  }
-}
+const cargarAsientosDisponibles = async (vueloId) => {
+    try {
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/vuelos/${vueloId}/asientos-disponibles`);
+        asientosDisponibles.value = {
+            turista: data.asientosTuristaDisponibles,
+            ejecutivo: data.asientosEjecutivosDisponibles
+        };
+    } catch (error) {
+        console.error('Error al cargar asientos disponibles:', error);
+        asientosDisponibles.value = { turista: 0, ejecutivo: 0 };
+    }
+};
 
 const confirmarReserva = async () => {
-  const usuarioId = localStorage.getItem('user_id');
-  if (!usuarioId) {
-    alert('Por favor, inicia sesi.');
+    const usuarioId = localStorage.getItem('user_id');
+    if (!usuarioId) {
+        alert('Por favor, inicia sesión.');
+        console.error('Usuario no logueado');
+        return;
+    }
 
-    console.error('Usuario no logueado');
-    return;
-  }
+    const cantidad = parseInt(cantidadSeleccionada.value);
+    if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
+        alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
+        return;
+    }
 
-  const cantidad = parseInt(cantidadSeleccionada.value);
-  if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
-    alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
-    return;
-  }
-
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
-        usuarioId,
-        vueloId: vuelo.value._id,
-        tipoAsiento: tipoAsiento.value,
-        cantidad 
-    });
-    alert('Reserva confirmada con éxito.');
-    await cargarAsientosDisponibles(vuelo.value._id);
-    router.push({ name: 'HistorialReservas' });
-} catch (error) {
-    console.error('Error al confirmar la reserva:', error);
-    alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
-}
-
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
+            usuarioId,
+            vueloId: vuelo.value._id,
+            tipoAsiento: tipoAsiento.value,
+            cantidad 
+        });
+        alert('Reserva confirmada con éxito.');
+        await cargarAsientosDisponibles(vuelo.value._id);
+        router.push({ name: 'HistorialReservas' });
+    } catch (error) {
+        console.error('Error al confirmar la reserva:', error);
+        alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
+    }
 };
+
+const cargarComentarios = async (vueloId) => {
+    try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/comentarios/vuelo/${vueloId}`);
+        
+        const comentariosConNombre = response.data.map(comentario => ({
+            ...comentario,
+            usuario: { nombre: comentario.usuarioId ? comentario.usuarioId.nombre : 'Usuario desconocido' }
+        }));
+
+        comentarios.value = comentariosConNombre;
+    } catch (error) {
+        console.error('Error al cargar los comentarios:', error);
+        comentarios.value = [];
+    }
+};
+
+
+const enviarComentario = async () => {
+    const usuarioId = localStorage.getItem('user_id');
+    if (!nuevoComentario.value.trim() || !vuelo.value || !usuarioId) {
+        alert('Todos los campos son necesarios.');
+        return;
+    }
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/comentarios`, {
+            contenido: nuevoComentario.value,
+            usuarioId: usuarioId,
+            vueloId: vuelo.value._id,
+        });
+
+        const nombreUsuario = response.data.usuario ? response.data.usuario.nombre : 'Usuario desconocido';
+
+        const comentarioConNombre = {
+            ...response.data,
+            usuario: { nombre: nombreUsuario }
+        };
+
+        comentarios.value.unshift(comentarioConNombre);
+        nuevoComentario.value = '';
+    } catch (error) {
+        console.error('Error al enviar comentario:', error);
+    }
+};
+
+
+
+
+
 </script>
+
 
 
 
