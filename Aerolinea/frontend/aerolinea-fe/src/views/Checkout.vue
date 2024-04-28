@@ -20,37 +20,42 @@
       </div>
       <button @click="confirmarReserva" class="btn btn-primary w-100">Confirmar Reserva</button>
     </div>
-    <!-- Comentarios y formulario para enviar comentarios -->
-    <div class="comentarios-container mt-4">
-      <h3>Comentarios del vuelo</h3>
-      <ul>
+<!-- Comentarios y formulario para enviar comentarios -->
+<div class="comentarios-container mt-4">
+        <h3>Comentarios del vuelo</h3>
+        <ul class="comentarios-lista">
+          <li v-for="comentario in comentarios" :key="comentario._id" class="comentario">
+            <div class="comentario-contenido">
+              <strong>{{ comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ comentario.contenido }}
+              <button @click="responderComentario(comentario._id)" class="responder-btn">Responder</button>
+            </div>
+            <ul v-if="comentario.respuestas && comentario.respuestas.length" class="respuestas">
+              <li v-for="respuesta in comentario.respuestas" :key="respuesta._id" class="respuesta">
+                <div class="respuesta-contenido">
+                  <strong>{{ respuesta.usuario ? respuesta.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ respuesta.contenido }}
+                </div>
+              </li>
+            </ul>
+            <div v-if="comentario._id === comentarioSeleccionado" class="responder-formulario">
+              <textarea v-model="nuevoRespuesta" placeholder="Escribe tu respuesta..." class="form-control mb-2"></textarea>
+              <button @click="() => enviarRespuesta(comentario._id, vuelo._id)" class="btn btn-success">Enviar Respuesta</button>
+            </div>
+          </li>
+        </ul>
+        <form @submit.prevent="enviarComentario" class="nuevo-comentario-formulario">
+          <textarea v-model="nuevoComentario" placeholder="Escribe tu comentario..." class="form-control mb-2"></textarea>
+          <button type="submit" class="btn btn-success">Enviar Comentario</button>
+        </form>
+</div>
 
 
-        <ul>
-  <li v-for="comentario in comentarios" :key="comentario._id">
-    <strong>{{ comentario.usuario ? comentario.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ comentario.contenido }}
-  </li>
-  <li v-if="comentarios.length === 0">
-    <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-  </li>
-</ul>
 
-
-
-        <li v-if="comentarios.length === 0">
-          <p>No hay comentarios aún. ¡Sé el primero en comentar!</p>
-        </li>
-      </ul>
-      <form @submit.prevent="enviarComentario">
-        <textarea v-model="nuevoComentario" placeholder="Escribe tu comentario..." class="form-control mb-2"></textarea>
-        <button type="submit" class="btn btn-success">Enviar Comentario</button>
-      </form>
-    </div>
   </div>
   <div v-else>
     <p>Cargando detalles del vuelo...</p>
   </div>
 </div>
+
 
 </template>
 
@@ -68,6 +73,10 @@ const asientosDisponibles = ref({ turista: 0, ejecutivo: 0 });
 const cantidadSeleccionada = ref(1);
 const comentarios = ref([]);
 const nuevoComentario = ref('');
+const comentarioSeleccionado = ref(null);
+const nuevoRespuesta = ref('');
+
+
 
 onMounted(async () => {
     const vueloSeleccionado = localStorage.getItem('vueloSeleccionado');
@@ -124,21 +133,71 @@ const confirmarReserva = async () => {
     }
 };
 
+
+
+const transformComentarios = (flatComments) => {
+  const parentComments = flatComments.filter(c => !c.parentId);
+
+  parentComments.forEach(parent => {
+    parent.respuestas = flatComments.filter(c => c.parentId === parent._id);
+  });
+
+  return parentComments;
+};
+
+
+
 const cargarComentarios = async (vueloId) => {
     try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/comentarios/vuelo/${vueloId}`);
-        
+
+        // Map the response data to include the username within the usuario object
         const comentariosConNombre = response.data.map(comentario => ({
             ...comentario,
-            usuario: { nombre: comentario.usuarioId ? comentario.usuarioId.nombre : 'Usuario desconocido' }
+            usuario: { 
+              nombre: comentario.usuarioId && comentario.usuarioId.nombre 
+                       ? comentario.usuarioId.nombre 
+                       : 'Usuario desconocido'
+            }
         }));
 
-        comentarios.value = comentariosConNombre;
+        // Transform the flat comments with usernames into a nested structure
+        const nestedComentarios = nestComments(comentariosConNombre);
+
+        comentarios.value = nestedComentarios;
     } catch (error) {
         console.error('Error al cargar los comentarios:', error);
         comentarios.value = [];
     }
 };
+
+// The nestComments function remains unchanged, as it does not manipulate the usuario object.
+
+
+// Helper function to transform a flat comment array into a nested structure
+const nestComments = (flatComments) => {
+    // Initialize a map to associate comments and replies
+    const commentMap = new Map();
+
+    // Populate the map with all comments, ensuring each has an empty replies array
+    flatComments.forEach(comment => {
+        commentMap.set(comment._id, {...comment, respuestas: [] });
+    });
+
+    // Associate replies with their parent comments
+    flatComments.forEach(comment => {
+        if (comment.parentId) {
+            const parent = commentMap.get(comment.parentId);
+            if (parent) {
+                parent.respuestas.push(comment);
+            }
+        }
+    });
+
+    // Extract top-level comments (those without a parentId) with their nested replies
+    return Array.from(commentMap.values()).filter(comment => !comment.parentId);
+};
+
 
 
 const enviarComentario = async () => {
@@ -169,6 +228,46 @@ const enviarComentario = async () => {
 };
 
 
+const enviarRespuesta = async (comentarioId, vueloId) => {
+    const usuarioId = localStorage.getItem('user_id');
+    const payload = {
+        contenido: nuevoRespuesta.value,
+        usuarioId,
+        vueloId,
+        parentId: comentarioId, // this is the ID of the comment being responded to
+    };
+
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/comentarios`, payload);
+        if (response && response.data) {
+            // Assuming response.data contains the newly created comment
+            const newResponse = response.data;
+
+            // Ensure comentarios is an array and update it
+            if (Array.isArray(comentarios.value)) {
+                const parentIndex = comentarios.value.findIndex(c => c._id === comentarioId);
+                if (parentIndex !== -1) {
+                    if (!comentarios.value[parentIndex].respuestas) {
+                        comentarios.value[parentIndex].respuestas = []; // Initialize if it doesn't exist
+                    }
+                    comentarios.value[parentIndex].respuestas.push(newResponse);
+                }
+            }
+
+            nuevoRespuesta.value = ''; // Clear the input after submission
+        }
+    } catch (error) {
+        console.error("Failed to send response:", error);
+    }
+};
+
+
+
+
+
+const responderComentario = (comentarioId) => {
+    comentarioSeleccionado.value = comentarioId;
+};
 
 
 
@@ -262,4 +361,110 @@ input[type="number"]:focus {
 .mb-3 {
   margin-bottom: 1.5rem;
 }
+
+
+
+.comentarios-container {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comentarios-lista {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.comentario {
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+
+.comentario-contenido, .respuesta-contenido {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: white;
+}
+
+.respuestas {
+  list-style-type: none;
+  padding-left: 20px; /* Indent responses for visual hierarchy */
+}
+
+.respuesta {
+  background: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 5px;
+  border-left: 2px solid #007bff;
+  margin-left: 20px; /* Indent replies */
+}
+
+.responder-formulario, .nuevo-comentario-formulario {
+  margin-top: 10px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.btn-enviar-respuesta, .btn-enviar-comentario {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.btn-enviar-respuesta:hover, .btn-enviar-comentario:hover {
+  background-color: #4cae4c;
+}
+
+.responder-btn {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #dcdcdc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.responder-btn:hover {
+  background-color: #e9e9e9;
+}
+
+/* Add a visual cue for comments with responses */
+.comentario-contenido {
+  position: relative;
+}
+
+.comentario-contenido::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #eef;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+.comentario-contenido:hover::after,
+.comentario-contenido:has(+ .respuestas) {
+  visibility: visible;
+}
+
 </style>

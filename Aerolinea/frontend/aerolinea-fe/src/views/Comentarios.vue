@@ -13,7 +13,7 @@
         </ul>
         <form @submit.prevent="enviarRespuesta(comentario._id)">
           <textarea v-model="comentario.nuevaRespuesta" placeholder="Escribe una respuesta..."></textarea>
-          <button type="submit">Enviar Respuesta</button>
+          <button type="submit">Enviar Respdduesta</button>
         </form>
       </div>
     </li>
