@@ -27,13 +27,13 @@
     <ul class="comentarios-lista">
       <li v-for="comentario in comentarios" :key="comentario._id" class="comentario">
         <div class="comentario-contenido">
-          <strong>{{ comentario.usuario && comentario.usuario.nombre ? comentario.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ comentario.contenido }}
+          <strong>{{ comentario.usuario && comentario.usuario.nombre ? comentario.usuario.nombre : 'Usuario ' }}</strong>: {{ comentario.contenido }}
           <button @click="responderComentario(comentario._id)" class="responder-btn">Responder</button>
         </div>
         <ul v-if="comentario.respuestas && comentario.respuestas.length" class="respuestas">
           <li v-for="respuesta in comentario.respuestas" :key="respuesta._id" class="respuesta">
     {{ console.log(respuesta) }}          <div class="respuesta-contenido">
-              <strong>{{ respuesta.usuario && respuesta.usuario.nombre ? respuesta.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ respuesta.contenido }}
+              <strong>{{ respuesta.usuario && respuesta.usuario.nombre ? respuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ respuesta.contenido }}
               <button @click="responderComentario(respuesta._id)" class="responder-btn">Responder</button>
 
 
@@ -47,7 +47,7 @@
             <ul v-if="respuesta.respuestas && respuesta.respuestas.length" class="nested-respuestas">
               <li v-for="nestedRespuesta in respuesta.respuestas" :key="nestedRespuesta._id" class="respuesta">
                 <div class="respuesta-contenido">
-                  <strong>{{ nestedRespuesta.usuario && nestedRespuesta.usuario.nombre ? nestedRespuesta.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ nestedRespuesta.contenido }}
+                  <strong>{{ nestedRespuesta.usuario && nestedRespuesta.usuario.nombre ? nestedRespuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ nestedRespuesta.contenido }}
                   <button @click="responderComentario(nestedRespuesta._id)" class="responder-btn">Responder</button>
 
 
@@ -60,7 +60,7 @@
                 <ul v-if="nestedRespuesta.respuestas && nestedRespuesta.respuestas.length" class="nested-respuestas">
                   <li v-for="furtherNestedRespuesta in nestedRespuesta.respuestas" :key="furtherNestedRespuesta._id" class="respuesta">
                     <div class="respuesta-contenido">
-                      <strong>{{ furtherNestedRespuesta.usuario && furtherNestedRespuesta.usuario.nombre ? furtherNestedRespuesta.usuario.nombre : 'Usuario desconocido' }}</strong>: {{ furtherNestedRespuesta.contenido }}
+                      <strong>{{ furtherNestedRespuesta.usuario && furtherNestedRespuesta.usuario.nombre ? furtherNestedRespuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ furtherNestedRespuesta.contenido }}
                       <button @click="responderComentario(furtherNestedRespuesta._id)" class="responder-btn">Responder</button>
 
                       <div v-if="furtherNestedRespuesta._id === comentarioSeleccionado" class="responder-formulario">
@@ -196,7 +196,7 @@
               const comentariosConNombre = response.data.map(comentario => ({
                   ...comentario,
                   usuario: {
-                      nombre: comentario.usuarioId?.nombre || 'Usuario desconocido'
+                      nombre: comentario.usuarioId?.nombre || 'Usuario '
                   },
                   respuestas: [] 
               }));
@@ -255,7 +255,7 @@
               vueloId: vuelo.value._id,
           });
   
-          const nombreUsuario = response.data.usuario ? response.data.usuario.nombre : 'Usuario desconocido';
+          const nombreUsuario = response.data.usuario ? response.data.usuario.nombre : 'Usuario ';
   
           const comentarioConNombre = {
               ...response.data,
@@ -284,7 +284,7 @@
           if (response && response.data) {
               const newResponse = {
                   ...response.data,
-                  usuario: { nombre: response.data.usuario?.nombre || 'Usuario desconocido' },
+                  usuario: { nombre: response.data.usuario?.nombre || 'Usuario ' },
                   respuestas: [] 
               };
   
