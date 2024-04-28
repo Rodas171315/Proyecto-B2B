@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">UNIS Airlines</a>
+            <a class="navbar-brand" href="/">UNIS Airlines</a>
             <button
                 class="navbar-toggler"
                 type="button"
@@ -77,8 +77,9 @@ watchEffect(() => {
 </style>
 
 <style scoped>
+/*
 .navbar {
-    background-color: #d65d5d; /* Color principal */
+    background-color: #d65d5d;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -88,12 +89,12 @@ watchEffect(() => {
 }
 
 .nav-link {
-    color: #5b3434cc !important; /* Color de los enlaces */
+    color: #5b3434cc !important;
     transition: color 0.3s;
 }
 
 .nav-link:hover {
-    color: #c18138 !important; /* Color al pasar el mouse */
+    color: #c18138 !important;
     background-color: transparent;
 }
 
@@ -107,11 +108,12 @@ watchEffect(() => {
 
 @media (max-width: 992px) {
     .navbar-collapse {
-        background-color: #cab9a1; /* Color de fondo cuando está colapsado */
+        background-color: #cab9a1;
     }
 
     .nav-link {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Línea divisoria */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 }
+*/
 </style>

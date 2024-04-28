@@ -54,6 +54,7 @@ export function fechaFormateada(fecha) {
     return moment(fecha).add(1, 'days').format('YYYY-MM-DD');
 }
 
+//Colocar switch case
 export function fechayhoraFormateada(fechayhora, operacion) {
     let res;
     if (operacion == 'create') {
