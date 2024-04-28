@@ -14,7 +14,7 @@ const HospedajesDisponibles = () => {
     const [rating, setRating] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
-
+    const [comentariosVisibles, setComentariosVisibles] = useState({});
     
 
     const tiposHabitacionDisponibles = ["Doble", "Junior Suite", "Suite", "Gran Suite"];
@@ -74,6 +74,20 @@ const HospedajesDisponibles = () => {
         console.log("Datos de la habitación:", habitacion);
         navigate('/comprahospedaje', { state: { hotelDetails: hotel, roomDetails: habitacion } });
     };
+
+    const toggleComentarios = (idHabitacion) => {
+        setComentariosVisibles(prevState => {
+            const newState = {
+                ...prevState,
+                [idHabitacion]: !prevState[idHabitacion]
+            };
+            console.log(newState);
+            return newState;
+        });
+    };
+    
+    
+
 
     const filteredHotelesConHabitaciones = hotelesConHabitaciones
         
@@ -186,8 +200,14 @@ const HospedajesDisponibles = () => {
                                         <Button size="small" onClick={() => iniciarCompra(hotel, habitacion)}>
                                             Comprar
                                         </Button>
+                                        <Button size="small" onClick={() => toggleComentarios(habitacion.id_habitacion)}>
+                                            Ver Comentarios
+                                        </Button>
                                     </CardActions>
-                                    <Comentarios idHabitacion={habitacion.id_habitacion} />
+                                    {comentariosVisibles[habitacion.id_habitacion] && (
+                                        <Comentarios idHabitacion={habitacion.id_habitacion} />
+                                    )}
+
 
                                 </Card>
                             </Grid>

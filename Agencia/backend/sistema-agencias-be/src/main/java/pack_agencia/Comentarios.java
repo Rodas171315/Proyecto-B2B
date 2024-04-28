@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * La clase {@code Comentarios} representa un comentario en el sistema de gestión de comentarios de usuarios.
+ * Los comentarios pueden ser anidados, permitiendo respuestas a comentarios existentes.
+ */
 @Entity
 public class Comentarios extends PanacheEntityBase {
 
@@ -39,11 +43,17 @@ public class Comentarios extends PanacheEntityBase {
     public LocalDateTime fechaCreacion = LocalDateTime.now();
 
 
-    
+    /**
+     * Constructor por defecto para la clase Comentarios.
+     */
+
     public Comentarios() {
     }
 
-    
+    /**
+     * Obtiene el identificador único del comentario.
+     * @return El identificador único del comentario.
+     */
     public Long getId() {
         return id;
     }
@@ -52,6 +62,10 @@ public class Comentarios extends PanacheEntityBase {
         this.id = id;
     }
 
+    /**
+     * Obtiene el usuario del cometario.
+     * @return El usuario del cometario.
+     */
     public Usuarios getUsuario() {
         return usuario;
     }
@@ -59,6 +73,11 @@ public class Comentarios extends PanacheEntityBase {
     public void setUsuario(Usuarios usuario) {
         this.usuario = usuario;
     }
+
+    /**
+     * Obtiene el contenido del comentario.
+     * @return El contenido del comentario.
+     */
 
     public String getComentario() {
         return comentario;
@@ -68,6 +87,11 @@ public class Comentarios extends PanacheEntityBase {
         this.comentario = comentario;
     }
 
+    /**
+     * Obtiene el identificador único del comentario padre.
+     * @return El identificador único del comentario padre.
+     */
+
     public Comentarios getParent() {
         return parent;
     }
@@ -76,6 +100,11 @@ public class Comentarios extends PanacheEntityBase {
         this.parent = parent;
     }
 
+    /**
+     * Obtiene la lista de respuestas del comentario.
+     * @return La lista de respuestas del comentario.
+     */
+
     public List<Comentarios> getReplies() {
         return replies;
     }
@@ -83,6 +112,11 @@ public class Comentarios extends PanacheEntityBase {
     public void setReplies(List<Comentarios> replies) {
         this.replies = replies;
     }
+
+    /**
+     * Obtiene la fecha de creacion del comentario.
+     * @return La fecha de creacion del comentario.
+     */
 
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;

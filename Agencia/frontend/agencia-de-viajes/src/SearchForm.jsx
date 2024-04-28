@@ -87,15 +87,22 @@ const SearchForm = () => {
 
     const handleBuscarHospedaje = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionado}`);
-            if (!response.ok) throw new Error('Error al buscar hoteles');
+            
+            const url = new URL('http://localhost:8080/habitaciones/buscar');
+            
+            url.searchParams.append('fechaIngreso', fechaCheckIn);
+            url.searchParams.append('fechaSalida', fechaCheckOut);
+            url.searchParams.append('numeroPersonas', capacidadPersona);
+            url.searchParams.append('pais', paisSeleccionado); 
+    
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error al buscar hospedajes');
             const hoteles = await response.json();
     
             if (hoteles.length === 0) {
-                setDialogMessage('No se encontraron hoteles disponibles en el país seleccionado.');
+                setDialogMessage('No se encontraron hoteles disponibles para las fechas seleccionadas.');
                 setOpenDialog(true);
             } else {
-                
                 navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles } });
             }
         } catch (error) {
@@ -104,6 +111,8 @@ const SearchForm = () => {
             setOpenDialog(true);
         }
     };
+    
+    
     
     const handleBuscarVuelos = async () => {
         try {
