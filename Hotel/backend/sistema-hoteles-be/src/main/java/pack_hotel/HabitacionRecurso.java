@@ -22,12 +22,9 @@ import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import jakarta.inject.Inject;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 @Path("/habitaciones")
 @Produces(MediaType.APPLICATION_JSON)

@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import java.util.List;
+
 
 @ApplicationScoped
 public class Tipo_habitacionRepositorio implements PanacheRepository<Tipos_habitacion> {

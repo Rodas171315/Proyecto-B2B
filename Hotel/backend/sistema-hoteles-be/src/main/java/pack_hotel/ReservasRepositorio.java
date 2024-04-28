@@ -6,17 +6,12 @@ package pack_hotel;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.sql.Date;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.Query;
+
 
 
 /**

@@ -18,13 +18,12 @@ import jakarta.ws.rs.core.Response;
 import java.util.Map;
 
 import java.util.List;
-import jakarta.persistence.EntityManager;
+
 
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
 
 import io.smallrye.common.annotation.Blocking;
-import jakarta.ws.rs.Produces;
 
 /**
  *
