@@ -8,6 +8,7 @@ import usuariosRoute from "./routes/usuarios.js";
 import vuelosRoute from "./routes/vuelos.js";
 import boletosRoute from "./routes/boletos.js";
 import comentariosRouter from './routes/comentarios.js'; 
+import respuestasRouter from './routes/comentarios.js'; 
 
 
 
@@ -65,6 +66,7 @@ app.use("/usuarios", usuariosRoute);
 app.use("/vuelos", vuelosRoute);
 app.use("/boletos", boletosRoute);
 app.use('/comentarios', comentariosRouter); 
+app.use('/respuestas', respuestasRouter); 
 
 
 app.use((err, req, res, next) => {
