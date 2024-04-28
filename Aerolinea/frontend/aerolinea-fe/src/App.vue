@@ -1,7 +1,8 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router';
 // import HelloWorld from './components/HelloWorld.vue'
-import Nav from './components/NavItem.vue'
+import Nav from './components/NavItem.vue';
+import Footer from './components/FooterItem.vue';
 </script>
 
 <template>
@@ -28,6 +29,7 @@ import Nav from './components/NavItem.vue'
     <div class="container-fluid mt-3">
         <RouterView />
     </div>
+    <Footer></Footer>
 </template>
 
 <style scoped>
@@ -85,7 +87,6 @@ nav a:first-of-type {
 
     nav {
         text-align: left;
-        margin-left: -1rem;
         font-size: 1rem;
 
         padding: 1rem 0;
