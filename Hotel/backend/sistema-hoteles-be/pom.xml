@@ -32,10 +32,12 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
-    <dependency>
+<dependency>
     <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-rest-client</artifactId>
+    <artifactId>quarkus-resteasy-client</artifactId>
+    <version>3.7.4</version>
 </dependency>
+
 
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -122,6 +124,27 @@
           </execution>
         </executions>
       </plugin>
+              <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+                <execution>
+                    <id>generate-javadocs</id>
+                    <goals>
+                        <goal>javadoc</goal>
+                    </goals>
+                    <phase>verify</phase> <!-- Binds the execution to the verify phase -->
+                </execution>
+            </executions>
+            <configuration>
+                <source>1.8</source> <!-- Use the appropriate Java source version -->
+                <detectJavaApiLink>false</detectJavaApiLink>
+                <additionalOptions>-Xdoclint:none</additionalOptions>
+                <sourcepath>${project.build.sourceDirectory}</sourcepath>
+                <subpackages>pack_hotel</subpackages>
+            </configuration>
+        </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>

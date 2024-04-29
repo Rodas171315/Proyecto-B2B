@@ -34,7 +34,9 @@ import java.util.ArrayList;
 
 
 
-
+/**
+ * Repositorio para manejar las operaciones de la entidad RegistroBusqueda.
+ */
 @ApplicationScoped
 public class RegistroBusquedaRepositorio implements PanacheRepository<RegistroBusqueda> {
 
@@ -44,7 +46,14 @@ public class RegistroBusquedaRepositorio implements PanacheRepository<RegistroBu
     @PersistenceContext
     EntityManager em;
 
-
+    /**
+     * Registra una nueva búsqueda en la base de datos.
+     * 
+     * @param parametros Los parámetros de la búsqueda realizada.
+     * @param usuarioId El ID del usuario que realiza la búsqueda.
+     * @param tipoAcceso El tipo de acceso utilizado para la búsqueda.
+     * @param esAutenticado Indica si el usuario está autenticado.
+     */
     public void registrarBusqueda(String parametros, Long usuarioId, String tipoAcceso, boolean esAutenticado) {
         RegistroBusqueda registro = new RegistroBusqueda();
         registro.setParametrosBusqueda(parametros);
@@ -62,7 +71,11 @@ public class RegistroBusquedaRepositorio implements PanacheRepository<RegistroBu
 // parte para analiticos
 
 
-
+    /**
+     * Obtiene todos los registros de búsqueda almacenados en la base de datos.
+     * 
+     * @return Lista de todos los registros de búsqueda.
+     */
 public List<RegistroBusqueda> obtenerTodosLosRegistros() {
     return listAll();
 }
@@ -71,7 +84,15 @@ public List<RegistroBusqueda> obtenerTodosLosRegistros() {
 
 
 
-
+    /**
+     * Filtra las búsquedas basándose en los criterios proporcionados.
+     * 
+     * @param fechaDesde La fecha inicial del rango para filtrar.
+     * @param fechaHasta La fecha final del rango para filtrar.
+     * @param tipoAcceso El tipo de acceso por el cual filtrar.
+     * @param esAutenticado Si la búsqueda fue hecha por un usuario autenticado.
+     * @return Lista de registros de búsqueda que coinciden con los filtros.
+     */
 public List<RegistroBusqueda> filtrarBusquedas(String fechaDesde, String fechaHasta, String tipoAcceso, Boolean esAutenticado) {
     EntityManager em = getEntityManager();
     CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -107,7 +128,11 @@ public List<RegistroBusqueda> filtrarBusquedas(String fechaDesde, String fechaHa
 
 
 // correcciones
-
+    /**
+     * Cuenta las búsquedas agrupadas por país.
+     * 
+     * @return Un mapa que contiene como clave el país y como valor la cantidad de búsquedas.
+     */
 public Map<String, Long> contarBusquedasPorPais() {
     List<RegistroBusqueda> busquedas = listAll();
     Pattern pattern = Pattern.compile("pais=([^;]*)");
@@ -120,7 +145,11 @@ public Map<String, Long> contarBusquedasPorPais() {
 }
 
 
-
+    /**
+     * Obtiene la evolución de las búsquedas por fecha.
+     * 
+     * @return Un mapa ordenado por fecha con el conteo de búsquedas para cada fecha.
+     */
 public Map<LocalDate, Long> evolucionBusquedas() {
     List<RegistroBusqueda> busquedas = listAll();
     return busquedas.stream()
@@ -130,15 +159,14 @@ public Map<LocalDate, Long> evolucionBusquedas() {
                 LinkedHashMap::new, // Mantener el orden de las fechas
                 Collectors.counting()
             )
-        );
-
-
-
-
-        
+        );     
 }
 
-
+    /**
+     * Cuenta las búsquedas por tipo de acceso.
+     * 
+     * @return Un mapa que contiene como clave el tipo de acceso y como valor el conteo de búsquedas.
+     */
 public Map<String, Long> contarPorTipoAcceso() {
     TypedQuery<Object[]> query = em.createQuery(
         "SELECT r.tipoAcceso, COUNT(r) FROM RegistroBusqueda r GROUP BY r.tipoAcceso", Object[].class);

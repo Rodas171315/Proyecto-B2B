@@ -398,6 +398,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+target/
 Agencia/backend/sistema-agencias-be/target/classes/application.properties
 Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
 Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class

@@ -36,7 +36,7 @@ const CompraVuelo = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          usuarioId: '65fe775efd03e7de767d50e7',
+          usuarioId: '6610fa0f69bd0f1affec1601',
           vueloId: vuelo._id,
           tipoAsiento,
           cantidad,

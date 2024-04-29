@@ -11,7 +11,7 @@ import java.util.Objects;
  * @author root
  */
 
-@Entity
+ @Entity(name = "HotelesAcme")
 public class Hoteles {
     
     @Id
