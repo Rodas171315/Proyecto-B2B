@@ -1,8 +1,11 @@
 package pack_hotel;
-import java.util.Objects;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Clase DTO para los detalles de las habitaciones, incluyendo información sobre el hotel y el tipo de habitación.
+ */
 public class HabitacionDetalleDTO {
     private Long idHabitacion;
     private boolean disponible;
@@ -17,12 +20,14 @@ public class HabitacionDetalleDTO {
     private String paisHotel;
     private String ciudadHotel;
     private String direccionHotel;
-    private String imagenHotelUrl; // URL principal del hotel
+    private String imagenHotelUrl; 
 
     private String tipoHabitacion;
-    private List<String> imagenesTipoHabitacion; // URLs de imágenes del tipo de habitación
+    private List<String> imagenesTipoHabitacion; 
 
-    // Constructor completo
+    /**
+     * Constructor completo para inicializar un HabitacionDetalleDTO.
+     */
     public HabitacionDetalleDTO(Long idHabitacion, boolean disponible, int numeroHabitacion, int capacidadPersonas, double precioXPersona, double precioXNoche, int valuacion, Long idHotel, String nombreHotel, String paisHotel, String ciudadHotel, String direccionHotel, String imagenHotelUrl, String tipoHabitacion, List<String> imagenesTipoHabitacion) {
         this.idHabitacion = idHabitacion;
         this.disponible = disponible;
@@ -74,7 +79,9 @@ public class HabitacionDetalleDTO {
     public void setTipoHabitacion(String tipoHabitacion) { this.tipoHabitacion = tipoHabitacion; }
     public void setImagenesTipoHabitacion(List<String> imagenesTipoHabitacion) { this.imagenesTipoHabitacion = imagenesTipoHabitacion; }
 
-    // Sobrescribe los métodos toString(), equals() y hashCode()
+    /**
+     * Método para comparar este objeto con otro basado en el identificador de la habitación.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,11 +90,17 @@ public class HabitacionDetalleDTO {
         return idHabitacion.equals(that.idHabitacion);
     }
 
+    /**
+     * Genera un código hash basado en el identificador de la habitación.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(idHabitacion);
     }
 
+    /**
+     * Devuelve una representación en cadena del objeto, incluyendo todos sus campos.
+     */
     @Override
     public String toString() {
         return "HabitacionDetalleDTO{" +

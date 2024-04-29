@@ -6,24 +6,17 @@ package pack_hotel;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.sql.Date;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.Query;
+
 
 
 /**
- *
- * @author root
+ * Repositorio para manejar las operaciones de base de datos relacionadas con las reservas.
  */
-
 @ApplicationScoped
 public class ReservasRepositorio implements PanacheRepository<Reservas> {
     
@@ -31,6 +24,11 @@ public class ReservasRepositorio implements PanacheRepository<Reservas> {
     @PersistenceContext
     EntityManager em;
 
+    /**
+     * Obtiene una lista de detalles de reservas asociadas a un usuario específico.
+     * @param idUsuario El identificador del usuario cuyas reservas se desean obtener.
+     * @return Una lista de objetos DetalleReservaDTO con la información detallada de cada reserva.
+     */
     @SuppressWarnings("unchecked")
     public List<DetalleReservaDTO> obtenerReservasPorUsuario(Long idUsuario) {
         List<Object[]> rawList = em.createNativeQuery("SELECT id_reserva, id_hotel, id_habitacion, id_usuario, tipo_habitacion, codigo_reserva, fecha_ingreso, fecha_salida, total_reserva, estado_reserva FROM VistaSeguimientoClientes WHERE id_usuario = :idUsuario")
@@ -91,12 +89,20 @@ private LocalDate convertToLocalDate(Object dbData) {
 
 
 
-
+    /**
+     * Encuentra reservas por identificador de habitación y estado.
+     * @param idHabitacion Identificador de la habitación.
+     * @param estado Estado de la reserva.
+     * @return Una lista de reservas que coinciden con los criterios.
+     */
 public List<Reservas> findByHabitacionAndEstado(Long idHabitacion, String estado) {
     return list("idHabitacion = ?1 and estadoReserva = ?2", idHabitacion, estado);
 }
 
-// En ReservasRepositorio.java
+    /**
+     * Cancela todas las reservas confirmadas para una habitación específica, si es necesario.
+     * @param idHabitacion Identificador de la habitación para la cual se cancelarán las reservas.
+     */
 public void cancelarReservasPorHabitacionSiNecesario(Long idHabitacion) {
     List<Reservas> reservasConfirmadas = em.createQuery("SELECT r FROM Reservas r WHERE r.idHabitacion = :idHabitacion AND r.estadoReserva = 'confirmada'", Reservas.class)
                                            .setParameter("idHabitacion", idHabitacion)
