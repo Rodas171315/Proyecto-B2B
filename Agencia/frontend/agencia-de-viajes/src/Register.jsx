@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Container, Typography, Box, Button, TextField, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { MenuItem } from '@mui/material';
+import emailjs from 'emailjs-com';
 import Header from './Header'; 
 import Footer from './Footer'; 
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -19,8 +21,32 @@ const Register = () => {
         pasaporte: '',
     });
 
-    const countries = ["Estados Unidos", "México", "Colombia", "Argentina", "España", "Francia", "Italia"];
+    const countries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
+                    "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
+                    "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+                    "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad",
+                    "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus",
+                    "Czechia (Czech Republic)", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+                    "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini ", "Ethiopia",
+                    "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala",
+                    "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Holy See", "Honduras", "Hungary", "Iceland", "India", "Indonesia",
+                    "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati",
+                    "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania",
+                    "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania",
+                    "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
+                    "Myanmar (formerly Burma)", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger",
+                    "Nigeria", "North Korea", "North Macedonia (formerly Macedonia)", "Norway", "Oman", "Pakistan", "Palau", "Palestine State",
+                    "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia",
+                    "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+                    "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia",
+                    "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka",
+                    "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo",
+                    "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates",
+                    "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
+                    "Zambia", "Zimbabwe"];
 
+
+    const [captchaToken, setCaptchaToken] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
@@ -32,11 +58,8 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-
-        
-
         try {
-            const response = await fetch('http://localhost:8080/usuarios', {
+            const response = await fetch('http://35.211.214.127:8100/usuarios', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -44,17 +67,28 @@ const Register = () => {
                 body: JSON.stringify(user),
             });
             if (response.ok) {
-                setShowSuccess(true);
                 
-                navigate('/login');
+                const templateParams = {
+                    to_name: user.primer_nombre,
+                    to_email: user.email,
+                    
+                };
+
+                emailjs.send('service_97sfyyu', 'template_cy2enpo', templateParams, 'JuvkFpFUkVC3f6giZ')
+                    .then((result) => {
+                        console.log(result.text);
+                        setShowSuccess(true);
+                        navigate('/login');
+                    }, (error) => {
+                        console.log(error.text);
+                        setShowError(true);
+                    });
             } else {
                 setShowError(true);
-               
             }
         } catch (error) {
             console.error('Error al enviar datos:', error);
             setShowError(true);
-            
         }
     };
 
@@ -196,11 +230,17 @@ const Register = () => {
                         />
 
                         
+                        <ReCAPTCHA
+                            sitekey="6Lc2g6UpAAAAAJacvQNmo6OvOXyN-hJ2qs3hEkA0"
+                            onChange={setCaptchaToken}
+                        />
+
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            disabled={!captchaToken}  
                         >
                             Registrarse
                         </Button>

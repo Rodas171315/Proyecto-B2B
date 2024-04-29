@@ -13,7 +13,7 @@ const DestinoPopular = () => {
         console.log("El ID es: ", id); 
         try {
             
-            const response = await fetch(`http://localhost:8080/contenido-estatico/destinos-populares/${id}`);
+            const response = await fetch(`http://35.211.214.127:8100/contenido-estatico/destinos-populares/${id}`);
             if (!response.ok) throw new Error('No se pudo obtener el destino');
             const data = await response.json();
             setDestino(data);

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, InputLabel, Select, MenuItem, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -32,13 +32,11 @@ const SearchForm = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogMessage, setDialogMessage] = useState('');
     const [origen, setOrigen] = useState('');
-    const [idHabitacion, setIdHabitacion] = useState('');
-    const [fechaIngreso, setFechaIngreso] = useState('');
-    const [fechaSalida, setFechaSalida] = useState('');
-
-
-
-
+    const [paisSeleccionado, setPaisSeleccionado] = useState('');
+    const [paises, setPaises] = useState([]);
+    const [fechaCheckIn, setFechaCheckIn] = useState('');
+    const [fechaCheckOut, setFechaCheckOut] = useState('');
+    const [capacidadPersona, setCapacidadPersona] = useState(1);
 
 
     const handleTabChange = (event, newValue) => {
@@ -48,75 +46,65 @@ const SearchForm = () => {
     const navigate = useNavigate(); 
 
     
-    const handleBuscarHospedaje = async () => {
+    useEffect(() => {
         
-        const idHabitacion = 1; 
-        const criteriosBusqueda = {
-            idHabitacion,
-            fechaIngreso, 
-            fechaSalida,
-        };
-    
-        try {
-            const response = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(criteriosBusqueda),
-            });
-    
-            if (!response.ok) throw new Error('Error al verificar la disponibilidad');
-            const disponibilidad = await response.json();
-    
-            if (disponibilidad.disponible) {
-                
-                alert('Habitación disponible');
-            } else {
-                setDialogMessage('No hay disponibilidad para las fechas seleccionadas.');
+        const fetchPaises = async () => {
+            try {
+                const response = await fetch('http://35.211.214.127:8080/hoteles/pais');
+                if (!response.ok) throw new Error('Error al cargar los países');
+                const data = await response.json();
+                setPaises(data);
+            } catch (error) {
+                console.error('Error al cargar los países:', error);
+                setDialogMessage('Error al cargar los países.');
                 setOpenDialog(true);
             }
+        };
+        fetchPaises();
+    }, []);
+
+    const handleBuscarHospedaje = async () => {
+        try {
+            const response = await fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionado}`);
+            if (!response.ok) throw new Error('Error al buscar hoteles');
+            const hoteles = await response.json();
+    
+            if (hoteles.length === 0) {
+                setDialogMessage('No se encontraron hoteles disponibles en el país seleccionado.');
+                setOpenDialog(true);
+            } else {
+                
+                navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles } });
+            }
         } catch (error) {
-            console.error('Error al verificar la disponibilidad:', error);
-            setDialogMessage('Ocurrió un error al verificar la disponibilidad.');
+            console.error('Error al buscar hospedaje:', error);
+            setDialogMessage('Ocurrió un error al buscar hoteles.');
             setOpenDialog(true);
         }
     };
     
-    
     const handleBuscarVuelos = async () => {
-        const criteriosBusqueda = {
-            origen, 
-            destino,
-            fechaIda,
-            fechaVuelta,
-            tipoViaje,
-            claseVuelo,
-        };
-
+        const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
+        const queryParams = new URLSearchParams({
+            ciudad_origen: origen,
+            ciudad_destino: destino,
+            fecha_salida: fechaIda
+        }).toString();
+        const fullURL = `${baseURL}?${queryParams}`;
+    
         try {
-            const response = await fetch('http://localhost:8080/static/vuelos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(criteriosBusqueda),
-            });
-
+            const response = await fetch(fullURL);
             if (!response.ok) throw new Error('No se pudieron encontrar vuelos con los criterios proporcionados.');
             const vuelosEncontrados = await response.json();
             
             if (vuelosEncontrados.length === 0) {
-                
                 setDialogMessage('No se encontraron vuelos disponibles con los criterios proporcionados.');
                 setOpenDialog(true);
             } else {
-                
                 navigate('/vuelos-disponibles', { state: { vuelos: vuelosEncontrados } });
             }
         } catch (error) {
             console.error(error);
-            
             setDialogMessage('Ocurrió un error al buscar vuelos.');
             setOpenDialog(true);
         }
@@ -124,21 +112,45 @@ const SearchForm = () => {
     
     const handleBuscarPaquetes = async () => {
         try {
-            const response = await fetch('http://localhost:8080/paquetes');
-            if (!response.ok) throw new Error('Error al buscar paquetes');
-            const paquetesEncontrados = await response.json();
+            const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
+            if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
+            let paquetesData = await resPaquetes.json();
+    
             
-            if (paquetesEncontrados.length === 0) {
-                console.log('No se encontraron paquetes disponibles.');
+            const vuelosRequests = paquetesData.map(paquete =>
+                fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`)
+            );
+            const vuelosResponses = await Promise.all(vuelosRequests);
+            const vuelosData = await Promise.all(vuelosResponses.map(res => res.json()));
+    
+            
+            paquetesData.forEach((paquete, index) => {
+                paquete.datosVuelo = vuelosData[index];
+            });
+    
+            
+            const paquetesFiltrados = paquetesData.filter(paquete =>
+                paquete.datosVuelo.ciudad_origen === origen &&
+                paquete.datosVuelo.ciudad_destino === destino &&
+                new Date(paquete.datosVuelo.fecha_salida) >= new Date(fechaIda) &&
+                (tipoViaje === 'sencillo' || new Date(paquete.datosVuelo.fecha_salida) <= new Date(fechaVuelta))
+            );
+    
+            if (paquetesFiltrados.length === 0) {
+                setDialogMessage('No se encontraron paquetes disponibles con los criterios proporcionados.');
+                setOpenDialog(true);
             } else {
-                navigate('/paquetes-disponibles', { state: { paquetes: paquetesEncontrados } });
+                navigate('/paquetes-disponibles', { state: { paquetes: paquetesFiltrados } });
             }
         } catch (error) {
             console.error('Error al buscar paquetes:', error);
+            setDialogMessage('Ocurrió un error al buscar paquetes.');
+            setOpenDialog(true);
         }
     };
-      
-
+    
+    
+    
     return (
         <Container>
             <Tabs value={tabValue} onChange={handleTabChange} centered>
@@ -148,40 +160,54 @@ const SearchForm = () => {
             </Tabs>
             <TabPanel value={tabValue} index={0}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="ID de la Habitación"
-                            type="number"
-                            fullWidth
-                            value={idHabitacion} 
-                            onChange={(e) => setIdHabitacion(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                        />
+                <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth>
+                            <InputLabel>País</InputLabel>
+                            <Select
+                                value={paisSeleccionado}
+                                onChange={(e) => setPaisSeleccionado(e.target.value)}
+                                label="País"
+                            >
+                                {paises.map((pais) => (
+                                    <MenuItem key={pais} value={pais}>{pais}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Fecha de Ingreso"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            value={fechaIngreso} 
-                            onChange={(e) => setFechaIngreso(e.target.value)}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Fecha de Salida"
-                            type="date"
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            value={fechaSalida} 
-                            onChange={(e) => setFechaSalida(e.target.value)}
-                        />
-                    </Grid>
-                </Grid>
                 
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Fecha de Check-In"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={fechaCheckIn}
+                    onChange={(e) => setFechaCheckIn(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Fecha de Check-Out"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={fechaCheckOut}
+                    onChange={(e) => setFechaCheckOut(e.target.value)}
+                />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                <TextField
+                    label="Capacidad de Persona"
+                    type="number"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={capacidadPersona}
+                    onChange={(e) => setCapacidadPersona(e.target.value)}
+                />
+                </Grid>
+                </Grid>
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                    <DialogTitle>No se encontraron hospedajes</DialogTitle>
+                    <DialogTitle>Información</DialogTitle>
                     <DialogContent>
                         <Typography>{dialogMessage}</Typography>
                     </DialogContent>
@@ -191,7 +217,7 @@ const SearchForm = () => {
                 </Dialog>
                 
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarHospedaje}>
-                    Verificar Disponibilidad
+                    Buscar Hoteles
                 </Button>
             </TabPanel>
 
@@ -260,8 +286,8 @@ const SearchForm = () => {
                                 value={claseVuelo}
                                 onChange={(e) => setClaseVuelo(e.target.value)}
                             >
-                                <FormControlLabel value="economica" control={<Radio />} label="Económica" />
-                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutiva" />
+                                <FormControlLabel value="economica" control={<Radio />} label="Turista" />
+                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutivo" />
                                 
                             </RadioGroup>
                         </FormControl>
@@ -282,6 +308,7 @@ const SearchForm = () => {
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
                 <Box sx={{ mt: 3 }}>
+                <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <TextField 
                         fullWidth 
@@ -298,7 +325,80 @@ const SearchForm = () => {
                         value={destino}
                         onChange={(e) => setDestino(e.target.value)} />
                 </Grid>
-                    
+
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Fecha de Ida"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            value={fechaIda}
+                            onChange={(e) => setFechaIda(e.target.value)}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Fecha de Vuelta"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            value={fechaVuelta}
+                            onChange={(e) => setFechaVuelta(e.target.value)}
+                            disabled={tipoViaje === 'sencillo'}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Tipo de Viaje</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="tipo de viaje"
+                                name="tipo-viaje"
+                                value={tipoViaje}
+                                onChange={(e) => setTipoViaje(e.target.value)}
+                            >
+                                <FormControlLabel value="sencillo" control={<Radio />} label="Sencillo" />
+                                <FormControlLabel value="redondo" control={<Radio />} label="Redondo" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend">Clase</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-label="clase"
+                                name="clase-vuelo"
+                                value={claseVuelo}
+                                onChange={(e) => setClaseVuelo(e.target.value)}
+                            >
+                                <FormControlLabel value="economica" control={<Radio />} label="Turista" />
+                                <FormControlLabel value="ejecutiva" control={<Radio />} label="Ejecutivo" />
+                                
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} >
+                    <TextField
+                        label="Numero de Pasajeros"
+                        type="number"
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        value={capacidadPersona}
+                        onChange={(e) => setCapacidadPersona(e.target.value)}
+                    />
+                    </Grid>
+                    </Grid>
+                    <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                        <DialogTitle>Información</DialogTitle>
+                        <DialogContent>
+                            <Typography>{dialogMessage}</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpenDialog(false)}>Cerrar</Button>
+                        </DialogActions>
+                    </Dialog>
+
                     <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
                         Buscar Paquetes
                     </Button>
