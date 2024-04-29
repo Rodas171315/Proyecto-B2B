@@ -76,12 +76,12 @@ const AfiliadosComponent = () => {
   }, []);
 
   const fetchEntities = () => {
-    fetch('http://35.211.214.127:8100/hotelesA')
+    fetch('http://localhost:8081/hotelesA')
       .then((response) => response.json())
       .then(setHoteles)
       .catch((error) => console.error("Error al cargar Hoteles:", error));
 
-    fetch('http://35.211.214.127:8100/aerolineas')
+    fetch('http://localhost:8081/aerolineas')
       .then((response) => response.json())
       .then(setAerolineas)
       .catch((error) => console.error("Error al cargar Aerolíneas:", error));
@@ -103,7 +103,7 @@ const AfiliadosComponent = () => {
 
   const handleSubmit = async (entity) => {
 
-    const baseUrl = 'http://35.211.214.127:8100/';
+    const baseUrl = 'http://localhost:8081/';
     const urlPart = entity.tipo === 'hotel' ? 'hotelesA' : 'aerolineas';
     const url = entity.id ? `${baseUrl}${urlPart}/${entity.id}` : `${baseUrl}${urlPart}`;
   
@@ -137,7 +137,7 @@ const AfiliadosComponent = () => {
 
   const handleDelete = async (id, tipo) => {
    
-    let baseUrl = 'http://35.211.214.127:8100/';
+    let baseUrl = 'http://localhost:8081/';
     baseUrl += tipo === 'hotel' ? 'hotelesA/' : 'aerolineas/';
   
     try {

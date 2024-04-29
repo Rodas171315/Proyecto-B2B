@@ -5,14 +5,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
-import jakarta.persistence.Query;
 
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
@@ -25,13 +24,15 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 import java.util.stream.Collectors;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 
+/**
+ * Recurso para manejar todas las operaciones relacionadas con las reservas.
+ */
 @Path("/reservas")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -55,6 +56,11 @@ public class ReservasRecurso {
     @Inject
     private UsuarioRepositorio UsuarioRepositorio;
     
+    /**
+     * Lista todas las reservas existentes.
+     *
+     * @return List<Reservas> Lista de reservas.
+     */
     @GET
     public List<Reservas> listarTodasLasReservas() {
         return reservasRepositorio.listAll();
@@ -65,7 +71,12 @@ public class ReservasRecurso {
     EntityManager entityManager;
 
 
-
+    /**
+     * Obtiene una reserva específica por su ID.
+     *
+     * @param id El ID de la reserva.
+     * @return Response La respuesta contiene la reserva o un estado NOT FOUND si no se encuentra.
+     */
     @GET
     @Path("{id}")
     public Response obtenerReservaPorId(@PathParam("id") Long id) {
@@ -79,6 +90,12 @@ public class ReservasRecurso {
 
 
 
+    /**
+     * Verifica la disponibilidad de una habitación para una fecha específica.
+     *
+     * @param verificarDisponibilidadDTO DTO que contiene los detalles para verificar la disponibilidad.
+     * @return Response La respuesta contiene la disponibilidad.
+     */
     @POST
     @Path("/verificar-disponibilidad")
     @Transactional
@@ -104,7 +121,13 @@ public class ReservasRecurso {
 
 
 
-    
+    /**
+     * Actualiza el estado de una reserva existente.
+     *
+     * @param id            El ID de la reserva a actualizar.
+     * @param estadoReserva El nuevo estado de la reserva.
+     * @return Response La respuesta incluye la reserva actualizada o un estado NOT FOUND si la reserva no existe.
+     */
     @PUT
     @Path("{id}/estado")
     @Transactional
@@ -121,7 +144,12 @@ public class ReservasRecurso {
 
 
     
-    
+    /**
+     * Crea una nueva reserva en el sistema.
+     *
+     * @param reserva Datos de la reserva a crear.
+     * @return Response Respuesta de la operación.
+     */
     @POST
     @Transactional
     public Response crearReserva(Reservas reserva) {
@@ -170,7 +198,11 @@ public class ReservasRecurso {
 
     
     
-    
+/**
+ * Obtiene todas las reservas asociadas a un usuario específico.
+ * @param idUsuario El ID del usuario para el que se buscan reservas.
+ * @return Response Una lista de reservas o un estado de error si no se encuentran reservas.
+ */
     @GET
 @Path("/usuario/{idUsuario}")
 public Response obtenerReservasPorUsuario(@PathParam("idUsuario") Long idUsuario) {
@@ -182,7 +214,11 @@ public Response obtenerReservasPorUsuario(@PathParam("idUsuario") Long idUsuario
 }
 
 
-
+/**
+ * Proporciona un detalle completo de las reservas por usuario, incluyendo información del hotel y habitación.
+ * @param idUsuario El ID del usuario cuyas reservas se quieren detallar.
+ * @return Response Una lista de detalles de reserva o un estado NOT FOUND si no hay reservas.
+ */
 @GET
 @Path("/detalle/usuario/{idUsuario}")
 public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long idUsuario) {
@@ -229,7 +265,10 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
 }
 
 
-
+/**
+ * Obtiene un detalle de todas las reservas en el sistema, incluyendo detalles del hotel y habitación asociados.
+ * @return Response Una lista de detalles de todas las reservas o un estado NOT FOUND si no hay reservas.
+ */
 @Path("/detalle/todas")
 @GET
 public Response obtenerDetalleTodasReservas() {
@@ -289,7 +328,12 @@ public Response obtenerDetalleTodasReservas() {
 
 
 
-
+/**
+ * Actualiza la información de una reserva existente.
+ * @param id Identificador de la reserva a actualizar.
+ * @param reservaActualizada Datos actualizados de la reserva.
+ * @return Response La reserva actualizada o un error si no se pudo actualizar.
+ */
 @PUT
 @Path("{id}")
 @Transactional
@@ -362,7 +406,11 @@ private Integer calcularTotalReservaPorTipo(LocalDate fechaIngreso, LocalDate fe
 
 
 
-
+/**
+ * Cancela una reserva existente.
+ * @param id Identificador de la reserva a cancelar.
+ * @return Response Confirmación de la cancelación o un error si la reserva no existe.
+ */
 @PUT
 @Path("/{id}/cancelar")
 @Transactional
@@ -381,6 +429,11 @@ public Response cancelarReserva(@PathParam("id") Long id) {
 }
 
 
+/**
+ * Obtiene los tipos únicos de habitaciones disponibles en un hotel especificado.
+ * @param hotelId Identificador del hotel.
+ * @return Response Lista de tipos de habitación o un error si el ID del hotel no se especifica o hay un error de procesamiento.
+ */
 @GET
 @Path("/tipos-habitacion-por-hotel")
 public Response obtenerTiposHabitacionPorHotel(@QueryParam("hotelId") Long hotelId) {

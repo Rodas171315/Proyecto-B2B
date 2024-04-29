@@ -22,7 +22,7 @@ const PaquetesDisponibles = () => {
     useEffect(() => {
         const fetchPaquetes = async () => {
             try {
-                const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
+                const resPaquetes = await fetch('http://localhost:8081/paquetes');
                 if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
                 let paquetesData = await resPaquetes.json();
 
@@ -30,8 +30,8 @@ const PaquetesDisponibles = () => {
                     console.log(`Fetching vuelo with ID: ${paquete.idVuelo}`);
                     console.log(`Fetching vuelo with ID: ${paquete.idHabitacion}`);
                     const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
-                        fetch(`http://35.211.214.127:8080/hoteles/${paquete.idHotel}`),
-                        fetch(`http://35.211.214.127:8080/habitaciones/${paquete.idHabitacion}`),
+                        fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
+                        fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
                         fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
                     ]);
                 

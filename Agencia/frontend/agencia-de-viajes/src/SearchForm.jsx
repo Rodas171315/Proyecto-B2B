@@ -37,6 +37,12 @@ const SearchForm = () => {
     const [fechaCheckIn, setFechaCheckIn] = useState('');
     const [fechaCheckOut, setFechaCheckOut] = useState('');
     const [capacidadPersona, setCapacidadPersona] = useState(1);
+    const [vuelos, setVuelos] = useState([]);
+    const [origenes, setOrigenes] = useState([]);
+    const [destinos, setDestinos] = useState([]);
+    const [origenSeleccionado, setOrigenSeleccionado] = useState('');
+    const [destinoSeleccionado, setDestinoSeleccionado] = useState('');
+
 
 
     const handleTabChange = (event, newValue) => {
@@ -47,10 +53,25 @@ const SearchForm = () => {
 
     
     useEffect(() => {
+
+        const fetchVuelos = async () => {
+            try {
+                const response = await fetch('http://35.211.214.127:8800/vuelos');
+                if (!response.ok) throw new Error('Error al cargar los vuelos');
+                const data = await response.json();
+                setVuelos(data);
+                const origenesUnicos = [...new Set(data.map(vuelo => vuelo.ciudad_origen))];
+                const destinosUnicos = [...new Set(data.map(vuelo => vuelo.ciudad_destino))];
+                setOrigenes(origenesUnicos);
+                setDestinos(destinosUnicos);
+            } catch (error) {
+                console.error('Error al cargar los vuelos:', error);
+            }
+        };
         
         const fetchPaises = async () => {
             try {
-                const response = await fetch('http://35.211.214.127:8080/hoteles/pais');
+                const response = await fetch('http://localhost:8080/hoteles/pais');
                 if (!response.ok) throw new Error('Error al cargar los países');
                 const data = await response.json();
                 setPaises(data);
@@ -60,20 +81,28 @@ const SearchForm = () => {
                 setOpenDialog(true);
             }
         };
+        fetchVuelos();
         fetchPaises();
     }, []);
 
     const handleBuscarHospedaje = async () => {
         try {
-            const response = await fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionado}`);
-            if (!response.ok) throw new Error('Error al buscar hoteles');
+            
+            const url = new URL('http://localhost:8080/habitaciones/buscar');
+            
+            url.searchParams.append('fechaIngreso', fechaCheckIn);
+            url.searchParams.append('fechaSalida', fechaCheckOut);
+            url.searchParams.append('numeroPersonas', capacidadPersona);
+            url.searchParams.append('pais', paisSeleccionado); 
+    
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error al buscar hospedajes');
             const hoteles = await response.json();
     
             if (hoteles.length === 0) {
-                setDialogMessage('No se encontraron hoteles disponibles en el país seleccionado.');
+                setDialogMessage('No se encontraron hoteles disponibles para las fechas seleccionadas.');
                 setOpenDialog(true);
             } else {
-                
                 navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles } });
             }
         } catch (error) {
@@ -83,20 +112,41 @@ const SearchForm = () => {
         }
     };
     
-    const handleBuscarVuelos = async () => {
-        const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
-        const queryParams = new URLSearchParams({
-            ciudad_origen: origen,
-            ciudad_destino: destino,
-            fecha_salida: fechaIda
-        }).toString();
-        const fullURL = `${baseURL}?${queryParams}`;
     
+    
+    const handleBuscarVuelos = async () => {
         try {
-            const response = await fetch(fullURL);
-            if (!response.ok) throw new Error('No se pudieron encontrar vuelos con los criterios proporcionados.');
-            const vuelosEncontrados = await response.json();
-            
+            const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
+            let queryParamsIda = new URLSearchParams({
+                ciudad_origen: origenSeleccionado,
+                ciudad_destino: destinoSeleccionado,
+                fecha_salida: fechaIda,
+                clase: claseVuelo,
+            }).toString();
+            const urlIda = `${baseURL}?${queryParamsIda}`;
+    
+            let vuelosIda = [];
+            const responseIda = await fetch(urlIda);
+            if (!responseIda.ok) throw new Error('No se pudieron encontrar vuelos de ida.');
+            vuelosIda = await responseIda.json();
+    
+            let vuelosVuelta = [];
+            if (tipoViaje === 'redondo') {
+                let queryParamsVuelta = new URLSearchParams({
+                    ciudad_origen: destinoSeleccionado,
+                    ciudad_destino: origenSeleccionado,
+                    fecha_salida: fechaVuelta,
+                    clase: claseVuelo,
+                }).toString();
+                const urlVuelta = `${baseURL}?${queryParamsVuelta}`;
+    
+                const responseVuelta = await fetch(urlVuelta);
+                if (!responseVuelta.ok) throw new Error('No se pudieron encontrar vuelos de vuelta.');
+                vuelosVuelta = await responseVuelta.json();
+            }
+    
+            const vuelosEncontrados = [...vuelosIda, ...vuelosVuelta];
+    
             if (vuelosEncontrados.length === 0) {
                 setDialogMessage('No se encontraron vuelos disponibles con los criterios proporcionados.');
                 setOpenDialog(true);
@@ -110,9 +160,11 @@ const SearchForm = () => {
         }
     };
     
+    
+    
     const handleBuscarPaquetes = async () => {
         try {
-            const resPaquetes = await fetch('http://35.211.214.127:8100/paquetes');
+            const resPaquetes = await fetch('http://localhost:8081/paquetes');
             if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
             let paquetesData = await resPaquetes.json();
     
@@ -224,20 +276,32 @@ const SearchForm = () => {
             <TabPanel value={tabValue} index={1}>
                 <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                    <TextField 
-                        fullWidth 
-                        label="Origen" 
-                        variant="outlined"
-                        value={origen}
-                        onChange={(e) => setOrigen(e.target.value)} />
+                    <FormControl fullWidth>
+                        <InputLabel>Origen</InputLabel>
+                        <Select
+                            value={origenSeleccionado}
+                            onChange={e => setOrigenSeleccionado(e.target.value)}
+                            label="Origen"
+                        >
+                            {origenes.map(origen => (
+                                <MenuItem key={origen} value={origen}>{origen}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                    <TextField 
-                        fullWidth 
-                        label="Destino" 
-                        variant="outlined"
-                        value={destino}
-                        onChange={(e) => setDestino(e.target.value)} />
+                    <FormControl fullWidth>
+                        <InputLabel>Destino</InputLabel>
+                        <Select
+                            value={destinoSeleccionado}
+                            onChange={e => setDestinoSeleccionado(e.target.value)}
+                            label="Destino"
+                        >
+                            {destinos.map(destino => (
+                                <MenuItem key={destino} value={destino}>{destino}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
 
                     <Grid item xs={12} sm={6}>

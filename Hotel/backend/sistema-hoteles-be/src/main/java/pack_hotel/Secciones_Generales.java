@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+/**
+ * La clase {@code Secciones_Generales} representa secciones de contenido general
+ * en el sistema, cada sección contiene un título y un contenido.
+ */
 @Entity
 public class Secciones_Generales {
     
@@ -16,32 +20,56 @@ public class Secciones_Generales {
     
     private String contenido;
 
-    // Constructor sin argumentos
+    /**
+     * Constructor sin argumentos necesario para JPA.
+     */
     public Secciones_Generales() {
     }
 
-    // Getters
+    /**
+     * Obtiene el identificador único de la sección.
+     * @return El identificador de la sección.
+     */
     public Long getId() {
         return id;
     }
 
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public String getContenido() {
-        return contenido;
-    }
-
-    // Setters
+    /**
+     * Establece el identificador único de la sección.
+     * @param id El nuevo identificador.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Obtiene el título de la sección.
+     * @return El título de la sección.
+     */
+    public String getTitulo() {
+        return titulo;
+    }
+
+    /**
+     * Establece el título de la sección.
+     * @param titulo El nuevo título de la sección.
+     */
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
 
+    /**
+     * Obtiene el contenido de la sección.
+     * @return El contenido de la sección.
+     */
+    public String getContenido() {
+        return contenido;
+    }
+
+    /**
+     * Establece el contenido de la sección.
+     * @param contenido El nuevo contenido de la sección.
+     */
     public void setContenido(String contenido) {
         this.contenido = contenido;
     }

@@ -8,37 +8,77 @@ const CrearPaquete = () => {
   const [hoteles, setHoteles] = useState([]);
   const [habitaciones, setHabitaciones] = useState([]);
   const [vuelos, setVuelos] = useState([]);
+  const [vuelosIda, setVuelosIda] = useState([]);
+  const [vuelosVuelta, setVuelosVuelta] = useState([]);
   const [destino, setDestino] = useState('');
+  const [origen, setOrigen] = useState('');
   const [hotelSeleccionado, setHotelSeleccionado] = useState(''); 
   const [habitacionSeleccionada, setHabitacionSeleccionada] = useState('');
   const [vueloSeleccionado, setVueloSeleccionado] = useState('');
   const [nombrePaquete, setNombrePaquete] = useState('');
   const [descripcionPaquete, setDescripcionPaquete] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
+  const [vueloIdaSeleccionado, setVueloIdaSeleccionado] = useState('');
+  const [vueloVueltaSeleccionado, setVueloVueltaSeleccionado] = useState('');
+  const [fechaIda, setFechaIda] = useState('');
+  const [fechaVuelta, setFechaVuelta] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     if (destino) {
-      fetch(`http://35.211.214.127:8080/hoteles/por-pais/${destino}`)
+      fetch(`http://localhost:8080/hoteles/por-pais/${destino}`)
         .then(response => response.json())
         .then(data => setHoteles(data))
         .catch(error => console.log(error));
 
-      fetch(`http://35.211.214.127:8800/vuelos/filtered?ciudad_destino=${destino}`)
-        .then(response => response.json())
-        .then(data => setVuelos(data))
-        .catch(error => console.log(error));
+        if (origen && destino && fechaIda && fechaVuelta) {
+          const fetchVuelos = async () => {
+            const responseIda = await fetch(`http://35.211.214.127:8800/vuelos/filtered?ciudad_origen=${origen}&ciudad_destino=${destino}&fecha_salida=${fechaIda}`);
+            const responseVuelta = await fetch(`http://35.211.214.127:8800/vuelos/filtered?ciudad_origen=${destino}&ciudad_destino=${origen}&fecha_salida=${fechaVuelta}`);
+            const vuelosIda = await responseIda.json();
+            const vuelosVuelta = await responseVuelta.json();
+            setVuelosIda(vuelosIda);
+            setVuelosVuelta(vuelosVuelta);
+          };
+          fetchVuelos();
+        }
     }
-  }, [destino]);
+  }, [origen, destino, fechaIda, fechaVuelta]);
 
   useEffect(() => {
-    if (hotelSeleccionado) {
-      fetch(`http://35.211.214.127:8080/habitaciones?hotelId=${hotelSeleccionado}`)
-        .then(response => response.json())
-        .then(data => setHabitaciones(data))
-        .catch(error => console.log(error));
+    if (destino && fechaIda && fechaVuelta ) {
+      const url = new URL('http://localhost:8080/habitaciones/buscar');
+      url.searchParams.append('pais', destino);
+      url.searchParams.append('fechaIngreso', fechaIda);
+      url.searchParams.append('fechaSalida', fechaVuelta);
+     
+  
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.length > 0) {
+            setHabitaciones(data);
+          } else {
+            console.log('No se encontraron habitaciones disponibles para los criterios dados.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('Error al cargar habitaciones disponibles:', error);
+        });
     }
-  }, [hotelSeleccionado]);
+  }, [destino, fechaIda, fechaVuelta]); 
+  
+  
+  
+  
+  
+  
 
   const translateTipoHabitacion = (tipoHabitacion) => {
     const tipoHabitacionMap = {
@@ -73,7 +113,7 @@ const CrearPaquete = () => {
   
     console.log('Paquete a crear:', paqueteData);
   
-    fetch('http://35.211.214.127:8100/paquetes', {
+    fetch('http://localhost:8081/paquetes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +169,17 @@ const CrearPaquete = () => {
                 rows={4}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                label="Origen"
+                type="text"
+                value={origen}
+                onChange={(e) => setOrigen(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
                 required
                 fullWidth
@@ -140,7 +190,28 @@ const CrearPaquete = () => {
                 onChange={(e) => setDestino(e.target.value)}
               />
             </Grid>
-            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                label="Fecha de Ida"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={fechaIda}
+                onChange={(e) => setFechaIda(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                label="Fecha de Vuelta"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={fechaVuelta}
+                onChange={(e) => setFechaVuelta(e.target.value)}
+              />
+            </Grid>
             <Grid item xs={12}>
             <FormControl fullWidth>
                 <InputLabel>Hotel</InputLabel>
@@ -179,15 +250,29 @@ const CrearPaquete = () => {
             
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Vuelo</InputLabel>
+                <InputLabel>Vuelo Ida</InputLabel>
                 <Select
-                  value={vueloSeleccionado}
-                  label="Vuelo"
-                  onChange={(e) => setVueloSeleccionado(e.target.value)}
+                  value={vueloIdaSeleccionado}
+                  onChange={(e) => setVueloIdaSeleccionado(e.target.value)}
                 >
-                  {vuelos.map((vuelo) => (
+                  {vuelosIda.map((vuelo) => (
                     <MenuItem key={vuelo._id} value={vuelo._id}>
-                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio})  {vuelo.fecha_salida}
+                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio}) {vuelo.fecha_salida}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Vuelo Vuelta</InputLabel>
+                <Select
+                  value={vueloVueltaSeleccionado}
+                  onChange={(e) => setVueloVueltaSeleccionado(e.target.value)}
+                >
+                  {vuelosVuelta.map((vuelo) => (
+                    <MenuItem key={vuelo._id} value={vuelo._id}>
+                      {vuelo.ciudad_origen} - {vuelo.ciudad_destino} (${vuelo.precio}) {vuelo.fecha_salida}
                     </MenuItem>
                   ))}
                 </Select>
