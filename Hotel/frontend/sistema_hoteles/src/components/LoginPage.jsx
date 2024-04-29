@@ -22,7 +22,7 @@ const LoginPage = () => {
     e.preventDefault();
     console.log('Attempting to log in with credentials:', credentials); // Log de intento de inicio de sesión
     try {
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch('http://35.211.214.127:8080/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
