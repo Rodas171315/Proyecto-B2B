@@ -366,3 +366,13 @@ html, body {
 
 
 
+.analiticos-container {
+  padding: 20px;
+}
+
+.chart-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+}

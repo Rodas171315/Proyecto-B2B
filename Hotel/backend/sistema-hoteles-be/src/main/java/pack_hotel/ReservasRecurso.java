@@ -230,32 +230,29 @@ public Response obtenerDetalleReservasPorUsuario(@PathParam("idUsuario") Long id
 
 
 
-@GET
 @Path("/detalle/todas")
+@GET
 public Response obtenerDetalleTodasReservas() {
     List<Reservas> reservas = reservasRepositorio.listAll();
     if (reservas.isEmpty()) {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    List<DetalleReservaDTO> detalleReservasList = reservas.stream().map(reserva -> {
-        DetalleReservaDTO detalle = new DetalleReservaDTO();
+    List<DetalleReservaDTO> detalleReservasList = new ArrayList<>();
+    for (Reservas reserva : reservas) {
+        if (reserva.getIdHotel() == null || reserva.getIdHabitacion() == null || reserva.getIdUsuario() == null) {
+            continue; // Ignorar reservas con IDs nulos para evitar errores
+        }
 
         Hoteles hotel = hotelRepositorio.findById(reserva.getIdHotel());
-        if (hotel == null) {
-            throw new WebApplicationException("Hotel no encontrado.", Response.Status.NOT_FOUND);
-        }
-
         Habitaciones habitacion = habitacionRepositorio.findById(reserva.getIdHabitacion());
-        if (habitacion == null) {
-            throw new WebApplicationException("Habitación no encontrada.", Response.Status.NOT_FOUND);
-        }
-
         Usuarios usuario = UsuarioRepositorio.findById(reserva.getIdUsuario());
-        if (usuario == null) {
-            throw new WebApplicationException("Usuario no encontrado.", Response.Status.NOT_FOUND);
+
+        if (hotel == null || habitacion == null || usuario == null) {
+            continue; // Ignorar reservas donde las entidades relacionadas no se encuentran
         }
 
+        DetalleReservaDTO detalle = new DetalleReservaDTO();
         detalle.setIdReserva(reserva.getIdReserva());
         detalle.setIdHotel(reserva.getIdHotel()); 
         detalle.setIdHabitacion(reserva.getIdHabitacion()); 
@@ -274,13 +271,19 @@ public Response obtenerDetalleTodasReservas() {
         detalle.setEstadoReserva(reserva.getEstadoReserva());
         detalle.setCapacidadPersonas(habitacion.getCapacidad_personas());
         detalle.setIdUsuario(usuario.getId());
-        detalle.setCorreoElectronico(usuario.getEmail()); // Usa getEmail() para obtener el correo del usuario
+        detalle.setCorreoElectronico(usuario.getEmail());
 
-        return detalle;
-    }).collect(Collectors.toList());
+        detalleReservasList.add(detalle);
+    }
+
+    if (detalleReservasList.isEmpty()) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
 
     return Response.ok(detalleReservasList).build();
 }
+
+
 
 
 
