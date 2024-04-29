@@ -15,7 +15,7 @@ import jakarta.persistence.ElementCollection;
  * @author root
  */
 
-@Entity
+@Entity(name = "TiposHabitacionAcme")
 public class Tipos_habitacion {
     
     @Id

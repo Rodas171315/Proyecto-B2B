@@ -19,11 +19,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import java.util.Map;
-/**
- *
- * @author root
- */
 
+/**
+ * Recurso REST para operaciones CRUD sobre hoteles.
+ */
 @Path("/hoteles")
 @Transactional
 public class HotelRecurso {
@@ -42,12 +41,23 @@ public class HotelRecurso {
     @Inject
     private ReservasRepositorio reservasRepositorio;
 
-    
+    /**
+     * Lista todos los hoteles.
+     *
+     * @return Una lista de objetos Hoteles.
+     */ 
     @GET
     public List<Hoteles> index() {
         return hotelesRepositorio.listAll();
     }
     
+
+    /**
+     * Inserta un nuevo hotel en la base de datos.
+     *
+     * @param insertedData Datos del hotel a insertar.
+     * @return El hotel insertado.
+     */
     @POST
     public Hoteles insert(Hoteles insertedData) {
         assert insertedData.getId_hotel() == null;
@@ -56,6 +66,13 @@ public class HotelRecurso {
         return insertedData;
     }
     
+
+    /**
+     * Obtiene un hotel por su ID.
+     *
+     * @param id ID del hotel.
+     * @return El objeto Hoteles recuperado.
+     */
     @GET
     @Path("{id}")
     public Hoteles retrieve(@PathParam("id") Long id) {
@@ -66,6 +83,13 @@ public class HotelRecurso {
         throw new NoSuchElementException("No hay hotel con el ID " + id + ".");
     }
     
+
+    /**
+     * Elimina un hotel por su ID.
+     *
+     * @param id ID del hotel.
+     * @return Un mensaje indicando si el hotel fue eliminado o no.
+     */
     @DELETE
     @Path("{id}")
     public String delete(@PathParam("id") Long id) {
@@ -76,11 +100,13 @@ public class HotelRecurso {
         }
     }
     
-
-
-
-
-
+    /**
+     * Actualiza los datos de un hotel existente.
+     *
+     * @param id ID del hotel.
+     * @param hotel Datos actualizados del hotel.
+     * @return El hotel actualizado.
+     */
     @PUT
     @Path("{id}")
     public Hoteles update(@PathParam("id") Long id, Hoteles hotel) {
@@ -99,6 +125,13 @@ public class HotelRecurso {
         throw new NoSuchElementException("No existe un hotel con el ID: " + id + ".");
     }
 
+
+    /**
+     * Obtiene una lista de hoteles por país.
+     *
+     * @param pais El país para filtrar hoteles.
+     * @return Una lista de hoteles en el país especificado.
+     */
     @GET
     @Path("/por-pais/{pais}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -106,6 +139,12 @@ public class HotelRecurso {
         return hotelesRepositorio.findByPais(pais);
     }
     
+
+    /**
+     * Obtiene una lista de todos los países únicos donde hay hoteles.
+     *
+     * @return Una lista de nombres de países.
+     */
     @GET
     @Path("/pais")
     public List<String> obtenerPaisesUnicos() {
@@ -113,9 +152,12 @@ public class HotelRecurso {
     }
 
 
-    //imagenes
-
-
+    /**
+     * Obtiene las imágenes de amenidades de un hotel por su ID.
+     *
+     * @param id ID del hotel.
+     * @return Lista de URLs de imágenes.
+     */
     @GET
     @Path("/{id}/imagenes")
     @Produces(MediaType.APPLICATION_JSON)
@@ -124,6 +166,13 @@ public class HotelRecurso {
     }
 
 
+    /**
+     * Actualiza las imágenes de un hotel.
+     *
+     * @param id ID del hotel.
+     * @param urlImagenes Lista de nuevas URLs de imágenes.
+     * @return Response indicando si la actualización fue exitosa.
+     */
     @POST
     @Path("/{id}/imagenes")
     public Response actualizarImagenesHotel(@PathParam("id") Long id, List<String> urlImagenes) {
@@ -146,6 +195,7 @@ public class HotelRecurso {
         return Response.ok().build();
     }
     
+
 
   @PUT
   @Path("/{id}/imagen")
@@ -173,6 +223,14 @@ public class HotelRecurso {
     }
   }
 
+
+    /**
+     * Cambia el estado de un hotel.
+     *
+     * @param idHotel ID del hotel.
+     * @param estado Nuevo estado del hotel ('activo' o 'inactivo').
+     * @return Response con el hotel actualizado.
+     */
   @PUT
   @Path("/{id}/estado/{estado}")
   public Response cambiarEstadoHotel(@PathParam("id") Long idHotel, @PathParam("estado") String estado) {
@@ -205,13 +263,25 @@ public class HotelRecurso {
   
   
   
-
+    /**
+     * Desactiva un hotel.
+     *
+     * @param id ID del hotel.
+     * @return Response indicando si la desactivación fue exitosa.
+     */
 @PUT
 @Path("/{id}/desactivar")
 public Response desactivarHotel(@PathParam("id") Long id) {
     return cambiarEstadoHotel(id, "inactivo");
 }
 
+
+    /**
+     * Activa un hotel.
+     *
+     * @param id ID del hotel.
+     * @return Response indicando si la activación fue exitosa.
+     */
 @PUT
 @Path("/{id}/activar")
 public Response activarHotel(@PathParam("id") Long id) {

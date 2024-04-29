@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "ImagenesAmenidadesAcme")
 @Table(name = "IMAGENES_AMENIDADES")
 public class ImagenAmenidad {
     

@@ -24,8 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
- *
- * @author root
+ * Resource class for managing user-related operations.
  */
 
 @RegisterRestClient(configKey="recaptchaService")
@@ -48,7 +47,10 @@ public class UsuarioRecurso {
 
     
 
-
+    /**
+     * Retrieves all users from the repository.
+     * @return a list of all users.
+     */
     @GET
     public List<Usuarios> index() {
         return usuariosRepositorio.listAll();
@@ -57,7 +59,12 @@ public class UsuarioRecurso {
         
 
 
-    
+        /**
+     * Retrieves a single user by ID.
+     * @param id the ID of the user to retrieve.
+     * @return the user object if found.
+     * @throws NoSuchElementException if no user is found with the provided ID.
+     */
     @GET
     @Path("{id}")
     public Usuarios retrieve(@PathParam("id") Long id) {
@@ -68,6 +75,11 @@ public class UsuarioRecurso {
         throw new NoSuchElementException("No hay usuario con el ID " + id + ".");
     }
     
+        /**
+     * Deletes a user by ID.
+     * @param id the ID of the user to delete.
+     * @return a Response indicating the outcome of the operation.
+     */
     @DELETE
     @Path("/{id}")
     public Response eliminarUsuario(@PathParam("id") Long id) {
@@ -80,7 +92,13 @@ public class UsuarioRecurso {
         }
     }
 
-    
+        /**
+     * Updates a user's information.
+     * @param id the ID of the user to update.
+     * @param user the new user data to apply.
+     * @return the updated user object.
+     * @throws NoSuchElementException if no user is found with the provided ID.
+     */
     @PUT
     @Path("{id}")
     public Usuarios update(@PathParam("id") Long id, Usuarios user) {
@@ -102,7 +120,12 @@ public class UsuarioRecurso {
         throw new NoSuchElementException("No existe un usuario con el ID: " + id + ".");
     }
     
-
+    /**
+     * Updates a user's role.
+     * @param id the ID of the user whose role is to be updated.
+     * @param nuevoRol the new role to assign.
+     * @return a Response indicating the outcome of the operation.
+     */
     @PUT
     @Path("{id}/rol")
     public Response actualizarRolUsuario(@PathParam("id") Long id, @QueryParam("nuevoRol") int nuevoRol) {
@@ -129,6 +152,11 @@ public class UsuarioRecurso {
         return Response.ok(detallesUsuarios).build();
     }
     
+        /**
+     * Creates a new user with the specified details.
+     * @param dto the data transfer object containing user details.
+     * @return a Response containing the newly created user or an error message.
+     */
     @POST
     @Path("/crear")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -175,7 +203,12 @@ public class UsuarioRecurso {
         return Response.status(Response.Status.CREATED).entity(usuarioCreadoDTO).build();
     }
 
-    
+        /**
+     * Updates an existing user with new information provided in the form of a DTO.
+     * @param id The ID of the user to update.
+     * @param dto Data Transfer Object containing updated user information.
+     * @return Response indicating success or failure of the update operation.
+     */
     @PUT
 @Path("/{id}")
 @Consumes(MediaType.APPLICATION_JSON)
