@@ -3,10 +3,7 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-# Omitir Aerolinea en rama Dev-agency
-Aerolinea/
-# Omitir Hotel en rama Dev-agency
-Hotel/
+
 
 # User-specific files
 *.rsuser

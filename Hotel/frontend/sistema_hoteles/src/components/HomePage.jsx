@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Form, Alert, Image, Carousel } from 
 import { useNavigate } from 'react-router-dom';
 import defaultRoomImage from './roomImage.jpg';
 import Comentarios from './Comentarios';
+import { useUser } from './UserContext';
 
 const HomePage = () => {
   const [hotels, setHotels] = useState([]);
@@ -16,6 +17,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [hotelImages, setHotelImages] = useState({});
   const [roomTypes, setRoomTypes] = useState({});
+  const { user } = useUser();  
 
 
 // PAL SEGUNDO FILTRO:
@@ -181,10 +183,21 @@ const applyAdditionalFilters = () => {
 
   const fetchHotelsAndRoomsFiltered = async () => {
     let queryParams = `?pais=${paisSeleccionado}&fechaIngreso=${fechaIngreso}&fechaSalida=${fechaSalida}&numeroPersonas=${numeroPersonas}`;
+    if (user && user.id) {
+        queryParams += `&usuarioId=${user.id}`;  // Agrega el ID del usuario a los parámetros de la consulta
+    }
+
     try {
+<<<<<<< HEAD
+        const response = await fetch(`http://localhost:8080/habitaciones/buscar${queryParams}`);
+        if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
+        const filteredRooms = await response.json();
+  
+=======
       const response = await fetch(`http://35.211.214.127:8080/habitaciones/buscar${queryParams}`);
       if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
       const filteredRooms = await response.json();
+>>>>>>> server
   
       // trasn las habitaciones filtradas en una estructura de hoteles con habitaciones
       const hotelsMap = {};

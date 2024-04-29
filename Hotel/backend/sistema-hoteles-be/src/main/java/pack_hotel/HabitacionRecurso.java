@@ -13,6 +13,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
+import java.time.LocalDateTime;
 
 
 import java.util.List;
@@ -23,7 +24,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import jakarta.inject.Inject;
 
-
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.SecurityContext;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Path("/habitaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,7 +44,25 @@ public class HabitacionRecurso {
 
     @Inject
     private ReservasRepositorio reservasRepositorio;
-    
+
+
+
+
+    @Inject
+    private RegistroBusquedaRepositorio registroBusquedaRepositorio;
+
+    @Context
+    private SecurityContext securityContext;
+
+    @Inject
+    private UsuarioRepositorio UsuarioRepositorio;
+
+    private String determinarTipoAcceso() {
+        // Implementación específica 
+        return "web"; // o "rest", dependiendo del contexto
+    }
+
+
     @GET
     public List<Habitaciones> index(@QueryParam("hotelId") Long hotelId) {
         if (hotelId != null) {
@@ -107,7 +129,7 @@ public class HabitacionRecurso {
     @GET
 @Path("/capacidades")
 public List<Integer> capacidadesUnicas() {
-    // Obtiene todas las habitaciones, extrae sus capacidades y las convierte en un conjunto para eliminar duplicados, finalmente vuelve a convertirlo en una lista
+    // Obtiene todas las habitaciones, extrae sus capacidades y las convierte en un conjunto para eliminar duplicados, y luego tolist ls convertirlo en una lista
     List<Integer> capacidades = habitacionesRepositorio.listAll().stream()
                                                         .map(Habitaciones::getCapacidad_personas)
                                                         .distinct()
@@ -126,8 +148,27 @@ public Response buscarPorPaisYDisponibilidad(
         @QueryParam("pais") String pais,
         @QueryParam("fechaIngreso") String fechaIngresoStr,
         @QueryParam("fechaSalida") String fechaSalidaStr,
-        @QueryParam("numeroPersonas") int numeroPersonas) {
+        @QueryParam("numeroPersonas") int numeroPersonas,
+        @QueryParam("usuarioId") Long usuarioId) {  //  usuarioId como parámetro 
+
+    try {
+        RegistroBusqueda registro = new RegistroBusqueda();
+        registro.setParametrosBusqueda("pais=" + pais + "; fechaIngreso=" + fechaIngresoStr + "; fechaSalida=" + fechaSalidaStr + "; numeroPersonas=" + numeroPersonas);
+        registro.setUsuarioId(usuarioId);  // Usar directamente el usuarioId recibido
+        registro.setFechaHora(LocalDateTime.now());
+        registro.setTipoAcceso("web");  // Asumiendo acceso web, de momento para problar
+        registro.setEsAutenticado(usuarioId != null);  // Es autenticado si usuarioId no es null
+        
+        registroBusquedaRepositorio.persist(registro);
+        System.out.println("Registro de búsqueda guardado con usuarioId: " + usuarioId);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al registrar búsqueda").build();
+    }
     
+
+
+
     LocalDate fechaIngreso = null;
     LocalDate fechaSalida = null;
     
