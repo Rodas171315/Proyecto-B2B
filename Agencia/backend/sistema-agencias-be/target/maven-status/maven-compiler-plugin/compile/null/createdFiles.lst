@@ -1,7 +1,0 @@
-pack_quarkus/BookResource.class
-pack_quarkus/Book.class
-META-INF/panache-archive.marker
-pack_agencia/PaquetesRepository.class
-pack_quarkus/BookRepository.class
-pack_agencia/Paquetes.class
-pack_agencia/PaquetesService.class
