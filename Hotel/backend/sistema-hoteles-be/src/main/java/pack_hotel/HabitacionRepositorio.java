@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 
 
 /**
- *
- * @author root
+ * Repositorio para operaciones de base de datos relacionadas con Habitaciones.
  */
 
  @ApplicationScoped
@@ -27,26 +26,54 @@ import java.util.stream.Collectors;
     @Inject
     EntityManager em;
 
-
+    /**
+     * Encuentra habitaciones por ID de hotel y estado.
+     *
+     * @param hotelId ID del hotel.
+     * @param estado Estado de la habitación.
+     * @return Lista de habitaciones que coinciden con los criterios.
+     */
     public List<Habitaciones> findByHotelIdAndEstado(Long hotelId, String estado) {
         return find("id_hotel = ?1 and estado = ?2", hotelId, estado).list();
     }
 
+
+    /**
+     * Encuentra todas las habitaciones por ID de hotel.
+     *
+     * @param hotelId ID del hotel.
+     * @return Lista de todas las habitaciones del hotel especificado.
+     */
     public List<Habitaciones> findByHotelId(Long hotelId) {
         return find("id_hotel", hotelId).list();
     }
+
+
 
      public List<Habitaciones> buscarPorHotelId(Long hotelId) {
          return find("id_hotel", hotelId).list();
      }
      
-     // Método para obtener el precio por noche de una habitación específica por su ID
+    /**
+     * Obtiene el precio por noche de una habitación específica utilizando su ID.
+     *
+     * @param idHabitacion ID de la habitación.
+     * @return Precio por noche como Optional<Double>.
+     */
      public Optional<Double> findPrecioPorNochePorIdHabitacion(Long idHabitacion) {
          return findByIdOptional(idHabitacion)
                  .map(Habitaciones::getPrecioxnoche);
      }
 
-
+    /**
+     * Busca habitaciones por tipo y disponibilidad.
+     *
+     * @param tipoHabitacion Tipo de habitación.
+     * @param fechaIngreso Fecha de ingreso.
+     * @param fechaSalida Fecha de salida.
+     * @param hotelId ID del hotel.
+     * @return Lista de habitaciones disponibles que coinciden con los criterios.
+     */
      public List<Habitaciones> buscarPorTipoYDisponibilidad(Integer tipoHabitacion, LocalDate fechaIngreso, LocalDate fechaSalida, Long hotelId) {
         // Asegúrate de que usas 'tipo_habitacion' y 'id_hotel' para coincidir con los nombres de los campos de la entidad
         List<Habitaciones> habitacionesTipo = list("tipo_habitacion = ?1 and id_hotel = ?2", tipoHabitacion, hotelId);
@@ -63,7 +90,15 @@ import java.util.stream.Collectors;
     }
     
     
-
+    /**
+     * Busca habitaciones disponibles por país y otros criterios de disponibilidad.
+     *
+     * @param pais País del hotel.
+     * @param fechaIngreso Fecha de ingreso.
+     * @param fechaSalida Fecha de salida.
+     * @param numeroPersonas Número de personas.
+     * @return Lista de habitaciones disponibles.
+     */
     public List<Habitaciones> buscarPorPaisYDisponibilidad(String pais, LocalDate fechaIngreso, LocalDate fechaSalida, int numeroPersonas) {
         List<Long> hotelIds = em.createQuery("SELECT h.id FROM Hoteles h WHERE h.pais = :pais", Long.class)
                                 .setParameter("pais", pais)
@@ -86,13 +121,12 @@ import java.util.stream.Collectors;
     }
 
 
-
-
-
-
-    // ESTAODS
-
-
+    /**
+     * Cambia el estado de todas las habitaciones de un hotel.
+     *
+     * @param hotelId ID del hotel.
+     * @param estado Nuevo estado de las habitaciones.
+     */
     @Transactional
     public void cambiarEstadoPorHotelId(Long hotelId, String estado) {
         List<Habitaciones> habitaciones = findByHotelId(hotelId);

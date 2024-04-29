@@ -56,7 +56,7 @@ const RegisterPage = () => {
       return;
     }
   
-    
+    //  las claves coincidan con la estructura esperada por el backend
     const usuarioToSend = {
       email: user.email,
       password: user.password,

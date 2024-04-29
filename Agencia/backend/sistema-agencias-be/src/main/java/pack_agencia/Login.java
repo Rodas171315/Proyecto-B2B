@@ -9,12 +9,21 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Clase que gestiona las solicitudes de inicio de sesión para los usuarios.
+ * Proporciona endpoints para la autenticación de usuarios.
+ */
 @Path("/login")
-
 public class Login {
     @Inject
     UsuarioRepositorio usuarioRepositorio;
 
+    /**
+     * Autentica a un usuario basándose en las credenciales proporcionadas.
+     * 
+     * @param credentials Un objeto UsuarioDTO que contiene el email y la contraseña del usuario.
+     * @return Una respuesta con el usuario autenticado o un mensaje de error si las credenciales son inválidas.
+     */
     @POST
     @Transactional
     @Consumes(MediaType.APPLICATION_JSON)
@@ -29,6 +38,9 @@ public class Login {
         }
     }
 
+    /**
+     * Clase interna para representar las credenciales de un usuario.
+     */
     public static class UsuarioDTO {
         public String email;
         public String password;

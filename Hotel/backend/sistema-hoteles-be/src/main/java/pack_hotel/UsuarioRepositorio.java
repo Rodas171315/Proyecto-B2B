@@ -8,10 +8,10 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- *
- * @author root
+ * Clase repositorio para entidades de tipo Usuario.
+ * Esta clase utiliza PanacheRepository para proporcionar operaciones CRUD simplificadas para la entidad Usuarios.
+ * @see Usuarios
  */
-
 @ApplicationScoped
 public class UsuarioRepositorio implements PanacheRepository<Usuarios> {
     

@@ -398,14 +398,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-Agencia/backend/sistema-agencias-be/target/classes/application.properties
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioDTO.class
-.gitignore
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioDTO.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioRecurso.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/Faqs.class

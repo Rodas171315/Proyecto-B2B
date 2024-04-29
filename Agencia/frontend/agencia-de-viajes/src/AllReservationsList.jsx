@@ -28,6 +28,7 @@ const AllReservationsList = () => {
   const [agencyUsers, setAgencyUsers] = useState([]);
   const [flightReservations, setFlightReservations] = useState([]);
   const [tabValue, setTabValue] = useState(0);
+  const [error, setError] = useState('');
 
 
   const handleTabChange = (event, newValue) => {
@@ -41,25 +42,32 @@ const AllReservationsList = () => {
 
   const fetchAgencyUsersAndReservations = async () => {
     try {
-      const reservationsPromise = fetch(`http://35.211.214.127:8080/reservas/detalle/todas`);
-      const usersPromise = fetch(`http://35.211.214.127:8100/usuarios`);
+      const reservationsPromise = fetch('http://localhost:8080/reservas');
+      const usersPromise = fetch('http://localhost:8081/usuarios');
       const [reservationsResponse, usersResponse] = await Promise.all([reservationsPromise, usersPromise]);
 
-      if (reservationsResponse.ok && usersResponse.ok) {
-        const reservationsData = await reservationsResponse.json();
-        const usersData = await usersResponse.json();
-        const agencyUserIds = new Set(usersData.map(user => user.id));
-        
-        const filteredReservations = reservationsData.filter(reservation => agencyUserIds.has(reservation.idUsuario));
-        setReservations(filteredReservations);
-        setAgencyUsers(usersData);
-      } else {
-        console.error("Failed to fetch data.");
+      if (!reservationsResponse.ok) {
+        throw new Error(`Failed to fetch reservations: Server responded with status ${reservationsResponse.status}`);
       }
+      if (!usersResponse.ok) {
+        throw new Error(`Failed to fetch users: Server responded with status ${usersResponse.status}`);
+      }
+
+      const reservationsData = await reservationsResponse.json();
+      const usersData = await usersResponse.json();
+      const agencyUserIds = new Set(usersData.map(user => user.id));
+
+      const filteredReservations = reservationsData.filter(reservation => agencyUserIds.has(reservation.idUsuario));
+      setReservations(filteredReservations);
+      setAgencyUsers(usersData);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError(error.message);
     }
   };
+
+
+  
 
 
   const fetchFlightReservations = async () => {
@@ -91,7 +99,7 @@ const AllReservationsList = () => {
 
   const cancelarReserva = async (idReserva) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/${idReserva}/cancelar`, {
+      const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -216,6 +224,9 @@ const AllReservationsList = () => {
   return (
     <div>
         <Header />
+        <Container maxWidth="md">
+          <Typography variant="h6" color="error">{error}</Typography>
+        </Container>
         <Tabs value={tabValue} onChange={handleTabChange} centered>
                 <Tab label="Hospedaje" />
                 <Tab label="Vuelos" />
