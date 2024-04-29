@@ -3,7 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-
+# Omitir Agencia en rama Dev-airline
+Agencia/
+# Omitir Hotel en rama Dev-airline
+Hotel/
 
 # User-specific files
 *.rsuser
@@ -398,14 +401,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-Agencia/backend/sistema-agencias-be/target/classes/application.properties
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioDTO.class
-.gitignore
-Agencia/backend/sistema-agencias-be/target/classes/pack_quarkus/TemperaturasResource.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioDTO.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/ComentarioRecurso.class
-Hotel/backend/sistema-hoteles-be/target/classes/pack_hotel/Faqs.class
+
+
+
+# Ignore specific backend build files and directories
+Agencia/backend/sistema-agencias-be/
+Hotel/backend/sistema-hoteles-be/target/

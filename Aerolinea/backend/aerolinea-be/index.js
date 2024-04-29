@@ -7,8 +7,9 @@ import authRoute from "./routes/auth.js";
 import usuariosRoute from "./routes/usuarios.js";
 import vuelosRoute from "./routes/vuelos.js";
 import boletosRoute from "./routes/boletos.js";
-
-
+import comentariosRouter from './routes/comentarios.js'; 
+import respuestasRouter from './routes/comentarios.js'; 
+import suscriptoresRoute from './routes/suscriptores.js';
 
 const app = express();
 dotenv.config();
@@ -28,8 +29,6 @@ const corsOptions = {
     credentials: true, // access-control-allow-credentials:true
     optionSuccessStatus: 200
 };
-
-
 
 app.get("/", (req,res) => {
     res.send("Welcome to Express Backend");
@@ -63,6 +62,9 @@ app.use("/auth", authRoute);
 app.use("/usuarios", usuariosRoute);
 app.use("/vuelos", vuelosRoute);
 app.use("/boletos", boletosRoute);
+app.use('/comentarios', comentariosRouter); 
+app.use('/respuestas', respuestasRouter); 
+app.use('/suscriptores', suscriptoresRoute);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

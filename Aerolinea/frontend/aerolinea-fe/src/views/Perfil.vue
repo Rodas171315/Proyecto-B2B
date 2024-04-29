@@ -37,36 +37,35 @@
 <script>
 import axios from 'axios';
 
+// En PerfilView.vue
 export default {
     name: 'PerfilView',
     data() {
         return {
-            // datos del usuario se obtendrán dinámicamente,
-            // inicialmente se configura como un objeto vacío
             usuario: {},
+            load: false,
         };
     },
     methods: {
         cerrarSesion() {
-            // Limpiar localStorage o cualquier otro mecanismo de autenticación que estés usando
             localStorage.removeItem('user_id');
-            // Añadir cualquier otra limpieza necesaria aquí
-
-            // Redirigir al usuario a la página de inicio o de inicio de sesión
             this.$router.push({ name: 'login' });
         },
     },
     mounted() {
-        axios
-            .get(import.meta.env.VITE_BACKEND_URL + '/usuarios/' + localStorage.user_id)
+        this.load = true; // Comienza el estado de carga.
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/usuarios/${localStorage.user_id}`)
             .then((response) => {
                 this.usuario = response.data;
+                this.load = false; // Termina el estado de carga.
             })
             .catch((error) => {
                 console.error('Error al cargar los datos del perfil:', error);
+                this.load = false; // Asegura terminar el estado de carga incluso si hay un error.
             });
     },
 };
+
 </script>
 
 <style>
