@@ -19,8 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 
 /**
- *
- * @author root
+ * Clase de recurso para manejar la creación de usuarios con verificación CAPTCHA.
  */
 
 @RegisterRestClient(configKey="recaptchaService")
@@ -42,7 +41,11 @@ public class UsuarioRecursoCaptcha {
 
     
 
-    
+        /**
+     * Crea un nuevo usuario verificando primero la respuesta de CAPTCHA.
+     * @param dto DTO que contiene los datos del usuario a crear.
+     * @return Respuesta con el estado de la creación del usuario.
+     */
     @POST
     @Path("/captcha") // Asegúrate de que este path sea exactamente el que intentas acceder
     @Consumes(MediaType.APPLICATION_JSON)

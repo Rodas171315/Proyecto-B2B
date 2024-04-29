@@ -5,6 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+/**
+ * La clase {@code Faqs} representa una pregunta frecuente en un sistema de gestión hotelera.
+ */
 @Entity
 public class Faqs {
     
@@ -16,37 +19,60 @@ public class Faqs {
     
     private String respuesta;
 
-    // Constructor
+    /**
+     * Constructor por defecto.
+     */
     public Faqs() {
     }
 
-    // Getters
+    /**
+     * Devuelve el identificador único de la FAQ.
+     * @return identificador de la FAQ.
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Devuelve la pregunta de la FAQ.
+     * @return pregunta de la FAQ.
+     */
     public String getPregunta() {
         return pregunta;
     }
 
+    /**
+     * Devuelve la respuesta de la FAQ.
+     * @return respuesta de la FAQ.
+     */
     public String getRespuesta() {
         return respuesta;
     }
 
-    // Setters
+    /**
+     * Establece el identificador único de la FAQ.
+     * @param id identificador de la FAQ.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Establece la pregunta de la FAQ.
+     * @param pregunta pregunta de la FAQ.
+     */
     public void setPregunta(String pregunta) {
         this.pregunta = pregunta;
     }
 
+    /**
+     * Establece la respuesta de la FAQ.
+     * @param respuesta respuesta de la FAQ.
+     */
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
     }
 
-    // hashCode, equals, y toString pueden ser generados por tu IDE para facilitar la depuración y el manejo en colecciones
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,3 +95,4 @@ public class Faqs {
                 '}';
     }
 }
+

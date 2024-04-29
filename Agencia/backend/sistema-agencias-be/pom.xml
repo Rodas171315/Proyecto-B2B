@@ -95,6 +95,29 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+                <execution>
+                    <id>generate-javadocs</id>
+                    <goals>
+                        <goal>javadoc</goal>
+                    </goals>
+                    <phase>verify</phase> <!-- Binds the execution to the verify phase -->
+                </execution>
+            </executions>
+            <configuration>
+                <source>1.8</source> <!-- Use the appropriate Java source version -->
+                <detectJavaApiLink>false</detectJavaApiLink>
+                <additionalOptions>-Xdoclint:none</additionalOptions>
+                <sourcepath>${project.build.sourceDirectory}</sourcepath>
+                <subpackages>pack_agencia</subpackages>
+            </configuration>
+        </plugin>
+
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
