@@ -33,8 +33,8 @@ const CrearPaquete = () => {
 
         if (origen && destino && fechaIda && fechaVuelta) {
           const fetchVuelos = async () => {
-            const responseIda = await fetch(`http://35.211.214.127:8800/vuelos/filtered?ciudad_origen=${origen}&ciudad_destino=${destino}&fecha_salida=${fechaIda}`);
-            const responseVuelta = await fetch(`http://35.211.214.127:8800/vuelos/filtered?ciudad_origen=${destino}&ciudad_destino=${origen}&fecha_salida=${fechaVuelta}`);
+            const responseIda = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/filtered?ciudad_origen=${origen}&ciudad_destino=${destino}&fecha_salida=${fechaIda}`);
+            const responseVuelta = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/filtered?ciudad_origen=${destino}&ciudad_destino=${origen}&fecha_salida=${fechaVuelta}`);
             const vuelosIda = await responseIda.json();
             const vuelosVuelta = await responseVuelta.json();
             setVuelosIda(vuelosIda);
@@ -113,7 +113,7 @@ const CrearPaquete = () => {
   
     console.log('Paquete a crear:', paqueteData);
   
-    fetch('http://localhost:8081/paquetes', {
+    fetch(process.env.REACT_APP_BACKEND_URL + '/paquetes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

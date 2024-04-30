@@ -17,7 +17,7 @@ const CompraDestino = () => {
     useEffect(() => {
         const fetchDestino = async () => {
             try {
-                const response = await fetch(`http://localhost:8081/contenido-estatico/destinos-populares/${id}`);
+                const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/contenido-estatico/destinos-populares/${id}`);
                 if (!response.ok) throw new Error('No se pudo obtener el destino');
                 const data = await response.json();
                 setDestino(data);

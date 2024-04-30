@@ -59,7 +59,7 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8081/usuarios', {
+            const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/usuarios', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

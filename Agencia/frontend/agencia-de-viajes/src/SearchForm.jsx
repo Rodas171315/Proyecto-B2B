@@ -56,7 +56,7 @@ const SearchForm = () => {
 
         const fetchVuelos = async () => {
             try {
-                const response = await fetch('http://35.211.214.127:8800/vuelos');
+                const response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + '/vuelos');
                 if (!response.ok) throw new Error('Error al cargar los vuelos');
                 const data = await response.json();
                 setVuelos(data);
@@ -116,7 +116,7 @@ const SearchForm = () => {
     
     const handleBuscarVuelos = async () => {
         try {
-            const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
+            const baseURL = process.env.REACT_APP_AIRLINE_BACKEND_URL + '/vuelos/filtered';
             let queryParamsIda = new URLSearchParams({
                 ciudad_origen: origenSeleccionado,
                 ciudad_destino: destinoSeleccionado,
@@ -164,13 +164,13 @@ const SearchForm = () => {
     
     const handleBuscarPaquetes = async () => {
         try {
-            const resPaquetes = await fetch('http://localhost:8081/paquetes');
+            const resPaquetes = await fetch(process.env.REACT_APP_BACKEND_URL + '/paquetes');
             if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
             let paquetesData = await resPaquetes.json();
     
             
             const vuelosRequests = paquetesData.map(paquete =>
-                fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`)
+                fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/${paquete.idVuelo}`)
             );
             const vuelosResponses = await Promise.all(vuelosRequests);
             const vuelosData = await Promise.all(vuelosResponses.map(res => res.json()));

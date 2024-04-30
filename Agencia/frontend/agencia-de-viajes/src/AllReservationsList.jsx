@@ -43,7 +43,7 @@ const AllReservationsList = () => {
   const fetchAgencyUsersAndReservations = async () => {
     try {
       const reservationsPromise = fetch('http://localhost:8080/reservas');
-      const usersPromise = fetch('http://localhost:8081/usuarios');
+      const usersPromise = fetch(process.env.REACT_APP_BACKEND_URL + '/usuarios');
       const [reservationsResponse, usersResponse] = await Promise.all([reservationsPromise, usersPromise]);
 
       if (!reservationsResponse.ok) {
@@ -72,7 +72,7 @@ const AllReservationsList = () => {
 
   const fetchFlightReservations = async () => {
     try {
-        const response = await fetch(`http://35.211.214.127:8800/boletos`);
+        const response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/boletos`);
         if (!response.ok) {
             throw new Error('Error al cargar reservas de vuelos');
         }
@@ -137,7 +137,7 @@ const AllReservationsList = () => {
   };
 
   const cancelarBoletoVuelo = async (idBoleto) => {
-    const url = `http://35.211.214.127:8800/boletos/cancelar/${idBoleto}`; 
+    const url = process.env.REACT_APP_AIRLINE_BACKEND_URL + `/boletos/cancelar/${idBoleto}`; 
     try {
       const response = await fetch(url, {
         method: 'PUT',

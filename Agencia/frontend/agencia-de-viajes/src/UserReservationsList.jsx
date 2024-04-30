@@ -73,7 +73,7 @@ const UserReservationsList = () => {
     
     const fetchPackages = async () => {
       try {
-          const resPaquetes = await fetch('http://localhost:8081/paquetes');
+          const resPaquetes = await fetch(process.env.REACT_APP_BACKEND_URL + '/paquetes');
           if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
           let paquetesData = await resPaquetes.json();
 
@@ -83,7 +83,7 @@ const UserReservationsList = () => {
               const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
                   fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
                   fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-                  fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+                  fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/${paquete.idVuelo}`),
               ]);
           
               const hotel = await hotelRes.json();

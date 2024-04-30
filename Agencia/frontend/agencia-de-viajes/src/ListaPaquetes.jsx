@@ -15,7 +15,7 @@ const ListaPaquetes = () => {
   useEffect(() => {
     const fetchPaquetes = async () => {
       try {
-        const resPaquetes = await fetch('http://localhost:8081/paquetes');
+        const resPaquetes = await fetch(process.env.REACT_APP_BACKEND_URL + '/paquetes');
         if (!resPaquetes.ok) throw new Error('Network response was not ok for paquetes');
         let paquetesData = await resPaquetes.json();
 
@@ -26,7 +26,7 @@ const ListaPaquetes = () => {
           const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
             fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
             fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-            fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+            fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/${paquete.idVuelo}`),
           ]);
         
           const hotel = await hotelRes.json();
@@ -64,7 +64,7 @@ const ListaPaquetes = () => {
     }
   
     try {
-      const response = await fetch(`http://localhost:8081/paquetes/${idPaquete}`, {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/paquetes/${idPaquete}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -80,7 +80,7 @@ const ListaPaquetes = () => {
   const cancelarPaquete = async (idPaquete) => {
     try {
         
-        let response = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
+        let response = await fetch(process.env.REACT_APP_BACKEND_URL + `/paquetes/cancelar/${idPaquete}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
@@ -107,7 +107,7 @@ const ListaPaquetes = () => {
         if (!response.ok) throw new Error('No se pudo cancelar la reserva de hospedaje.');
 
         
-        response = await fetch(`http://35.211.214.127:8800/boletos/cancelar/${paqueteActualizado.idBoleto}`, {
+        response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/boletos/cancelar/${paqueteActualizado.idBoleto}`, {
             method: 'PUT', 
             headers: { 'Content-Type': 'application/json' },
         });

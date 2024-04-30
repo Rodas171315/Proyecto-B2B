@@ -30,7 +30,7 @@ const CompraPaquete = () => {
             const fetchDatosPaquete = async () => {
                 try {
                     const [resVuelo, resHabitacion] = await Promise.all([
-                        fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+                        fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/${paquete.idVuelo}`),
                         fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`)
                     ]);
                     if (!resVuelo.ok || !resHabitacion.ok) {
@@ -60,7 +60,7 @@ const CompraPaquete = () => {
         
         try {
             
-            const apiUrl = 'http://35.211.214.127:8800/boletos'; 
+            const apiUrl = process.env.REACT_APP_AIRLINE_BACKEND_URL + '/boletos'; 
             const responseBoleto = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -170,7 +170,7 @@ const CompraPaquete = () => {
 
             const actualizarEstadoPaquete = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8081/paquetes/${paquete.idPaquete}`, {
+                    const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/paquetes/${paquete.idPaquete}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
