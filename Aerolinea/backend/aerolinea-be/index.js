@@ -14,7 +14,7 @@ import suscriptoresRoute from './routes/suscriptores.js';
 const app = express();
 dotenv.config();
 
-var whitelist = [process.env.FRONTEND_URL, process.env.FRONTEND_AGENCY_URL];
+var whitelist = [process.env.FRONTEND_URL, process.env.AGENCY_FRONTEND_URL];
 
 const corsOptions = {
     origin: function (origin, callback) {
