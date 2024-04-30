@@ -23,7 +23,7 @@ const AddHotelPage = () => {
 
   const fetchHoteles = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/hoteles');
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/hoteles');
       if (!response.ok) throw new Error('No se pudieron cargar los hoteles');
       const data = await response.json();
       setHoteles(data);
@@ -48,7 +48,7 @@ const AddHotelPage = () => {
 
   const submitHotel = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/hoteles', {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/hoteles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(hotelData),
@@ -88,7 +88,7 @@ const AddHotelPage = () => {
 
   const guardarEdicion = async () => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/hoteles/${editandoId}`, {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/hoteles/${editandoId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(hotelEditado),
@@ -113,7 +113,7 @@ const manejarImagenesDelHotel = async (hotelId, imageLinks) => {
   const urlImagenes = imageLinks.filter(url => url);
 
   try {
-    const response = await fetch(`http://35.211.214.127:8080/hoteles/${hotelId}/imagenes`, {
+    const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/hoteles/${hotelId}/imagenes`, {
       method: 'POST', //  POST para actualizar todas las imágenes a la vez
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(urlImagenes) // Envía un arreglo de URLs
@@ -134,7 +134,7 @@ const manejarImagenesDelHotel = async (hotelId, imageLinks) => {
 
   const eliminarHotel = async (id) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/hoteles/${id}`, {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/hoteles/${id}`, {
         method: 'DELETE',
       });
 
@@ -152,7 +152,7 @@ const manejarImagenesDelHotel = async (hotelId, imageLinks) => {
 const fetchHotelImages = async () => {
   let newHotelImages = {};
   for (let hotel of hoteles) {
-    const response = await fetch(`http://35.211.214.127:8080/hoteles/${hotel.id_hotel}/imagenes`);
+    const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/hoteles/${hotel.id_hotel}/imagenes`);
     if (response.ok) {
       const images = await response.json();
       newHotelImages[hotel.id_hotel] = images;
@@ -178,7 +178,7 @@ const cambiarEstadoHotel = async (idHotel, estadoActual) => {
   const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
   
   try {
-    const response = await fetch(`http://35.211.214.127:8080/hoteles/${idHotel}/estado/${nuevoEstado}`, {
+    const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/hoteles/${idHotel}/estado/${nuevoEstado}`, {
       method: 'PUT',
     });
     if (!response.ok) {

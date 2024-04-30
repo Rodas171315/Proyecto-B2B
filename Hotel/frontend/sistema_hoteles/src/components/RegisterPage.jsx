@@ -73,7 +73,7 @@ const RegisterPage = () => {
     
   
     try {
-      const response = await fetch('http://35.211.214.127:8080/usuarios/captcha', {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/usuarios/captcha', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

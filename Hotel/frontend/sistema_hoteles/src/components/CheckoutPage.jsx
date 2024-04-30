@@ -69,7 +69,7 @@ const CheckoutPage = () => {
     };
   
     // Verificar disponibilidad primero
-    const responseDisponibilidad = await fetch('http://35.211.214.127:8080/reservas/verificar-disponibilidad', {
+    const responseDisponibilidad = await fetch(process.env.REACT_APP_BACKEND_URL + '/reservas/verificar-disponibilidad', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(verificarDisponibilidadData),
@@ -101,7 +101,7 @@ const CheckoutPage = () => {
     
     try {
       // Verificar la disponibilidad de la habitación primero
-      const responseDisponibilidad = await fetch('http://35.211.214.127:8080/reservas/verificar-disponibilidad', {
+      const responseDisponibilidad = await fetch(process.env.REACT_APP_BACKEND_URL + '/reservas/verificar-disponibilidad', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(verificarDisponibilidadData),
@@ -139,7 +139,7 @@ const CheckoutPage = () => {
 
 
   
-      const response = await fetch('http://35.211.214.127:8080/reservas', {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/reservas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalReservationData),
@@ -191,7 +191,7 @@ const CheckoutPage = () => {
       if (reservationData.checkIn && reservationData.checkOut) {
         // Asumiendo que tienes una endpoint en tu API para verificar la disponibilidad
         try {
-          const response = await fetch(`http://35.211.214.127:8080/verificar-disponibilidad`, {
+          const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/verificar-disponibilidad`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
