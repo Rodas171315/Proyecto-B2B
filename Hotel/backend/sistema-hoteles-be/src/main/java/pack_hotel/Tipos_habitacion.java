@@ -30,8 +30,9 @@ public class Tipos_habitacion {
     @Column(name = "IMAGEN_URL")
     private String imagenUrl;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> urlsImagenes = new ArrayList<>();
+    
 
     /**
      * Obtiene el identificador único del tipo de habitación.
