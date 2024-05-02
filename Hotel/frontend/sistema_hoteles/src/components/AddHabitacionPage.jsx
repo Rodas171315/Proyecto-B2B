@@ -33,7 +33,7 @@ const AddHabitacionPage = () => {
 
   const fetchHoteles = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/hoteles');
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/hoteles');
       if (!response.ok) throw new Error('Error al cargar los hoteles');
       const data = await response.json();
       setHoteles(data);
@@ -45,7 +45,7 @@ const AddHabitacionPage = () => {
 
   const fetchHabitaciones = async (idHotel) => {
     try {
-      const url = idHotel ? `http://35.211.214.127:8080/habitaciones?hotelId=${idHotel}` : 'http://35.211.214.127:8080/habitaciones';
+      const url = idHotel ? process.env.REACT_APP_BACKEND_URL + `/habitaciones?hotelId=${idHotel}` : process.env.REACT_APP_BACKEND_URL + '/habitaciones';
       const response = await fetch(url);
       if (!response.ok) throw new Error('No se pudieron cargar las habitaciones');
       const data = await response.json();
@@ -86,7 +86,7 @@ const AddHabitacionPage = () => {
             ...nuevaHabitacion, 
             id_hotel: selectedHotel //
         };
-        const response = await fetch('http://35.211.214.127:8080/habitaciones', {
+        const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/habitaciones', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(habitacionData),
@@ -116,7 +116,7 @@ const iniciarEdicion = (habitacion) => {
   
   const guardarEdicion = async (idHabitacion) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/habitaciones/${idHabitacion}`, {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/habitaciones/${idHabitacion}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -143,7 +143,7 @@ const cancelarEdicion = () => {
   
 const eliminarHabitacion = async (idHabitacion) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/habitaciones/${idHabitacion}`, {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/habitaciones/${idHabitacion}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Error al eliminar la habitación');
@@ -164,7 +164,7 @@ const cambiarEstadoHabitacion = async (idHabitacion, estadoActual) => {
   const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
 
   try {
-    const response = await fetch(`http://35.211.214.127:8080/habitaciones/${idHabitacion}/estado/${nuevoEstado}`, {
+    const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/habitaciones/${idHabitacion}/estado/${nuevoEstado}`, {
       method: 'PUT',
     });
     if (!response.ok) {

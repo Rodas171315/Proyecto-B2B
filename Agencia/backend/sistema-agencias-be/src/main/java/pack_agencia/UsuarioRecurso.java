@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package pack_agencia;
 
 import jakarta.inject.Inject;
@@ -16,10 +12,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- *
- * @author root
+ * Clase que representa un recurso REST para la gestión de usuarios.
+ * Proporciona operaciones CRUD para interactuar con la base de datos de usuarios.
  */
-
 @Path("/usuarios")
 @Transactional
 public class UsuarioRecurso {
@@ -27,11 +22,20 @@ public class UsuarioRecurso {
     @Inject
     private UsuarioRepositorio usuariosRepositorio;
     
+    /**
+     * Obtiene una lista de todos los usuarios registrados.
+     * @return Lista de usuarios.
+     */
     @GET
     public List<Usuarios> index() {
         return usuariosRepositorio.listAll();
     }
     
+    /**
+     * Crea y persiste un nuevo usuario en la base de datos.
+     * @param insertedUser Usuario a insertar.
+     * @return El usuario insertado con su ID asignado.
+     */
     @POST
     public Usuarios insert(Usuarios insertedUser) {
         assert insertedUser.getId() == null;
@@ -40,6 +44,12 @@ public class UsuarioRecurso {
         return insertedUser;
     }
     
+    /**
+     * Obtiene un usuario específico por su ID.
+     * @param id Identificador del usuario.
+     * @return Usuario correspondiente al ID.
+     * @throws NoSuchElementException Si no se encuentra el usuario.
+     */
     @GET
     @Path("{id}")
     public Usuarios retrieve(@PathParam("id") Long id) {
@@ -50,6 +60,11 @@ public class UsuarioRecurso {
         throw new NoSuchElementException("No hay usuario con el ID " + id + ".");
     }
     
+    /**
+     * Elimina un usuario específico por su ID.
+     * @param id Identificador del usuario a eliminar.
+     * @return Mensaje indicando si el usuario fue borrado o no existía.
+     */
     @DELETE
     @Path("{id}")
     public String delete(@PathParam("id") Long id) {
@@ -60,6 +75,13 @@ public class UsuarioRecurso {
         }
     }
     
+    /**
+     * Actualiza la información de un usuario existente.
+     * @param id ID del usuario a actualizar.
+     * @param user Datos del usuario con las actualizaciones aplicadas.
+     * @return Usuario actualizado.
+     * @throws NoSuchElementException Si no existe un usuario con el ID proporcionado.
+     */
     @PUT
     @Path("{id}")
     public Usuarios update(@PathParam("id") Long id, Usuarios user) {
@@ -82,3 +104,4 @@ public class UsuarioRecurso {
     }
     
 }
+

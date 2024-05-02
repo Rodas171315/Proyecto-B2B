@@ -7,41 +7,66 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+/**
+ * La clase {@code Rol} representa un rol de usuario en el sistema.
+ * Cada rol tiene un tipo que define el conjunto de permisos asociados.
+ */
 @Entity
-@Table(name = "ROLES") // Este nombre debe coincidir con el nombre de tu tabla en la base de datos.
+@Table(name = "ROLES") 
 public class Rol {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // o GenerationType.SEQUENCE, dependiendo de la configuración de tu DB.
-    @Column(name = "ID_ROL") // Este nombre debe coincidir con el nombre de tu columna en la base de datos.
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "ID_ROL") 
     private Long idRol;
 
-    @Column(name = "TIPO") // Este nombre debe coincidir con el nombre de tu columna en la base de datos.
+    @Column(name = "TIPO") 
     private String tipo;
 
-    // Constructor sin argumentos necesario para JPA
+    /**
+     * Constructor sin argumentos necesario para JPA.
+     */
     public Rol() {
     }
 
-    // Constructor con argumentos para facilitar la creación de instancias.
+    /**
+     * Constructor con argumentos para facilitar la creación de instancias.
+     * @param idRol El identificador del rol.
+     * @param tipo El tipo de rol.
+     */
     public Rol(Long idRol, String tipo) {
         this.idRol = idRol;
         this.tipo = tipo;
     }
 
-    // Getters y Setters
+    /**
+     * Obtiene el identificador único del rol.
+     * @return El identificador del rol.
+     */
     public Long getIdRol() {
         return idRol;
     }
 
+    /**
+     * Establece el identificador único del rol.
+     * @param idRol El nuevo identificador del rol.
+     */
     public void setIdRol(Long idRol) {
         this.idRol = idRol;
     }
 
+    /**
+     * Obtiene el tipo de rol.
+     * @return El tipo de rol.
+     */
     public String getTipo() {
         return tipo;
     }
 
+    /**
+     * Establece el tipo de rol.
+     * @param tipo El nuevo tipo de rol.
+     */
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }

@@ -9,11 +9,21 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio REST para buscar contenido estático como hospedajes y vuelos.
+ * Permite filtrar hospedajes y vuelos basados en diferentes criterios de búsqueda.
+ */
 @Path("/static")
 public class StaticContentResource {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Busca hospedajes basados en los criterios proporcionados.
+     * @param criterios CriteriosBusqueda con los filtros aplicables a los hospedajes.
+     * @return Una lista de hospedajes que coinciden con los criterios de búsqueda.
+     * @throws IOException Si hay un error en la lectura del archivo JSON.
+     */
     @POST
     @Path("/hospedajes")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -28,6 +38,12 @@ public class StaticContentResource {
         ).collect(Collectors.toList());
     }
 
+    /**
+     * Busca vuelos basados en los criterios proporcionados.
+     * @param criterios CriteriosBusqueda con los filtros aplicables a los vuelos.
+     * @return Una lista de vuelos que coinciden con los criterios de búsqueda.
+     * @throws IOException Si hay un error en la lectura del archivo JSON.
+     */
     @POST
     @Path("/vuelos")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -44,6 +60,9 @@ public class StaticContentResource {
         ).collect(Collectors.toList());
     }
 
+    /**
+     * Clase que encapsula los criterios de búsqueda para hospedajes y vuelos.
+     */
     public static class CriteriosBusqueda {
         private String ciudad;
         private int adultos;

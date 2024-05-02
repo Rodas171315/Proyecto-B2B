@@ -25,7 +25,7 @@ const UserAdministration = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://35.211.214.127:8100/usuarios');
+                const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/usuarios');
                 if (!response.ok) throw new Error('Error al cargar usuarios');
                 const data = await response.json();
                 setUsers(data);
@@ -40,7 +40,7 @@ const UserAdministration = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            const response = await fetch(`http://35.211.214.127:8100/usuarios/${userId}`, {
+            const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/usuarios/${userId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) throw new Error('Error al eliminar usuario');
@@ -74,7 +74,7 @@ const UserAdministration = () => {
         if (userId) {
             console.log(`Actualizando usuario con ID: ${userId}`, editFormData);
             try {
-                const response = await fetch(`http://35.211.214.127:8100/usuarios/${userId}`, {
+                const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/usuarios/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(editFormData),

@@ -32,11 +32,11 @@ const CompraVuelo = () => {
         ? vuelo.precio * 1.5 * cantidad * 0.8 
         : vuelo.precio * cantidad * 0.8; 
   
-      const response = await fetch('http://35.211.214.127:8800/boletos', {
+      const response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + '/boletos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          usuarioId: '65fe775efd03e7de767d50e7',
+          usuarioId: '6610fa0f69bd0f1affec1601',
           vueloId: vuelo._id,
           tipoAsiento,
           cantidad,

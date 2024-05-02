@@ -6,6 +6,9 @@ pom.xml.versionsBackup
 release.properties
 .flattened-pom.xml
 
+# Build
+*.class
+
 # Eclipse
 .project
 .classpath
@@ -41,6 +44,3 @@ nb-configuration.xml
 
 # Plugin directory
 /.quarkus/cli/plugins/
-
-
-/src/main/resources/

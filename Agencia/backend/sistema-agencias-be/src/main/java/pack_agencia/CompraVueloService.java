@@ -16,6 +16,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servicio para gestionar las compras de vuelos.
+ * Permite la creación de registros de compra y su almacenamiento en un archivo JSON.
+ */
 @Path("/compras")
 public class CompraVueloService {
 
@@ -24,6 +28,11 @@ public class CompraVueloService {
 
     private final java.nio.file.Path comprasPath = Paths.get(System.getProperty("user.dir"), "compras.json");
 
+    /**
+     * Registra una nueva compra de vuelo y la almacena en un archivo JSON.
+     * @param datosCompra los datos de la compra a registrar
+     * @return una respuesta HTTP con los datos de la compra o un mensaje de error en caso de fallo
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,6 +57,9 @@ public class CompraVueloService {
         }
     }
 
+    /**
+     * Clase interna para manejar los datos de las compras de vuelos.
+     */
     public static class DatosCompra {
         private int vueloId;
         private String nombre;
@@ -55,55 +67,47 @@ public class CompraVueloService {
         private String telefono;
         private String numeroTarjeta;
         
-        
-        
         public DatosCompra() {}
-    
         
         public int getVueloId() {
             return vueloId;
         }
-    
+
         public String getNombre() {
             return nombre;
         }
-    
+
         public String getEmail() {
             return email;
         }
-    
+
         public String getTelefono() {
             return telefono;
         }
-    
+
         public String getNumeroTarjeta() {
             return numeroTarjeta;
         }
-    
         
         public void setVueloId(int vueloId) {
             this.vueloId = vueloId;
         }
-    
+
         public void setNombre(String nombre) {
             this.nombre = nombre;
         }
-    
+
         public void setEmail(String email) {
             this.email = email;
         }
-    
+
         public void setTelefono(String telefono) {
             this.telefono = telefono;
         }
-    
+
         public void setNumeroTarjeta(String numeroTarjeta) {
             this.numeroTarjeta = numeroTarjeta;
         }
-    
-        
-    
-        
     }
-    
 }
+

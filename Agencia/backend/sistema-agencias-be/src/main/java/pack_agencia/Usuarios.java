@@ -11,10 +11,9 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- *
- * @author root
+ * Clase Usuarios que representa a un usuario en el sistema de una agencia de viajes.
+ * Almacena información relevante como nombres, apellidos, fechas importantes, y datos de identificación.
  */
-
 @Entity
 public class Usuarios {
     
@@ -42,93 +41,182 @@ public class Usuarios {
     
     private Long pasaporte;
 
+    /**
+     * Obtiene el ID del usuario.
+     * @return el ID del usuario.
+     */
     public Long getId() {
         return id;
     }
 
-    public int getRol() {
-        return rol;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getPrimer_nombre() {
-        return primer_nombre;
-    }
-
-    public String getSegundo_nombre() {
-        return segundo_nombre;
-    }
-
-    public String getPrimer_apellido() {
-        return primer_apellido;
-    }
-
-    public String getSegundo_apellido() {
-        return segundo_apellido;
-    }
-
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
-    }
-
-    public String getNacionalidad() {
-        return nacionalidad;
-    }
-
-    public Long getPasaporte() {
-        return pasaporte;
-    }
-
+    /**
+     * Establece el ID del usuario.
+     * @param id el nuevo ID del usuario.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Obtiene el rol del usuario dentro del sistema.
+     * @return el rol del usuario.
+     */
+    public int getRol() {
+        return rol;
+    }
+
+    /**
+     * Establece el rol del usuario dentro del sistema.
+     * @param rol el nuevo rol del usuario.
+     */
     public void setRol(int rol) {
         this.rol = rol;
     }
 
+    /**
+     * Obtiene el correo electrónico del usuario.
+     * @return el correo electrónico del usuario.
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Establece el correo electrónico del usuario.
+     * @param email el nuevo correo electrónico del usuario.
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Obtiene la contraseña del usuario.
+     * @return la contraseña del usuario.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Establece la contraseña del usuario.
+     * @param password la nueva contraseña del usuario.
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * Obtiene el primer nombre del usuario.
+     * @return el primer nombre del usuario.
+     */
+    public String getPrimer_nombre() {
+        return primer_nombre;
+    }
+
+    /**
+     * Establece el primer nombre del usuario.
+     * @param primer_nombre el nuevo primer nombre del usuario.
+     */
     public void setPrimer_nombre(String primer_nombre) {
         this.primer_nombre = primer_nombre;
     }
 
+    /**
+     * Obtiene el segundo nombre del usuario.
+     * @return el segundo nombre del usuario.
+     */
+    public String getSegundo_nombre() {
+        return segundo_nombre;
+    }
+
+    /**
+     * Establece el segundo nombre del usuario.
+     * @param segundo_nombre el nuevo segundo nombre del usuario.
+     */
     public void setSegundo_nombre(String segundo_nombre) {
         this.segundo_nombre = segundo_nombre;
     }
 
+    /**
+     * Obtiene el primer apellido del usuario.
+     * @return el primer apellido del usuario.
+     */
+    public String getPrimer_apellido() {
+        return primer_apellido;
+    }
+
+    /**
+     * Establece el primer apellido del usuario.
+     * @param primer_apellido el nuevo primer apellido del usuario.
+     */
     public void setPrimer_apellido(String primer_apellido) {
         this.primer_apellido = primer_apellido;
     }
 
+    /**
+     * Obtiene el segundo apellido del usuario.
+     * @return el segundo apellido del usuario.
+     */
+    public String getSegundo_apellido() {
+        return segundo_apellido;
+    }
+
+    /**
+     * Establece el segundo apellido del usuario.
+     * @param segundo_apellido el nuevo segundo apellido del usuario.
+     */
     public void setSegundo_apellido(String segundo_apellido) {
         this.segundo_apellido = segundo_apellido;
     }
 
+    /**
+     * Obtiene la fecha de nacimiento del usuario.
+     * @return la fecha de nacimiento del usuario.
+     */
+    public LocalDate getFecha_nacimiento() {
+        return fecha_nacimiento;
+    }
+
+    /**
+     * Establece la fecha de nacimiento del usuario.
+     * @param fecha_nacimiento la nueva fecha de nacimiento del usuario.
+     */
     public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
         this.fecha_nacimiento = fecha_nacimiento;
     }
 
+    /**
+     * Obtiene la nacionalidad del usuario.
+     * @return la nacionalidad del usuario.
+     */
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    /**
+     * Establece la nacionalidad del usuario.
+     * @param nacionalidad la nueva nacionalidad del usuario.
+     */
     public void setNacionalidad(String nacionalidad) {
         this.nacionalidad = nacionalidad;
     }
 
+    /**
+     * Obtiene el número de pasaporte del usuario.
+     * @return el número de pasaporte del usuario.
+     */
+    public Long getPasaporte() {
+        return pasaporte;
+    }
+
+    /**
+     * Establece el número de pasaporte del usuario.
+     * @param pasaporte el nuevo número de pasaporte del usuario.
+     */
     public void setPasaporte(Long pasaporte) {
         this.pasaporte = pasaporte;
     }
+
 
     @Override
     public int hashCode() {

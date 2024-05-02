@@ -2,6 +2,10 @@ package pack_agencia;
 
 import java.util.List;
 
+/**
+ * Representa un vuelo en el sistema de gestión de la agencia.
+ * Contiene detalles como origen, destino, fecha, hora, aerolínea, precio y las clases disponibles.
+ */
 public class Vuelo {
     private Long id;
     private String origen;
@@ -12,11 +16,23 @@ public class Vuelo {
     private String precio;
     private List<String> clasesDisponibles;
 
-
+    /**
+     * Constructor por defecto.
+     */
     public Vuelo() {
     }
 
-
+    /**
+     * Constructor con parámetros para crear un nuevo vuelo con toda la información necesaria.
+     * @param id El identificador único del vuelo.
+     * @param origen Ciudad de origen del vuelo.
+     * @param destino Ciudad destino del vuelo.
+     * @param fecha Fecha del vuelo.
+     * @param hora Hora de salida del vuelo.
+     * @param aerolinea Aerolínea que opera el vuelo.
+     * @param precio Precio del vuelo.
+     * @param clasesDisponibles Lista de clases disponibles en el vuelo (ej. económica, primera clase).
+     */
     public Vuelo(Long id, String origen, String destino, String fecha, String hora, String aerolinea, String precio, List<String> clasesDisponibles) {
         this.id = id;
         this.origen = origen;
@@ -27,7 +43,6 @@ public class Vuelo {
         this.precio = precio;
         this.clasesDisponibles = clasesDisponibles;
     }
-
 
     public Long getId() {
         return id;

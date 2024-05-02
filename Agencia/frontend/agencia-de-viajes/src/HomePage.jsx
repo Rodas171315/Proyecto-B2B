@@ -17,7 +17,7 @@ const HomePage = () => {
         const paisSeleccionadoFavoritos = 'Guatemala'; 
         const paisSeleccionadoOfertas = 'Mexico'; 
         
-        fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionadoDestinos}`)
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoDestinos}`)
             .then((response) => response.json())
             .then(data => {
                 console.log(data); 
@@ -25,7 +25,7 @@ const HomePage = () => {
             })
             .catch((error) => console.error("Error al cargar destinos populares para " + paisSeleccionadoDestinos + ":", error));
     
-        fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionadoOfertas}`)
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoOfertas}`)
             .then((response) => response.json())
             .then(data => {
                 console.log(data); 
@@ -33,7 +33,7 @@ const HomePage = () => {
             })
             .catch((error) => console.error("Error al cargar ofertas especiales:" + paisSeleccionadoOfertas + ":", error));
     
-        fetch(`http://35.211.214.127:8080/hoteles/por-pais/${paisSeleccionadoFavoritos}`)
+        fetch(`http://localhost:8080/hoteles/por-pais/${paisSeleccionadoFavoritos}`)
             .then((response) => response.json())
             .then(data => {
                 console.log(data); 

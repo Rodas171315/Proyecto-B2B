@@ -22,7 +22,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://35.211.214.127:8100/login', {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

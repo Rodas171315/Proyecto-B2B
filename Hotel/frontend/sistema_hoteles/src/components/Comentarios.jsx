@@ -14,13 +14,13 @@ function Comentarios({ idHabitacion }) {
   }, [idHabitacion]);
 
   const estructurarComentarios = (comentarios) => {
-   
+    //  map almacena la referencia de cada comentario por su ID
     const comentariosMap = comentarios.reduce((map, comentario) => {
       map[comentario.idComentario] = { ...comentario, respuestas: [] };
       return map;
     }, {});
 
-    
+    //  bucle asigna cada comentario a su respectivo padre
     comentarios.forEach(comentario => {
       if (comentario.idComentarioPadre) {
         const padre = comentariosMap[comentario.idComentarioPadre];
@@ -30,19 +30,19 @@ function Comentarios({ idHabitacion }) {
       }
     });
 
-    
+    // Filtra solo los comentarios de nivel superior
     return Object.values(comentariosMap).filter(comentario => !comentario.idComentarioPadre);
   };
 
   const fetchComentarios = async () => {
     try {
       console.log(`Cargando comentarios para la habitación ${idHabitacion}`);
-      const response = await fetch(`http://35.211.214.127:8080/comentarios/por-habitacion/${idHabitacion}`);
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + `/comentarios/por-habitacion/${idHabitacion}`);
       if (response.ok) {
         const data = await response.json();
-        
+        // Se estructuran los comentarios una sola vez
         const comentariosEstructurados = estructurarComentarios(data);
-        setComentarios(comentariosEstructurados); 
+        setComentarios(comentariosEstructurados); // Utiliza solo comentarios estructurados
         console.log("Comentarios estructurados exitosamente:", comentariosEstructurados);
       } else {
         console.error('Error al recuperar los comentarios', response);
@@ -68,7 +68,7 @@ function Comentarios({ idHabitacion }) {
     };
 
     try {
-      const response = await fetch('http://35.211.214.127:8080/comentarios', {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/comentarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(comentarioData)
@@ -79,7 +79,7 @@ function Comentarios({ idHabitacion }) {
         setTextoComentario('');
         setRating(1);
         setIdComentarioPadre(null);
-        fetchComentarios(); 
+        fetchComentarios(); // Refresca los comentarios después de agregar uno nuevo
       } else {
         console.error('Error al crear el comentario', response);
       }
@@ -130,6 +130,12 @@ function Comentarios({ idHabitacion }) {
             </Form.Control>
           </Form.Group>
 
+                  {/* Comentado para no mostrar a qué comentario se está respondiendo */}
+        {/* {idComentarioPadre && (
+          <div>Respondiendo al comentario #{idComentarioPadre}</div>
+        )} */}
+
+          {/* Muestra un botón diferente si el usuario está respondiendo a un comentario */}
           {idComentarioPadre ? (
             <>
               <div>Respondiendo al comentario</div>

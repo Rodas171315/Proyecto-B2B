@@ -18,17 +18,16 @@ import jakarta.ws.rs.core.Response;
 import java.util.Map;
 
 import java.util.List;
-import jakarta.persistence.EntityManager;
+
 
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
 
 import io.smallrye.common.annotation.Blocking;
-import jakarta.ws.rs.Produces;
 
 /**
- *
- * @author root
+ * Recurso de la API que gestiona los tipos de habitación.
+ * Proporciona endpoints para operaciones CRUD básicas sobre la entidad Tipos_habitacion.
  */
 
 @Path("/tipos_habitacion")
@@ -38,6 +37,10 @@ public class Tipo_habitacionRecurso {
     @Inject
     private Tipo_habitacionRepositorio tipos_habitacionRepositorio;
     
+        /**
+     * Obtiene una lista de todos los tipos de habitación.
+     * @return una lista de Tipos_habitacion
+     */
     @GET
     public List<Tipos_habitacion> index() {
         List<Tipos_habitacion> tipos = tipos_habitacionRepositorio.listAll();
@@ -45,6 +48,11 @@ public class Tipo_habitacionRecurso {
         return tipos;
     }
     
+        /**
+     * Crea un nuevo tipo de habitación.
+     * @param insertedData Datos del nuevo tipo de habitación.
+     * @return el tipo de habitación insertado con ID asignado.
+     */
     @POST
     public Tipos_habitacion insert(Tipos_habitacion insertedData) {
         assert insertedData.getId_tipo() == null;
@@ -54,7 +62,11 @@ public class Tipo_habitacionRecurso {
     }
     
 
-    
+        /**
+     * Recupera un tipo de habitación por su ID.
+     * @param id El ID del tipo de habitación a recuperar.
+     * @return el tipo de habitación solicitado.
+     */
     @Blocking // puede realizar operaciones bloqueantes
     @GET
     @Path("{id}")
@@ -69,7 +81,12 @@ public class Tipo_habitacionRecurso {
         throw new NoSuchElementException("No hay tipo de habitacion con el ID " + id + ".");
     }
     
-    
+        /**
+     * Actualiza la imagen de un tipo de habitación especificado por ID.
+     * @param id El ID del tipo de habitación a actualizar.
+     * @param imagenData Datos que contienen la nueva URL de la imagen.
+     * @return una respuesta HTTP indicando el resultado de la operación.
+     */
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -90,7 +107,11 @@ public class Tipo_habitacionRecurso {
 
 
 
-
+    /**
+     * Elimina un tipo de habitación por su ID.
+     * @param id El ID del tipo de habitación a eliminar.
+     * @return un mensaje indicando el resultado de la operación.
+     */
 
     
     @DELETE

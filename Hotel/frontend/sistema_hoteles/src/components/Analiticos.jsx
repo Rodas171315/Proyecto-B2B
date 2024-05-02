@@ -46,7 +46,7 @@ const Analiticos = () => {
     
 
     const fetchBusquedasPorPais = async () => {
-        const response = await axios.get('http://localhost:8080/analiticos/registros/paises');
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/analiticos/registros/paises');
         const paises = response.data;
         const labels = Object.keys(paises);
         const data = labels.map(pais => paises[pais]);
@@ -61,7 +61,7 @@ const Analiticos = () => {
     };
 
     const fetchEvolucionBusquedas = async () => {
-        const response = await axios.get('http://localhost:8080/analiticos/registros/evolucion');
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/analiticos/registros/evolucion');
         const evolucion = response.data;
         const labels = Object.keys(evolucion);
         const data = labels.map(fecha => evolucion[fecha]);
@@ -78,7 +78,7 @@ const Analiticos = () => {
     };
 
     const fetchTipoAcceso = async () => {
-        const response = await axios.get('http://localhost:8080/analiticos/registros/tipoacceso');
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/analiticos/registros/tipoacceso');
         const tipoAcceso = response.data;
         const labels = Object.keys(tipoAcceso);
         const data = labels.map(type => tipoAcceso[type]);
@@ -119,7 +119,7 @@ const Analiticos = () => {
         }
     
         try {
-            const response = await axios.get(`http://localhost:8080/analiticos/filtrar?${params}`);
+            const response = await axios.get(process.env.REACT_APP_BACKEND_URL + `/analiticos/filtrar?${params}`);
             const formattedResults = response.data.map(item => ({
                 ...item,
                 fechaHora: new Date(item.fechaHora).toLocaleString('en-US', {
@@ -241,7 +241,7 @@ const handleExport = () => {
 
 const handleUploadToDrive = () => {
     const folderId = '1nihlBuTFBe11gQ5fDxHi0AQ_SWGA7E6x';
-    axios.post('http://localhost:8080/uploadToDrive', {
+    axios.post(process.env.REACT_APP_BACKEND_URL + '/uploadToDrive', {
         filePath: '/home/pmorales/Downloads/searchResults.csv',
         fileName: 'searchResults.csv',
         folderId: folderId  

@@ -10,17 +10,26 @@ import jakarta.ws.rs.ext.Provider;
 import java.util.NoSuchElementException;
 
 /**
- *
- * @author root
+ * Implementación de ExceptionMapper para manejar la excepción NoSuchElementException.
+ * Proporciona una respuesta uniforme para las excepciones de elementos no encontrados en la API.
  */
 
 @Provider
 public class NoSuchElementExceptionMapper implements ExceptionMapper<NoSuchElementException> {
 
+    /**
+     * Clase de registro interna para encapsular mensajes de error.
+     */
     public static record NoSuchElementMessage(String message, String detail) {
     
     }
     
+    /**
+     * Método que convierte una NoSuchElementException en una respuesta HTTP adecuada.
+     * 
+     * @param e La excepción capturada que se manejará.
+     * @return Una respuesta HTTP con un código de estado 404 (No encontrado) y un mensaje de error.
+     */
     @Override
     public Response toResponse(NoSuchElementException e) {
         var error = new NoSuchElementMessage(e.getMessage(), null);

@@ -1,5 +1,8 @@
 package pack_agencia;
 
+/**
+ * Representa un hospedaje favorito, con detalles sobre la ubicación, precio y características.
+ */
 public class HospedajeFavorito {
     private int id;
     private String nombre;
@@ -10,11 +13,23 @@ public class HospedajeFavorito {
     private String imagen;
     private String descripcion;
 
-
+    /**
+     * Constructor por defecto.
+     */
     public HospedajeFavorito() {
     }
 
-
+    /**
+     * Constructor con parámetros para crear un nuevo hospedaje favorito.
+     * @param id Identificador único del hospedaje.
+     * @param nombre Nombre del hospedaje.
+     * @param ciudad Ciudad donde se encuentra el hospedaje.
+     * @param pais País donde se encuentra el hospedaje.
+     * @param precioPorNoche Precio por noche en el hospedaje.
+     * @param calificacion Calificación promedio del hospedaje.
+     * @param imagen URL de la imagen representativa del hospedaje.
+     * @param descripcion Descripción breve del hospedaje.
+     */
     public HospedajeFavorito(int id, String nombre, String ciudad, String pais, double precioPorNoche, int calificacion, String imagen, String descripcion) {
         this.id = id;
         this.nombre = nombre;
