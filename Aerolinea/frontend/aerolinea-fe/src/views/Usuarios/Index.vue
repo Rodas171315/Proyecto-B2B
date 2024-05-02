@@ -142,6 +142,7 @@ const save = async () => {
                             <th>Nacionalidad</th>
                             <th>Pasaporte</th>
                             <th>Rol</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
