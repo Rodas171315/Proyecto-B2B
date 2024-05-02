@@ -10,8 +10,9 @@ import Graphic from '../views/Usuarios/Graphic.vue';
 import Reports from '../views/Usuarios/Reports.vue';
 import HistorialReservas from '../views/HistorialReservas.vue';
 import Create from '../views/Vuelos/Create.vue';
-import EditVuelo from '../views/Vuelos/Edit.vue'; 
-import Checkout from '../views/Checkout.vue'; 
+import EditVuelo from '../views/Vuelos/Edit.vue';
+import Checkout from '../views/Checkout.vue';
+import AdministrarBoletos from '../views/AdministrarBoletos.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -24,27 +25,10 @@ const routes = [
   { path: '/graphic', name: 'graphic', component: Graphic, meta: { requiresAdmin: true } },
   { path: '/reports', name: 'reports', component: Reports, meta: { requiresAdmin: true } },
   { path: '/historialreservas', name: 'historialreservas', component: HistorialReservas },
-  { path: '/create', name: 'create', component: Create }, 
-  {
-    path: '/edit/:id',
-    name: 'edit',
-    component: EditVuelo,
-    props: true, 
-  },
-    { path: '/checkout', name: 'Checkout', component: Checkout },
-
-
-    {
-        path: '/historial-reservas',
-        name: 'HistorialReservas',
-        component: HistorialReservas, 
-      },
-
-
-
-
-
-
+  { path: '/create', name: 'create', component: Create },
+  { path: '/edit/:id', name: 'edit', component: EditVuelo, props: true },
+  { path: '/checkout', name: 'Checkout', component: Checkout },
+  { path: '/administrar-boletos', name: 'administrarBoletos', component: AdministrarBoletos, meta: { requiresAdmin: true } }, 
 ];
 
 const router = createRouter({

@@ -34,6 +34,9 @@
                     <li class="nav-item" v-if="isAdmin">
                         <router-link to="/reports" class="nav-link">Reportes</router-link>
                     </li>
+                    <li class="nav-item" v-if="isAdmin">
+                        <router-link to="/administrar-boletos" class="nav-link">Administrar Boletos</router-link>
+                    </li>
                     <!-- Muestra Registrarse e Iniciar Sesión solo si el usuario no está autenticado -->
                     <li class="nav-item" v-if="!isAuthenticated">
                         <router-link to="/register" class="nav-link">Registrarse</router-link>

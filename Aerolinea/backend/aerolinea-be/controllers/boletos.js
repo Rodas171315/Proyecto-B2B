@@ -94,7 +94,7 @@ export const cancelarBoleto = async (req, res) => {
             return res.status(404).send('Boleto no encontrado');
         }
 
-        // Marcar el boleto como cancelado
+        // Mark the ticket as cancelled
         boleto.estadoReserva = false;
         await boleto.save();
 
@@ -103,24 +103,40 @@ export const cancelarBoleto = async (req, res) => {
             return res.status(404).send('Vuelo no encontrado');
         }
 
-        // Incrementar los asientos disponibles según el tipo de asiento del boleto
+        // Increment available seats according to the seat type of the ticket
         if (boleto.tipoAsiento === 'turista') {
             vuelo.asientosTuristaDisponibles += 1;
         } else if (boleto.tipoAsiento === 'ejecutivo') {
             vuelo.asientosEjecutivosDisponibles += 1;
         }
 
-        await vuelo.save();
+        // Save the vuelo without modifying fields not involved in the operation
+        await vuelo.save({ validateBeforeSave: false }); // Option to skip validation if not updating duracion
 
         res.send('Boleto cancelado y vuelo actualizado');
     } catch (error) {
-        console.error(error);
+        console.error('Error al cancelar el boleto:', error);
         res.status(500).send('Error al cancelar el boleto');
     }
 };
 
 
+export const updateBoleto = async (req, res) => {
+    try {
+        const boletoId = req.params.boletoId;
+        const updates = req.body;
 
+        const boleto = await Boleto.findByIdAndUpdate(boletoId, updates, { new: true });
+        if (!boleto) {
+            return res.status(404).send('Boleto not found');
+        }
+
+        res.json(boleto);
+    } catch (error) {
+        console.error('Failed to update boleto:', error);
+        res.status(500).send('Error updating boleto');
+    }
+};
 
 
 /*
