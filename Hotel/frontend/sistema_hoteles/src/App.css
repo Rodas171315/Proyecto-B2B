@@ -1,0 +1,378 @@
+.header {
+  background-color: #333; /* Un fondo oscuro para elegancia */
+  padding: 0.5rem 1rem; /* Espaciado interno para darle más aire */
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 120px; /* Ajuste de altura para visibilidad */
+  width: auto; /* Mantener la proporción */
+  margin-right: 10px;
+}
+
+.brand-name {
+  font-family: 'Georgia', serif; /* Fuente más elegante */
+  color: #d2b48c; /* Color dorado claro */
+  font-size: 1.5rem; /* Tamaño más grande para el nombre */
+}
+
+.search-input {
+  border-radius: 20px; /* Bordes redondeados para la entrada de búsqueda */
+  border: 2px solid #d2b48c; /* Borde dorado para el campo de texto */
+}
+
+.nav-link, .shopping-cart {
+  margin-left: 1rem;
+  color: #d2b48c; /* Color dorado claro para enlaces */
+}
+
+.nav-link:hover, .shopping-cart:hover {
+  color: #fff;
+}
+
+/* Estilo para el botón de búsqueda */
+.btn-outline-light {
+  border-color: #d2b48c; /* Borde dorado para el botón */
+  color: #d2b48c; /* Texto dorado */
+}
+.btn-outline-light:hover {
+  background-color: #d2b48c; /* Fondo dorado para hover */
+  color: #333; /* Texto oscuro para contraste */
+}
+
+/* Ajustes responsivos */
+@media (max-width: 576px) {
+  .brand-name {
+    font-size: 1.2rem; /* Tamaño de fuente más pequeño para móviles */
+  }
+
+  .logo {
+    height: 60px; /* Logo más pequeño para móviles */
+  }
+}
+
+
+.footer {
+  background-color: #333; /* Un fondo oscuro para elegancia */
+  color: #d2b48c; /* Color dorado para el texto */
+  padding: 20px 0;
+  margin-top: auto; /* Asegura que el footer se mantenga al fondo */
+}
+
+.footer-logo {
+  max-width: 200px; /* Asegúrate de que el logo no sea demasiado grande */
+  margin-bottom: 10px;
+}
+
+.footer h5 {
+  color: #d2b48c; /* Color dorado para los subtítulos */
+  margin-top: 20px;
+}
+
+.footer p, .footer a {
+  color: #d2b48c; /* Color dorado para el texto y enlaces */
+  margin-bottom: 10px;
+  display: block; /* Asegura que los enlaces se muestren en líneas separadas */
+}
+
+.footer a:hover {
+  color: #fff;
+  text-decoration: none; /* Remueve el subrayado al pasar el mouse */
+}
+
+/* Ajustes responsivos para el pie de página */
+@media (max-width: 768px) {
+  .footer-logo {
+    margin: 0 auto; /* Centra el logo en dispositivos móviles */
+  }
+  .footer h5, .footer p, .footer a {
+    text-align: center; /* Centra el texto en dispositivos móviles */
+  }
+}
+
+/* Ajustes globales y estructurales para la app */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.App {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Resto de tus estilos .App aquí */
+}
+
+
+
+/* App.css */
+/* Añadir al final de tu archivo App.css existente */
+
+/* Estilos para HomePage */
+.card {
+  transition: transform 0.2s; /* Animación para el hover */
+}
+
+.card:hover {
+  transform: scale(1.03); /* Escala la card para efecto visual */
+}
+
+.card-img-top {
+  width: 100%;
+  height: 15vw; /* Ajustar según necesites */
+  object-fit: cover;
+}
+
+/* Responsividad para imágenes y cards */
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 40vw;
+  }
+}
+
+
+.elegant-header {
+  font-family: 'Playfair Display', serif; /* o cualquier otra fuente elegante que prefieras */
+  font-weight: 700;
+  color: #4d4132; /* Color dorado para combinar con tu tema */
+  text-shadow: 1px 1px 2px rgba(43, 42, 42, 0.1); /* Sombra sutil para profundidad */
+  /* Otros estilos que desees aplicar */
+}
+
+
+
+/* App.css */
+.search-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.search-form .form-control {
+  border-radius: 0.25rem;
+  border: 1px solid #d2b48c;
+}
+
+.search-form .form-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.search-form .btn-primary {
+  background-color: #d2b48c;
+  border-color: #d2b48c;
+}
+
+.search-form .btn-primary:hover {
+  background-color: #b3926c;
+  border-color: #b3926c;
+}
+
+
+
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+/* Estilos para los formularios */
+.form-control {
+  background-color: #f8f9fa;
+  border: 1px solid #d2b48c;
+  color: #5a5a5a;
+}
+
+.form-label {
+  color: #333;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #d2b48c;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #b3926c;
+}
+
+
+.login-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.login-form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.login-form .form-control {
+  border-radius: 20px;
+}
+
+.login-form .btn-primary {
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+/* Ajustes responsivos para el formulario de inicio de sesión */
+@media (max-width: 576px) {
+  .login-form .btn-primary {
+    width: 100%;
+  }
+}
+
+.gallery-image {
+  width: 65%; /* Asegúrate de que la imagen ocupe todo el ancho del contenedor */
+  margin-bottom: 20px; /* Añade un margen para separar las imágenes */
+}
+
+/* Ajustes para la imagen principal del hotel */
+.main-hotel-image {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Ajustes para las imágenes de la galería */
+.gallery-image {
+  width: 100%; /* Las imágenes ocupan todo el ancho del contenedor de columna */
+}
+
+
+/* Estilos para BookingHistoryPage */
+.booking-history-container {
+  padding: 2rem;
+  background-color: #f5f5f5; /* Fondo claro para contraste */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para profundidad */
+  margin: 2rem auto; /* Centrado con margen */
+  max-width: 800px; /* Ancho máximo para mejor lectura */
+}
+
+.booking-history-title {
+  color: #333; /* Color oscuro para el título */
+  text-align: center; /* Centrado del título */
+  margin-bottom: 1.5rem; /* Espaciado después del título */
+  font-size: 2rem; /* Tamaño de fuente grande */
+}
+
+.booking-item {
+  background-color: #ffffff; /* Fondo blanco para cada reserva */
+  padding: 1rem; /* Espaciado interno */
+  margin-bottom: 1rem; /* Espaciado entre reservas */
+  border-radius: 4px; /* Bordes redondeados para las reservas */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.booking-item h3 {
+  color: #9c511f; /* Color azul para el nombre del hotel */
+  margin-bottom: 0.5rem; /* Espaciado después del nombre del hotel */
+}
+
+.booking-item p {
+  color: #666; /* Color gris para los detalles */
+  margin-bottom: 0.25rem; /* Espaciado entre detalles */
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .booking-history-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .booking-history-title {
+    font-size: 1.5rem;
+  }
+}
+
+
+
+
+.card-img-top {
+  height: 200px; /* Ajusta según necesites */
+  object-fit: cover; /* Para que las imágenes se vean bien */
+}
+
+/* Estilos adicionales para las tarjetas */
+.card {
+  transition: transform 0.3s ease-in-out; /* Para un efecto de hover sutil */
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Levanta la tarjeta ligeramente al hacer hover */
+}
+
+/* Ajustes para responsividad y más estilos elegantes pueden ser añadidos según se necesite */
+
+
+/* CheckoutPage.css */
+
+/* Espaciado y estilo para el formulario de pago */
+.form-control {
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Botones con un poco más de margen */
+.btn-secondary {
+  margin-left: 0.5rem;
+}
+
+
+.reservation-summary {
+  border: 1px solid #dee2e6; /* Color de borde suave */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  background-color: #f8f9fa; /* Fondo ligeramente gris */
+  padding: 20px; /* Espaciado interno */
+  margin-top: 20px; /* Espaciado superior */
+  margin-bottom: 40px; /* Espaciado inferior */
+}
+
+.reservation-summary h4 {
+  color: #495057; /* Color oscuro para el título */
+  margin-bottom: 15px; /* Espaciado después del título */
+}
+
+.reservation-summary p {
+  font-size: 16px; /* Tamaño de fuente */
+  color: #343a40; /* Color de fuente */
+  margin-bottom: 10px; /* Espaciado entre párrafos */
+}
+
+.reservation-summary p strong {
+  color: #684403; /* Color para destacar */
+}
+
+
+
+
+
+.analiticos-container {
+  padding: 20px;
+}
+
+.chart-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+}
