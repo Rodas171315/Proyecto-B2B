@@ -20,15 +20,22 @@
       </div>
     </div>
     <!-- Edit Modal -->
-    <div v-if="selectedBoleto" class="modal">
+    <div v-if="selectedBoleto" class="modal-overlay">
       <div class="modal-content">
-        <h4>Edit Ticket: {{ selectedBoleto._id }}</h4>
-        <select v-model="selectedBoleto.tipoAsiento">
-          <option value="turista">Turista</option>
-          <option value="ejecutivo">Ejecutivo</option>
-        </select>
-        <button @click="submitEdit">Submit Changes</button>
-        <button @click="closeEditModal">Close</button>
+        <div class="modal-header">
+          <h4>Edit Ticket: {{ selectedBoleto._id }}</h4>
+          <button class="close-button" @click="closeEditModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <label for="tipoAsiento">Tipo de Asiento:</label>
+          <select id="tipoAsiento" v-model="selectedBoleto.tipoAsiento">
+            <option value="turista">Turista</option>
+            <option value="ejecutivo">Ejecutivo</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button @click="submitEdit" class="btn btn-success">Confirmar cambios</button>
+        </div>
       </div>
     </div>
   </div>
@@ -95,6 +102,7 @@ const submitEdit = async () => {
 </script>
 
 <style scoped>
+/* Container and List Styles */
 .container {
   max-width: 800px;
   margin: 2rem auto;
@@ -103,11 +111,9 @@ const submitEdit = async () => {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .alert-info {
   text-align: center;
 }
-
 .list-group-item {
   display: flex;
   justify-content: space-between;
@@ -118,48 +124,59 @@ const submitEdit = async () => {
   margin-bottom: 1rem;
   background-color: white;
 }
-
 .list-group-item-action:hover {
   background-color: #f8f9fa;
 }
-
 .btn-primary, .btn-warning {
   margin-right: 10px;
 }
-
 .btn-primary:hover, .btn-warning:hover {
   opacity: 0.85;
 }
 
-.modal {
+/* Modal Styles */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1050;
 }
-
 .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  width: 90%;
+  max-width: 500px;
 }
-
-.modal-content h4 {
-  margin-bottom: 20px;
+.modal-header, .modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-.modal-content select, .modal-content button {
-  margin-top: 10px;
-  width: 100%;
-  padding: 8px 12px;
-  box-sizing: border-box; /* Fixes padding and border widths */
+.close-button {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  color: #666;
+}
+.modal-body {
+  margin: 20px 0;
+}
+.modal-footer .btn {
+  padding: 0.8rem 1.2rem;
+  color: white;
+  background-color: #28a745;
+  border-color: #28a745;
+}
+.modal-footer .btn:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
 }
 </style>
