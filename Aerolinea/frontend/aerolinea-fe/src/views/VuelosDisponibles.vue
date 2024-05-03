@@ -1,23 +1,19 @@
 <template>
     <div class="container">
-        <h2 class="mb-4 text-center">Vuelos Disponibles</h2>
-        <!-- Filtros -->
-        <div class="filters mb-4">
-            <input
-                v-model="filtroOrigen"
-                type="text"
-                placeholder="Origen"
-                class="form-control me-2"
-            />
-            <input
-                v-model="filtroDestino"
-                type="text"
-                placeholder="Destino"
-                class="form-control me-2"
-            />
-            <input v-model="filtroFecha" type="date" class="form-control me-2" />
-            <button @click="aplicarFiltros" class="btn btn-success">Filtrar</button>
-        </div>
+      <h2 class="mb-4 text-center">Vuelos Disponibles</h2>
+      <!-- Filtros -->
+      <div class="filters mb-4">
+        <select v-model="filtroOrigen" class="form-control me-2">
+          <option value="">Seleccione Origen</option>
+          <option v-for="ciudad in ciudadesOrigen" :key="ciudad" :value="ciudad">{{ ciudad }}</option>
+        </select>
+        <select v-model="filtroDestino" class="form-control me-2">
+          <option value="">Seleccione Destino</option>
+          <option v-for="ciudad in ciudadesDestino" :key="ciudad" :value="ciudad">{{ ciudad }}</option>
+        </select>
+        <input v-model="filtroFecha" type="date" class="form-control me-2" />
+        <button @click="aplicarFiltros" class="btn btn-success">Filtrar</button>
+      </div>
         <div class="card border border-white text-center" v-if="!load">
             <div class="card-body">
                 <img src="/flight-loader.gif" class="img-fluid" />
@@ -72,7 +68,7 @@
 
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { confirmation, fechayhoraFormateada } from '../functions';
 import { useRouter } from 'vue-router';
 
@@ -82,21 +78,41 @@ const load = ref(false);
 const filtroOrigen = ref('');
 const filtroDestino = ref('');
 const filtroFecha = ref('');
+const ciudadesOrigen = ref([]);
+const ciudadesDestino = ref([]);
 const userId = localStorage.getItem('user_id');
 
-
-async function cargarVuelos() {
-    try {
-        const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos');
-        vuelos.value = response.data;
-        load.value = true;
-    } catch (error) {
-        console.error('Error al obtener los vuelos:', error);
-        load.value = true;
-    }
+// Consolidated data fetching method
+async function fetchData() {
+  await fetchCiudadesDisponibles();
+  await cargarVuelos();
 }
 
-onMounted(cargarVuelos);
+const fetchCiudadesDisponibles = async () => {
+  try {
+    const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos/ciudades-disponibles');
+    ciudadesOrigen.value = response.data.origen;
+    ciudadesDestino.value = response.data.destino;
+    console.log('Ciudades Origen:', ciudadesOrigen.value); // Debugging
+    console.log('Ciudades Destino:', ciudadesDestino.value); // Debugging
+  } catch (error) {
+    console.error('Error al obtener ciudades disponibles:', error);
+  }
+};
+
+async function cargarVuelos() {
+  try {
+    const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos');
+    vuelos.value = response.data;
+    load.value = true;
+    console.log('Vuelos cargados:', vuelos.value); // Debugging
+  } catch (error) {
+    console.error('Error al obtener los vuelos:', error);
+    load.value = true;
+  }
+}
+
+onMounted(fetchData);
 
 const vuelosFiltrados = computed(() => {
     return vuelos.value.filter((vuelo) => {
@@ -116,6 +132,13 @@ async function aplicarFiltros() {
     cargarVuelos();
     registrarBusqueda();
 }
+
+
+
+
+
+
+
 
 async function registrarBusqueda() {
     const parametros = {

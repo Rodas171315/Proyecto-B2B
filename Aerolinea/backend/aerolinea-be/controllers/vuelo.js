@@ -123,6 +123,25 @@ export const getAsientosDisponibles = async (req, res) => {
   }
 };
 
+export const getCiudadesDisponibles = async (req, res) => {
+    try {
+      const vuelos = await Vuelo.find();
+      let ciudadesOrigen = new Set();
+      let ciudadesDestino = new Set();
+      vuelos.forEach(vuelo => {
+        ciudadesOrigen.add(vuelo.ciudad_origen);
+        ciudadesDestino.add(vuelo.ciudad_destino);
+      });
+      res.status(200).json({ origen: [...ciudadesOrigen], destino: [...ciudadesDestino] });
+    } catch (error) {
+      res.status(500).json({ message: "Error al obtener las ciudades disponibles", error });
+    }
+  };
+  
+  
+
+
+
 
   
 

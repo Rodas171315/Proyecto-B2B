@@ -1,7 +1,10 @@
 import express from "express";
-import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos, getFilteredVuelos, getAsientosDisponibles } from "../controllers/vuelo.js";
+import { createVuelo, updateVuelo, deleteVuelo, getVuelo, getVuelos, getFilteredVuelos, getAsientosDisponibles, getCiudadesDisponibles } from "../controllers/vuelo.js";
 
 const router = express.Router();
+
+
+router.get('/ciudades-disponibles', getCiudadesDisponibles);
 
 //CREATE
 router.post("/", createVuelo);
