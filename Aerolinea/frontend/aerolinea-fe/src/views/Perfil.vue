@@ -54,7 +54,8 @@ export default {
     },
     mounted() {
         this.load = true; // Comienza el estado de carga.
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/usuarios/${localStorage.user_id}`)
+        axios
+            .get(`${import.meta.env.VITE_BACKEND_URL}/usuarios/${localStorage.user_id}`)
             .then((response) => {
                 this.usuario = response.data;
                 this.load = false; // Termina el estado de carga.
@@ -65,7 +66,6 @@ export default {
             });
     },
 };
-
 </script>
 
 <style>
@@ -87,7 +87,6 @@ export default {
     font-weight: bold;
 }
 .btn-danger {
-    margin-top: 20px;
     display: block;
     width: 100%;
 }
