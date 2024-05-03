@@ -102,8 +102,22 @@ const vuelosFiltrados = computed(() => {
     });
 });
 
-function aplicarFiltros() {
+async function aplicarFiltros() {
     cargarVuelos();
+    registrarBusqueda();
+}
+
+async function registrarBusqueda() {
+    try {
+        const parametros = {
+            origen: filtroOrigen.value,
+            destino: filtroDestino.value,
+            fecha: filtroFecha.value
+        };
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/analiticos/registro-busqueda`, parametros);
+    } catch (error) {
+        console.error('Error registrando la búsqueda:', error);
+    }
 }
 
 const reservarVuelo = (vueloId) => {

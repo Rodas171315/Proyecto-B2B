@@ -29,7 +29,7 @@
                         <router-link to="/usuarios" class="nav-link">Usuarios</router-link>
                     </li>
                     <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/graphic" class="nav-link">Gráficas</router-link>
+                        <router-link to="/analiticos" class="nav-link">Analíticos</router-link>
                     </li>
                     <li class="nav-item" v-if="isAdmin">
                         <router-link to="/reports" class="nav-link">Reportes</router-link>
