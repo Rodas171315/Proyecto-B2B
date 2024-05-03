@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <h2>Analytics Dashboard</h2>
+      <h2>Panel de Análisis</h2>
       <div>
         <bar-chart :chart-data="barChartData" v-if="barChartData"/>
         <line-chart :chart-data="lineChartData" v-if="lineChartData"/>
@@ -34,7 +34,6 @@
   };
   
   const processChartData = (data) => {
-    // Process data for Bar Chart: Count by origen
     const originsCount = data.reduce((acc, item) => {
       const origin = item.parametrosBusqueda.split(';')[0].split('=')[1];
       acc[origin] = (acc[origin] || 0) + 1;
@@ -44,13 +43,12 @@
     barChartData.value = {
       labels: Object.keys(originsCount),
       datasets: [{
-        label: 'Number of Searches by Origin',
+        label: 'Busquedas por Origen',
         backgroundColor: '#42A5F5',
         data: Object.values(originsCount)
       }]
     };
   
-    // Process data for Line Chart: Searches over time
     const datesCount = data.reduce((acc, item) => {
       const date = new Date(item.fechaHora).toISOString().slice(0, 10);
       acc[date] = (acc[date] || 0) + 1;
@@ -60,7 +58,7 @@
     lineChartData.value = {
       labels: Object.keys(datesCount),
       datasets: [{
-        label: 'Searches Over Time',
+        label: 'Busquedas a lo largo del tiempo',
         backgroundColor: '#66BB6A',
         borderColor: '#66BB6A',
         data: Object.values(datesCount),
@@ -68,9 +66,8 @@
       }]
     };
   
-    // Process data for Pie Chart: Authenticated vs Non-authenticated
     const authCount = data.reduce((acc, item) => {
-      const key = item.esAutenticado ? 'Authenticated' : 'Non-Authenticated';
+      const key = item.esAutenticado ? 'Autenticado' : 'No Autenticado';
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
