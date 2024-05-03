@@ -11,6 +11,9 @@
             <li class="nav-item">
               <router-link to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</router-link>
             </li>
+            <li class="nav-item">
+                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
+              </li>
             <!-- Solo visible para administradores -->
             <template v-if="isAdmin">
               <li class="nav-item">
@@ -28,6 +31,7 @@
               <li class="nav-item">
                 <router-link to="/administrar-boletos" class="nav-link">Administrar Boletos</router-link>
               </li>
+
             </template>
             <!-- Solo visible para no autenticados -->
             <template v-if="!isAuthenticated">
@@ -37,15 +41,16 @@
               <li class="nav-item">
                 <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
               </li>
+              <li class="nav-item">
+                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
+              </li>
             </template>
             <!-- Solo visible para autenticados -->
             <template v-if="isAuthenticated">
               <li class="nav-item">
                 <router-link to="/perfil" class="nav-link">Perfil</router-link>
               </li>
-              <li class="nav-item">
-                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
-              </li>
+
             </template>
           </ul>
         </div>

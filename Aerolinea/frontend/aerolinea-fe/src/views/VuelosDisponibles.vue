@@ -51,8 +51,16 @@
                     <h6 class="card-subtitle mb-2 text-muted">
                         {{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}
                     </h6>
+                    <p class="card-text">Duración del vuelo: {{ vuelo.duracion }} horas</p>
                     <p class="card-text">Precio: Q{{ vuelo.precio }}</p>
                     <p class="card-text">Valoración: {{ vuelo.valuacion }}/5</p>
+                    <p v-if="!vuelo.esDirecto">
+                        Escala en {{ vuelo.ciudad_escala }} con una duración de {{ vuelo.duracion_escala }} horas.
+                    </p>
+
+                    <div class="rating">
+                        <span v-for="star in 5" :key="star" @click="rateFlight(vuelo._id, star)" :class="{ 'filled': star <= vuelo.valuacion }">&#9733;</span>
+                    </div>
                     <button @click="reservarVuelo(vuelo._id)" class="btn btn-primary">
                         Reservar
                     </button>
@@ -125,8 +133,19 @@ async function registrarBusqueda() {
         console.error('Error registrando la búsqueda:', error.response.data);
     }
 }
-
-
+const rateFlight = async (vueloId, rating) => {
+    try {
+        const response = await axios.post('http://localhost:8800/revisiones', {
+            vueloId,
+            usuarioId: userId, 
+            valoracion: rating,
+            comentario: ''
+        });
+        console.log('Valoración enviada:', response.data);
+    } catch (error) {
+        console.error('Error al enviar la valoración:', error);
+    }
+};
 
 
 
@@ -141,7 +160,34 @@ const reservarVuelo = (vueloId) => {
 };
 </script>
 
+
 <style scoped>
+
+
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    position: relative;
+}
+.rating span {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+    color: transparent;
+    cursor: pointer;
+}
+.rating span:before {
+    content: '\2605';
+    position: absolute;
+    left: 0;
+    color: #FFD700;
+}
+.rating span.filled:before {
+    color: #FFD700;
+}
+
+
 .container {
     max-width: 1200px;
     margin: 20px auto;
@@ -149,8 +195,8 @@ const reservarVuelo = (vueloId) => {
 }
 
 .card {
-    background-color: #ffffff;
-    border: 1px solid #dddddd;
+    background-color: #f1e3df;
+    border: 1px solid #e07f1d;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition:

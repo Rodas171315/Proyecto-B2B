@@ -11,6 +11,7 @@ import comentariosRouter from './routes/comentarios.js';
 import respuestasRouter from './routes/comentarios.js'; 
 import suscriptoresRoute from './routes/suscriptores.js';
 import analiticos from './routes/analiticos.js';  
+import revisiones from './routes/revisiones.js';
 
 
 const app = express();
@@ -68,6 +69,7 @@ app.use('/comentarios', comentariosRouter);
 app.use('/respuestas', respuestasRouter); 
 app.use('/suscriptores', suscriptoresRoute);
 app.use('/analiticos', analiticos);
+app.use('/revisiones', revisiones);
 
 
 
