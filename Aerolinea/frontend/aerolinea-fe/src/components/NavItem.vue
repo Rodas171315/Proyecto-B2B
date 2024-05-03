@@ -1,79 +1,75 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">UNIS Airlines</a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <!-- Muestra Vuelos Disponibles para todos los usuarios -->
-                    <li class="nav-item">
-                        <router-link to="/vuelosdisponibles" class="nav-link"
-                            >Vuelos Disponibles</router-link
-                        >
-                    </li>
-                    <!-- Muestra estas opciones solo si el usuario es administrador -->
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/vuelos" class="nav-link">Vuelos</router-link>
-                    </li>
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/usuarios" class="nav-link">Usuarios</router-link>
-                    </li>
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/analiticos" class="nav-link">Analíticos</router-link>
-                    </li>
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/reports" class="nav-link">Reportes</router-link>
-                    </li>
-                    <li class="nav-item" v-if="isAdmin">
-                        <router-link to="/administrar-boletos" class="nav-link">Administrar Boletos</router-link>
-                    </li>
-                    <!-- Muestra Registrarse e Iniciar Sesión solo si el usuario no está autenticado -->
-                    <li class="nav-item" v-if="!isAuthenticated">
-                        <router-link to="/register" class="nav-link">Registrarse</router-link>
-                    </li>
-                    <li class="nav-item" v-if="!isAuthenticated">
-                        <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
-                    </li>
-                    <!-- Muestra estas opciones solo si el usuario está autenticado -->
-                    <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/perfil" class="nav-link">Perfil</router-link>
-                    </li>
-                    <li class="nav-item" v-if="isAuthenticated">
-                        <router-link to="/historialreservas" class="nav-link"
-                            >Mis Reservas</router-link
-                        >
-                    </li>
-                </ul>
-            </div>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">UNIS Airlines</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</router-link>
+            </li>
+            <!-- Solo visible para administradores -->
+            <template v-if="isAdmin">
+              <li class="nav-item">
+                <router-link to="/vuelos" class="nav-link">Vuelos</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/usuarios" class="nav-link">Usuarios</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/analiticos" class="nav-link">Analíticos</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/reports" class="nav-link">Reportes</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/administrar-boletos" class="nav-link">Administrar Boletos</router-link>
+              </li>
+            </template>
+            <!-- Solo visible para no autenticados -->
+            <template v-if="!isAuthenticated">
+              <li class="nav-item">
+                <router-link to="/register" class="nav-link">Registrarse</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
+              </li>
+            </template>
+            <!-- Solo visible para autenticados -->
+            <template v-if="isAuthenticated">
+              <li class="nav-item">
+                <router-link to="/perfil" class="nav-link">Perfil</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
+              </li>
+            </template>
+          </ul>
         </div>
+      </div>
     </nav>
-</template>
+  </template>
+  
+  <script setup>
+  import { ref, watchEffect } from 'vue';
+  
+  const isAuthenticated = ref(localStorage.getItem('user_id') !== null);
+  const isAdmin = ref(localStorage.getItem('isAdmin') === 'true');
+  
+  // Reaccionar a cambios en el almacenamiento local
+  watchEffect(() => {
+    isAuthenticated.value = localStorage.getItem('user_id') !== null;
+    isAdmin.value = localStorage.getItem('isAdmin') === 'true';
+  });
+  </script>
+  
+  
 
-<script setup>
-import { ref, watchEffect } from 'vue';
 
-const isAuthenticated = ref(false);
-const isAdmin = ref(false);
 
-// Reactivamente actualiza las variables basadas en el estado de autenticación y rol del usuario
-watchEffect(() => {
-    const userId = localStorage.getItem('user_id');
-    const adminStatus = localStorage.getItem('isAdmin');
-
-    isAuthenticated.value = !!userId;
-    isAdmin.value = adminStatus === 'true';
-});
-</script>
 
 <style scoped>
 /* Tus estilos aquí */
