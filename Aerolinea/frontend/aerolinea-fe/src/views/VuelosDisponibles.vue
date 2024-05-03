@@ -74,6 +74,8 @@ const load = ref(false);
 const filtroOrigen = ref('');
 const filtroDestino = ref('');
 const filtroFecha = ref('');
+const userId = localStorage.getItem('user_id');
+
 
 async function cargarVuelos() {
     try {
@@ -108,17 +110,25 @@ async function aplicarFiltros() {
 }
 
 async function registrarBusqueda() {
+    const parametros = {
+        origen: filtroOrigen.value,
+        destino: filtroDestino.value,
+        fecha: filtroFecha.value,
+        usuarioId: userId,
+        esAutenticado: !!userId 
+    };
+
     try {
-        const parametros = {
-            origen: filtroOrigen.value,
-            destino: filtroDestino.value,
-            fecha: filtroFecha.value
-        };
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/analiticos/registro-busqueda`, parametros);
+        console.log('Búsqueda registrada con éxito');
     } catch (error) {
-        console.error('Error registrando la búsqueda:', error);
+        console.error('Error registrando la búsqueda:', error.response.data);
     }
 }
+
+
+
+
 
 const reservarVuelo = (vueloId) => {
     const vueloSeleccionado = vuelosFiltrados.value.find((vuelo) => vuelo._id === vueloId);

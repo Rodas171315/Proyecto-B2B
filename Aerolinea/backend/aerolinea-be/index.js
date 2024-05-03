@@ -10,7 +10,7 @@ import boletosRoute from "./routes/boletos.js";
 import comentariosRouter from './routes/comentarios.js'; 
 import respuestasRouter from './routes/comentarios.js'; 
 import suscriptoresRoute from './routes/suscriptores.js';
-import analiticos from './routes/analiticos.js';
+import analiticos from './routes/analiticos.js';  
 
 
 const app = express();
@@ -67,7 +67,7 @@ app.use("/boletos", boletosRoute);
 app.use('/comentarios', comentariosRouter); 
 app.use('/respuestas', respuestasRouter); 
 app.use('/suscriptores', suscriptoresRoute);
-app.use('/analiticos', analiticosRoutes);
+app.use('/analiticos', analiticos);
 
 
 
