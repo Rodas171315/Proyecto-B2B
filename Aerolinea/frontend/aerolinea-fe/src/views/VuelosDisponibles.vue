@@ -40,31 +40,33 @@
                         alt="Imagen secundaria del vuelo"
                     />
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">
-                        {{ vuelo.ciudad_origen }} - {{ vuelo.ciudad_destino }}
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        {{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}
-                    </h6>
-                    <p class="card-text">Duración del vuelo: {{ vuelo.duracion }} horas</p>
-                    <p class="card-text">Precio: Q{{ vuelo.precio }}</p>
-                    <p class="card-text">Valoración: {{ vuelo.valuacion }}/5</p>
-                    <p v-if="!vuelo.esDirecto">
-                        Escala en {{ vuelo.ciudad_escala }} con una duración de {{ vuelo.duracion_escala }} horas.
-                    </p>
-
-                    <div class="rating">
+        <div class="card-body">
+          <h5 class="card-title">{{ vuelo.ciudad_origen }} - {{ vuelo.ciudad_destino }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ fechayhoraFormateada(vuelo.fecha_salida, 'read') }}</h6>
+          <p class="card-text">Duración del vuelo: {{ vuelo.duracion }} horas</p>
+          <p class="card-text">Precio: Q{{ vuelo.precio }}</p>
+          <p class="card-text">Valoración: {{ vuelo.valuacion }}/5</p>
+          <div class="rating">
                         <span v-for="star in 5" :key="star" @click="rateFlight(vuelo._id, star)" :class="{ 'filled': star <= vuelo.valuacion }">&#9733;</span>
                     </div>
-                    <button @click="reservarVuelo(vuelo._id)" class="btn btn-primary">
-                        Reservar
-                    </button>
-                </div>
-            </div>
+          <p v-if="!vuelo.esDirecto">Escala en {{ vuelo.ciudad_escala }} con una duración de {{ vuelo.duracion_escala }} horas.</p>
+          <button @click="reservarVuelo(vuelo._id)" class="btn btn-primary">Reservar</button>
         </div>
+      </div>
+      <!-- Añadir una sección para vuelos con escala -->
+      <div v-for="(combinacion, idx) in vuelosConEscala" :key="'combinacion-' + idx" class="card m-2" style="width: 18rem">
+        <div class="card-body">
+          <h5 class="card-title">Combinación: {{ combinacion.vuelo1.ciudad_origen }} - {{ combinacion.vuelo2.ciudad_destino }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Escala en {{ combinacion.vuelo1.ciudad_destino }}</h6>
+          <p class="card-text">Tiempo total de viaje: {{ calculaDuracionTotal(combinacion) }} horas (incluye escala)</p>
+          <p class="card-text">Costo total: Q{{ combinacion.vuelo1.precio + combinacion.vuelo2.precio }}</p>
+          <button @click="reservarCombinacion(combinacion)" class="btn btn-primary">Reservar Viaje</button>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
+
 
 <script setup>
 import axios from 'axios';
@@ -156,6 +158,9 @@ async function registrarBusqueda() {
         console.error('Error registrando la búsqueda:', error.response.data);
     }
 }
+
+
+
 const rateFlight = async (vueloId, rating) => {
     try {
         const response = await axios.post('http://localhost:8800/revisiones', {
