@@ -33,13 +33,14 @@ const VueloSchema = new mongoose.Schema({
   asientosEjecutivosDisponibles: {
     type: Number,
     required: true,
-  },
+  }, 
   imagenesUrl: [String], // Array de strings para URLs de imágenes
   esDirecto: {
     type: Boolean,
     default: true,
     required: true,
   },
+  
   //escala: {
     ciudad_escala: {
       type: String,

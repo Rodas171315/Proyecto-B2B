@@ -6,7 +6,7 @@ import Register from '../views/Register.vue';
 import Perfil from '../views/Perfil.vue';
 import Vuelos from '../views/Vuelos/Index.vue';
 import Usuarios from '../views/Usuarios/Index.vue';
-import Graphic from '../views/Usuarios/Graphic.vue';
+import Analiticos from '../views/Analiticos.vue';
 import Reports from '../views/Usuarios/Reports.vue';
 import HistorialReservas from '../views/HistorialReservas.vue';
 import Create from '../views/Vuelos/Create.vue';
@@ -22,7 +22,7 @@ const routes = [
   { path: '/perfil', name: 'perfil', component: Perfil },
   { path: '/vuelos', name: 'vuelos', component: Vuelos, meta: { requiresAdmin: true } },
   { path: '/usuarios', name: 'usuarios', component: Usuarios, meta: { requiresAdmin: true } },
-  { path: '/graphic', name: 'graphic', component: Graphic, meta: { requiresAdmin: true } },
+  { path: '/analiticos', name: 'analiticos', component: Analiticos, meta: { requiresAdmin: true } },
   { path: '/reports', name: 'reports', component: Reports, meta: { requiresAdmin: true } },
   { path: '/historialreservas', name: 'historialreservas', component: HistorialReservas },
   { path: '/create', name: 'create', component: Create },
