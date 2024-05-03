@@ -10,6 +10,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate';
 import App from './App.vue';
 import router from './router';
 import axios from 'axios';
+import VueRecaptcha from 'vue-recaptcha';
 
 window.axios = axios;
 window.axios.defaults.baseURL = 'http://localhost/aerolinea-fe/public';
@@ -28,5 +29,12 @@ const app = createApp(App);
 
 app.use(pinia);
 app.use(router);
+
+
+
+app.component('VueRecaptcha', VueRecaptcha);
+
+
+
 
 app.mount('#app');
