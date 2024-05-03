@@ -1,37 +1,49 @@
 <template>
-    <div class="container">
-      <h2>Panel de Análisis</h2>
-      <div>
-        <bar-chart :chart-data="barChartData" v-if="barChartData"/>
-        <line-chart :chart-data="lineChartData" v-if="lineChartData"/>
-        <pie-chart :chart-data="pieChartData" v-if="pieChartData"/>
+  <div class="container">
+    <h2>Panel de Análisis</h2>
+    <div class="charts-container">
+      <div v-if="barChartData">
+        <bar-chart ref="barChartRef" :chart-data="barChartData" />
+        <button @click="downloadCSV(barChartData, 'bar-chart')">Descargar Datos (CSV)</button>
+      </div>
+      <div v-if="lineChartData">
+        <line-chart ref="lineChartRef" :chart-data="lineChartData" />
+        <button @click="downloadCSV(lineChartData, 'line-chart')">Descargar Datos (CSV)</button>
+      </div>
+      <div v-if="pieChartData">
+        <pie-chart ref="pieChartRef" :chart-data="pieChartData" />
+        <button @click="downloadCSV(pieChartData, 'pie-chart')">Descargar Datos (CSV)</button>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from 'axios';
-  import BarChart from '@/views/BarChart.vue';
-  import LineChart from '@/views/LineChart.vue';
-  import PieChart from '@/views/PieChart.vue';
-  
-  const barChartData = ref(null);
-  const lineChartData = ref(null);
-  const pieChartData = ref(null);
-  
-  onMounted(() => {
-    fetchAnalyticsData();
-  });
-  
-  const fetchAnalyticsData = async () => {
-    try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/analiticos/registros`);
-      processChartData(data);
-    } catch (error) {
-      console.error('Failed to fetch analytics data:', error);
-    }
-  };
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import BarChart from '@/views/BarChart.vue';
+import LineChart from '@/views/LineChart.vue';
+import PieChart from '@/views/PieChart.vue';
+
+const barChartRef = ref(null);
+const lineChartRef = ref(null);
+const pieChartRef = ref(null);
+const barChartData = ref(null);
+const lineChartData = ref(null);
+const pieChartData = ref(null);
+
+onMounted(() => {
+  fetchAnalyticsData();
+});
+
+const fetchAnalyticsData = async () => {
+  try {
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/analiticos/registros`);
+    processChartData(data);
+  } catch (error) {
+    console.error('Failed to fetch analytics data:', error);
+  }
+};
   
   const processChartData = (data) => {
     const originsCount = data.reduce((acc, item) => {
@@ -81,13 +93,62 @@
       }]
     };
   };
-  </script>
-  
-  <style scoped>
-  .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
+
+
+
+
+  const downloadChart = (chartRef, fileName) => {
+  if (!chartRef.value) {
+    console.error("Chart reference is not available");
+    return;
   }
-  </style>
-  
+  const canvas = chartRef.value.$el.querySelector('canvas');
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = `${fileName}.png`;
+  link.click();
+};
+
+const downloadCSV = (chartData, fileName) => {
+  if (!chartData) {
+    console.error("Chart data is not available");
+    return;
+  }
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += chartData.labels.join(",") + "\r\n";
+  chartData.datasets.forEach((dataset) => {
+    csvContent += dataset.data.join(",") + "\r\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `${fileName}.csv`);
+  link.click();
+};
+</script>
+
+<style scoped>
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+.charts-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  background-color: #e16f18;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #0056b3;
+}
+</style>
