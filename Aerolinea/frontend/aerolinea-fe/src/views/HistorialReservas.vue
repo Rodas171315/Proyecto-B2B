@@ -1,6 +1,11 @@
 <template>
   <div class="container mt-5">
     <h2 class="text-center mb-4">Historial de Reservas</h2>
+    <div class="mb-4">
+      <input v-model="codigoReserva" type="text" placeholder="Buscar por código de reserva" class="form-control">
+      <button class="btn btn-primary mt-2" @click="buscarBoleto">Buscar</button>
+      <button class="btn btn-secondary mt-2" @click="cargarBoletos">Mostrar todos</button>
+    </div>
     <div v-if="boletos && boletos.length === 0" class="alert alert-info" role="alert">
       No tienes reservas.
     </div>
@@ -11,101 +16,119 @@
             <h5 class="mb-1">{{ boleto.vueloId.ciudad_origen }} - {{ boleto.vueloId.ciudad_destino }}</h5>
             <small>{{ fechayhoraFormateada(boleto.fecha_salida, 'read') }}</small>
             <p class="mb-1">Tipo de asiento: {{ boleto.tipoAsiento }}</p>
+            <p class="mb-1">Código de Reserva: {{ boleto.codigoReserva }}</p> 
             <p class="mb-1" v-if="!boleto.estadoReserva"><strong>Estado:</strong> Cancelado</p>
+            <p class="mb-1"><strong>Email del Usuario:</strong> {{ boleto.usuarioId.email }}</p> 
             <small class="text-muted">Precio final: Q{{ boleto.precioFinal }}</small>
           </div>
-          <button v-if="boleto.estadoReserva" class="btn btn-warning" @click="cancelarBoleto(boleto._id)">Cancelar</button>
+          <button class="btn btn-success" @click="downloadPDF(boleto)">Descargar PDF</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-  
+
 <script setup>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { jsPDF } from 'jspdf';
 import { fechayhoraFormateada } from '../functions.js';
 
-const router = useRouter();
 const boletos = ref([]);
+const codigoReserva = ref(''); // Estado para almacenar el código de reserva
 
-onMounted(async () => {
-  try {
-    const usuarioId = localStorage.getItem('user_id');
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
-    boletos.value = response.data;
-  } catch (error) {
-    console.error('Error al cargar el historial de reservas:', error);
+// Función para cargar todos los boletos de un usuario
+const cargarBoletos = async () => {
+  const usuarioId = localStorage.getItem('user_id');
+  console.log('Usuario actual:', usuarioId); // Agregar log para mostrar el user_id actual
+
+  const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
+  boletos.value = response.data;
+};
+
+// Función para buscar un boleto por código de reserva
+const buscarBoleto = async () => {
+  if (!codigoReserva.value) {
+    alert('Por favor, introduce un código de reserva para buscar.');
+    return;
   }
-});
-
-const cancelarBoleto = async (boletoId) => {
-  try {
-    await axios.put(`${import.meta.env.VITE_BACKEND_URL}/boletos/cancelar/${boletoId}`);
-    alert('Reserva cancelada con éxito.');
-    const usuarioId = localStorage.getItem('user_id');
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
+  const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/buscar/${codigoReserva.value}`);
+  if (response.data.length > 0) {
     boletos.value = response.data;
-  } catch (error) {
-    console.error('Error al cancelar la reserva:', error);
-    alert('No se pudo cancelar la reserva.');
+  } else {
+    boletos.value = [];
+    alert('No se encontraron reservas con ese código.');
   }
 };
-</script>
-  
-  
 
-  <style scoped>
-  .container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+onMounted(cargarBoletos);
+
+
+
+function downloadPDF(boleto) {
+  const doc = new jsPDF();
   
-  .alert-info {
-    text-align: center;
-  }
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Detalle de la Reserva', 105, 20, null, null, 'center');
   
-  .list-group-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem;
-    border: 1px solid #e9ecef;
-    border-radius: 0.375rem;
-    margin-bottom: 1rem;
-    background-color: white;
-  }
+  doc.setLineWidth(0.5);
+  doc.line(20, 25, 190, 25);
   
-  .list-group-item-action:hover {
-    background-color: #f8f9fa;
-  }
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
   
-  .btn-danger {
-    color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545;
-  }
+  let verticalOffset = 40; 
+
+  doc.text(`Origen: ${boleto.vueloId.ciudad_origen}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Destino: ${boleto.vueloId.ciudad_destino}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Fecha de Salida: ${fechayhoraFormateada(boleto.fecha_salida, 'read')}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Tipo de Asiento: ${boleto.tipoAsiento}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Código de Reserva: ${boleto.codigoReserva}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Estado: ${boleto.estadoReserva ? 'Activo' : 'Cancelado'}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Precio Final: Q${boleto.precioFinal}`, 20, verticalOffset);
   
-  .btn-danger:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
-  }
-  
-  .d-flex {
-    align-items: center;
-  }
-  
-  .mb-1 {
-    margin-bottom: 0.25rem !important;
-  }
-  
-  .text-muted {
-    color: #6c757d !important;
-  }
-  </style>
-  
+  verticalOffset += 20;
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text(`UNIS Airlines - ${new Date().toLocaleDateString()}`, 105, verticalOffset, null, null, 'center');
+
+  doc.save(`Reserva_${boleto._id}.pdf`);
+}
+</script>
+
+<style scoped>
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.alert-info {
+  text-align: center;
+}
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border: 1px solid #e9ecef;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  background-color: white;
+}
+.list-group-item-action:hover {
+  background-color: #f8f9fa;
+}
+.btn-success {
+  margin-left: auto;
+}
+</style>

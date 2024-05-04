@@ -50,6 +50,7 @@ const deleteVuelo = (id) => {
                             <th>Ciudad de Escala</th>
                             <th>Duracion de Escala</th>
                             <th>Valuacion</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">

@@ -6,12 +6,16 @@ import Register from '../views/Register.vue';
 import Perfil from '../views/Perfil.vue';
 import Vuelos from '../views/Vuelos/Index.vue';
 import Usuarios from '../views/Usuarios/Index.vue';
-import Graphic from '../views/Usuarios/Graphic.vue';
+import Analiticos from '../views/Analiticos.vue';
 import Reports from '../views/Usuarios/Reports.vue';
 import HistorialReservas from '../views/HistorialReservas.vue';
 import Create from '../views/Vuelos/Create.vue';
-import EditVuelo from '../views/Vuelos/Edit.vue'; 
-import Checkout from '../views/Checkout.vue'; 
+import EditVuelo from '../views/Vuelos/Edit.vue';
+import Checkout from '../views/Checkout.vue';
+import AdministrarBoletos from '../views/AdministrarBoletos.vue';
+import Explorar from '../views/Explorar.vue';
+import CheckoutEscala from '../views/CheckoutEscala.vue';
+
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
@@ -21,30 +25,17 @@ const routes = [
   { path: '/perfil', name: 'perfil', component: Perfil },
   { path: '/vuelos', name: 'vuelos', component: Vuelos, meta: { requiresAdmin: true } },
   { path: '/usuarios', name: 'usuarios', component: Usuarios, meta: { requiresAdmin: true } },
-  { path: '/graphic', name: 'graphic', component: Graphic, meta: { requiresAdmin: true } },
+  { path: '/analiticos', name: 'analiticos', component: Analiticos, meta: { requiresAdmin: true } },
   { path: '/reports', name: 'reports', component: Reports, meta: { requiresAdmin: true } },
   { path: '/historialreservas', name: 'historialreservas', component: HistorialReservas },
-  { path: '/create', name: 'create', component: Create }, 
-  {
-    path: '/edit/:id',
-    name: 'edit',
-    component: EditVuelo,
-    props: true, 
-  },
-    { path: '/checkout', name: 'Checkout', component: Checkout },
+  { path: '/create', name: 'create', component: Create },
+  { path: '/edit/:id', name: 'edit', component: EditVuelo, props: true },
+  { path: '/checkout', name: 'Checkout', component: Checkout },
+  { path: '/administrar-boletos', name: 'administrarBoletos', component: AdministrarBoletos, meta: { requiresAdmin: true } },
+  { path: '/explorar', name: 'explorar', component: Explorar },
+  { path: '/checkoutescala', name: 'checkoutescala', component: CheckoutEscala },
 
-
-    {
-        path: '/historial-reservas',
-        name: 'HistorialReservas',
-        component: HistorialReservas, 
-      },
-
-
-
-
-
-
+ 
 ];
 
 const router = createRouter({

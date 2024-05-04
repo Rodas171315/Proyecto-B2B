@@ -1,87 +1,57 @@
 <template>
     <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <h1 class="mb-4">Registrarse</h1>
-                <form @submit.prevent="register" class="g-3">
-                    <div class="mb-3">
-                        <input
-                            v-model="email"
-                            type="email"
-                            placeholder="Email"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <input
-                            v-model="password"
-                            type="password"
-                            placeholder="Contraseña"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <input
-                            v-model="nombre"
-                            type="text"
-                            placeholder="Nombre"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <input
-                            v-model="apellido"
-                            type="text"
-                            placeholder="Apellido"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <input
-                            v-model="fecha_nacimiento"
-                            type="date"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <select v-model="nacionalidad" class="form-select" required>
-                            <option disabled value="">Seleccione un país</option>
-                            <option v-for="country in countries" :key="country" :value="country">
-                                {{ country }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <input
-                            v-model="pasaporte"
-                            type="number"
-                            placeholder="Pasaporte"
-                            class="form-control"
-                            required
-                        />
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Registrar</button>
-                    </div>
-                </form>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <h1 class="mb-4">Registrarse</h1>
+          <form @submit.prevent="register">
+            <div class="mb-3">
+              <input v-model="email" type="email" placeholder="Email" class="form-control" required />
             </div>
+            <div class="mb-3">
+              <input v-model="password" type="password" placeholder="Contraseña" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <input v-model="nombre" type="text" placeholder="Nombre" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <input v-model="apellido" type="text" placeholder="Apellido" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <input v-model="fecha_nacimiento" type="date" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <select v-model="nacionalidad" class="form-select" required>
+                <option disabled value="">Seleccione un país</option>
+                <option v-for="country in countries" :key="country" :value="country">{{ country }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <input v-model="pasaporte" type="number" placeholder="Pasaporte" class="form-control" required />
+            </div>
+            <recaptcha2
+              sitekey="6Lc2g6UpAAAAAJacvQNmo6OvOXyN-hJ2qs3hEkA0"
+              @verify="onCaptchaVerified"
+            />
+            <button type="submit" class="btn btn-primary">Registrar</button>
+          </form>
         </div>
+      </div>
     </div>
-</template>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import axios from 'axios';
+  import Recaptcha2 from 'vue3-recaptcha2';
+  import emailjs from 'emailjs-com';
 
-<script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
 
-const countries = ref([
-    'Afghanistan',
-    'Albania',
+
+
+  const countries = ref([
+      'Afghanistan',
+      'Albania',
     'Algeria',
     'Andorra',
     'Angola',
@@ -274,37 +244,65 @@ const countries = ref([
     'Yemen',
     'Zambia',
     'Zimbabwe',
-]);
-const router = useRouter();
+  ]);
+  
+  const router = useRouter();
+  const email = ref('');
+  const password = ref('');
+  const nombre = ref('');
+  const apellido = ref('');
+  const fecha_nacimiento = ref('');
+  const nacionalidad = ref('');
+  const pasaporte = ref('');
+  const recaptchaToken = ref('');
+  
+  const onCaptchaVerified = (token) => {
+    recaptchaToken.value = token;
+  };
 
-const email = ref('');
-const password = ref('');
-const nombre = ref('');
-const apellido = ref('');
-const fecha_nacimiento = ref('');
-const nacionalidad = ref('');
-const pasaporte = ref('');
 
-const register = async () => {
-    const user = {
-        email: email.value,
-        password: password.value,
-        nombre: nombre.value,
-        apellido: apellido.value,
-        fecha_nacimiento: fecha_nacimiento.value,
-        nacionalidad: nacionalidad.value,
-        pasaporte: pasaporte.value,
-    };
 
-    try {
-        await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/register', user); // Ajusta según la ruta real de tu API
-        alert('Registro exitoso. Por favor, inicia sesión.');
-        router.push('/login');
-    } catch (error) {
-        console.error(error);
-        alert('Error al registrar. Por favor, intenta nuevamente.');
-    }
+  const sendConfirmationEmail = () => {
+  const templateParams = {
+    to_name: nombre.value,
+    to_email: email.value,
+  };
+
+  emailjs.send('service_db-dw', 'template_nzi1pho', templateParams, 'BLyjSRydByFGcVhN6')
+    .then((result) => {
+        console.log('Email successfully sent!', result.text);
+    }, (error) => {
+        console.error('Failed to send email. Error: ', error.text);
+    });
 };
-</script>
 
-<style scoped></style>
+
+
+
+
+  
+  const register = async () => {
+    const user = {
+      email: email.value,
+      password: password.value,
+      nombre: nombre.value,
+      apellido: apellido.value,
+      fecha_nacimiento: fecha_nacimiento.value,
+      nacionalidad: nacionalidad.value,
+      pasaporte: pasaporte.value,
+      recaptchaToken: recaptchaToken.value
+    };
+  
+    try {
+      await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/register', user);
+      sendConfirmationEmail(); // Envía el correo de confirmación
+
+      alert('Registro exitoso. Por favor, inicia sesión.');
+      router.push('/login');
+    } catch (error) {
+      console.error('Error al registrar: ', error);
+      alert('Error al registrar. Por favor, intenta nuevamente.');
+    }
+  };
+  </script>
+  

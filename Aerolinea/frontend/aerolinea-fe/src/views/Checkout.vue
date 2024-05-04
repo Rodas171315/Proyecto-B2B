@@ -28,14 +28,13 @@
       <li v-for="comentario in comentarios" :key="comentario._id" class="comentario">
         <div class="comentario-contenido">
           <strong>{{ comentario.usuario && comentario.usuario.nombre ? comentario.usuario.nombre : 'Usuario ' }}</strong>: {{ comentario.contenido }}
-          <button @click="responderComentario(comentario._id)" class="responder-btn">Responder</button>
+          <button @click="responderComentario(comentario._id)" class="btn btn-success">Responder</button>
         </div>
         <ul v-if="comentario.respuestas && comentario.respuestas.length" class="respuestas">
           <li v-for="respuesta in comentario.respuestas" :key="respuesta._id" class="respuesta">
     {{ console.log(respuesta) }}          <div class="respuesta-contenido">
               <strong>{{ respuesta.usuario && respuesta.usuario.nombre ? respuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ respuesta.contenido }}
-              <button @click="responderComentario(respuesta._id)" class="responder-btn">Responder</button>
-
+              <button @click="responderComentario(respuesta._id)" class="btn btn-success">Responder</button>
 
               <div v-if="respuesta._id === comentarioSeleccionado" class="responder-formulario">
                 <textarea v-model="nuevoRespuesta" placeholder="Escribe tu respuesta..." class="form-control mb-2"></textarea>
@@ -48,7 +47,7 @@
               <li v-for="nestedRespuesta in respuesta.respuestas" :key="nestedRespuesta._id" class="respuesta">
                 <div class="respuesta-contenido">
                   <strong>{{ nestedRespuesta.usuario && nestedRespuesta.usuario.nombre ? nestedRespuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ nestedRespuesta.contenido }}
-                  <button @click="responderComentario(nestedRespuesta._id)" class="responder-btn">Responder</button>
+                  <button @click="responderComentario(nestedRespuesta._id)" class="btn btn-success">Responder</button>
 
 
                   <div v-if="nestedRespuesta._id === comentarioSeleccionado" class="responder-formulario">
@@ -61,7 +60,7 @@
                   <li v-for="furtherNestedRespuesta in nestedRespuesta.respuestas" :key="furtherNestedRespuesta._id" class="respuesta">
                     <div class="respuesta-contenido">
                       <strong>{{ furtherNestedRespuesta.usuario && furtherNestedRespuesta.usuario.nombre ? furtherNestedRespuesta.usuario.nombre : 'Usuario ' }}</strong>: {{ furtherNestedRespuesta.contenido }}
-                      <button @click="responderComentario(furtherNestedRespuesta._id)" class="responder-btn">Responder</button>
+                      <button @click="responderComentario(furtherNestedRespuesta._id)" class="btn btn-success">Responder</button>
 
                       <div v-if="furtherNestedRespuesta._id === comentarioSeleccionado" class="responder-formulario">
                         <textarea v-model="nuevoRespuesta" placeholder="Escribe tu respuesta..." class="form-control mb-2"></textarea>
@@ -107,16 +106,21 @@
   import axios from 'axios';
   import { useRouter } from 'vue-router';
   import { fechayhoraFormateada } from '../functions.js';
+  import emailjs from 'emailjs-com';
+
   
   const router = useRouter();
   const vuelo = ref(null);
   const tipoAsiento = ref('turista');
   const asientosDisponibles = ref({ turista: 0, ejecutivo: 0 });
   const cantidadSeleccionada = ref(1);
+  const usuario = ref({});  
   const comentarios = ref([]);
   const nuevoComentario = ref('');
   const comentarioSeleccionado = ref(null);
   const nuevoRespuesta = ref('');
+  const codigoReserva = ref('');
+
   
   
   
@@ -131,6 +135,19 @@
           router.push({ name: 'VuelosDisponibles' });
       }
   });
+
+  const usuarioId = localStorage.getItem('user_id');
+    if (usuarioId) {
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/usuarios/${usuarioId}`)
+        .then(response => {
+            usuario.value = response.data;
+        })
+        .catch(error => {
+            console.error('Error al cargar los datos del usuario:', error);
+            alert('No se pudo cargar la información del usuario.');
+        });
+    }
+
   
   const cargarAsientosDisponibles = async (vueloId) => {
       try {
@@ -144,37 +161,95 @@
           asientosDisponibles.value = { turista: 0, ejecutivo: 0 };
       }
   };
-  
+
+
+
+
   const confirmarReserva = async () => {
-      const usuarioId = localStorage.getItem('user_id');
-      if (!usuarioId) {
-          alert('Por favor, inicia sesión.');
-          console.error('Usuario no logueado');
-          return;
-      }
+    const usuarioId = localStorage.getItem('user_id');
+    if (!usuario.value._id) {
+        alert('Por favor, inicia sesión.');
+        console.error('Usuario no logueado');
+        return;
+    }
+
+    const cantidad = parseInt(cantidadSeleccionada.value);
+    if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
+        alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
+        return;
+    }
+
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
+            usuarioId: usuario.value._id,
+            vueloId: vuelo.value._id,
+            tipoAsiento: tipoAsiento.value,
+            cantidad
+        });
+
+        // Verifica que la respuesta incluya el código de reserva
+        if (response.data && response.data.codigoReserva) {
+            codigoReserva.value = response.data.codigoReserva;
+            alert('Reserva confirmada con éxito.');
+            console.log('Reserva confirmada con éxito:', response.data);
+
+            // Asegúrate de que el correo solo se envíe después de que el código está asignado
+            await sendTicketEmail();
+
+            await cargarAsientosDisponibles(vuelo.value._id);
+            router.push({ name: 'historialreservas' });
+        } else {
+            console.error('No se recibió el código de reserva:', response);
+            alert('Error: No se recibió el código de reserva.');
+        }
+    } catch (error) {
+        console.error('Error al confirmar la reserva:', error);
+        alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
+    }
+};
+
+
+
+
+  const sendTicketEmail = () => {
+    if (!usuario.value.email || !usuario.value.nombre || !codigoReserva.value) {
+        console.error('Datos del usuario o código de reserva no disponibles para enviar el correo.');
+        console.error('Email:', usuario.value.email, 'Nombre:', usuario.value.nombre, 'Código:', codigoReserva.value);
+        return;
+    }
+
+    const templateParams = {
+        to_name: usuario.value.nombre,
+        from_name: "Unis Airlines",
+        to_email: usuario.value.email,
+        flight_origin: vuelo.value.ciudad_origen,
+        flight_destination: vuelo.value.ciudad_destino,
+        flight_date: fechayhoraFormateada(vuelo.value.fecha_salida, 'read'),
+        seat_type: tipoAsiento.value,
+        quantity: cantidadSeleccionada.value,
+        total_price: vuelo.value.precio * cantidadSeleccionada.value,
+        reservation_code: codigoReserva.value
+    };
+
+    emailjs.send('service_pzs5mlz', 'template_9m8cigb', templateParams, '4KZRrnu_XlHEApeh4')
+        .then((result) => {
+            console.log('Confirmation email sent!', result.text);
+        }, (error) => {
+            console.error('Failed to send confirmation email:', error);
+        });
+};
+
+
+
+
+
+
+
+
+
   
-      const cantidad = parseInt(cantidadSeleccionada.value);
-      if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
-          alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
-          return;
-      }
-  
-      try {
-          const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
-              usuarioId,
-              vueloId: vuelo.value._id,
-              tipoAsiento: tipoAsiento.value,
-              cantidad 
-          });
-          alert('Reserva confirmada con éxito.');
-          await cargarAsientosDisponibles(vuelo.value._id);
-          router.push({ name: 'HistorialReservas' });
-      } catch (error) {
-          console.error('Error al confirmar la reserva:', error);
-          alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
-      }
-  };
-  
+
+
   
   
   const transformComentarios = (flatComments) => {
@@ -245,7 +320,7 @@
   const enviarComentario = async () => {
       const usuarioId = localStorage.getItem('user_id');
       if (!nuevoComentario.value.trim() || !vuelo.value || !usuarioId) {
-          alert('Todos los campos son necesarios.');
+          alert('Inicia sesión para dejar tu comentario.');
           return;
       }
       try {
@@ -339,192 +414,192 @@
   
   <style scoped>
   .container {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #d2b48c; /* Soft beige background */
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .card {
-    background-color: white;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
+      background-color: #e3d2c3; /* Lighter beige variant */
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
   }
   
   .card-body {
-    padding: 2rem;
+      padding: 2rem;
   }
   
   .card-text {
-    margin-bottom: 1rem;
-    color: #495057;
+      margin-bottom: 1rem;
+      color: #3a312c; /* Darker contrast color for text */
   }
   
+  
   .btn-primary {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 0.375rem;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+      background-color: #a6785c; /* Warm earthy tone */
+      border-color: #8c6b4f;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
   }
   
   .btn-primary:hover {
-    background-color: #004494;
-    border-color: #003d7a;
+      background-color: #8c6b4f; /* Darker shade for hover */
+      border-color: #705543;
   }
   
   .form-select {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #3a312c;
+      background-color: #dcd3c9; /* Neutral off-white background */
+      background-clip: padding-box;
+      border: 1px solid #bbaa9b;
+      border-radius: 0.375rem;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
   
   .form-select:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      border-color: #a6785c;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(166, 120, 92, 0.25);
   }
   
   input[type="number"] {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #3a312c;
+      background-color: #f0ede6;
+      background-clip: padding-box;
+      border: 1px solid #ced4da;
+      border-radius: 0.375rem;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   }
   
   input[type="number"]:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      border-color: #a6785c;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(166, 120, 92, 0.25);
   }
   
   .mb-3 {
-    margin-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
   }
   
-  
-  
   .comentarios-container {
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background-color: #d2b48c; /* Consistent beige for containers */
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
   .comentarios-lista {
-    list-style-type: none;
-    padding-left: 0;
-    margin-top: 10px;
+      list-style-type: none;
+      padding-left: 0;
+      margin-top: 10px;
   }
   
   .comentario {
-    background: #f0f0f0;
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    position: relative;
+      background: #e3d2c3; /* Lighter beige for comments */
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      position: relative;
   }
   
-  
   .comentario-contenido, .respuesta-contenido {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 5px;
-    background-color: white;
+      border: 1px solid #bbaa9b;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 5px;
+      background-color: white;
   }
   
   .respuestas {
-    list-style-type: none;
-    padding-left: 20px; 
+      list-style-type: none;
+      padding-left: 20px;
   }
   
   .respuesta {
-    background: #fff;
-    padding: 8px;
-    border-radius: 4px;
-    margin-top: 5px;
-    border-left: 2px solid #007bff;
-    margin-left: 20px;
+      background: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 5px;
+      border-left: 2px solid #a6785c; /* Warm earthy tone for accents */
+      margin-left: 20px;
   }
   
   .responder-formulario, .nuevo-comentario-formulario {
-    margin-top: 10px;
+      margin-top: 10px;
   }
   
   .form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 5px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 5px;
   }
   
   .btn-enviar-respuesta, .btn-enviar-comentario {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #5cb85c;
-    color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #5cb85c; /* Keep for visibility, or adjust to fit theme */
+      color: white;
   }
   
   .btn-enviar-respuesta:hover, .btn-enviar-comentario:hover {
-    background-color: #4cae4c;
+      background-color: #4cae4c;
   }
   
   .responder-btn {
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #dcdcdc;
-    border-radius: 3px;
-    cursor: pointer;
+      padding: 5px 10px;
+      background-color: #f0f0f0;
+      border: 1px solid #dcdcdc;
+      border-radius: 3px;
+      cursor: pointer;
   }
   
   .responder-btn:hover {
-    background-color: #e9e9e9;
+      background-color: #e9e9e9;
   }
   
   .comentario-contenido {
-    position: relative;
+      position: relative;
   }
   
   .comentario-contenido::after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: #eef;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    visibility: hidden;
+      content: '';
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: #eef;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      visibility: hidden;
   }
   
   .comentario-contenido:hover::after,
   .comentario-contenido:has(+ .respuestas) {
-    visibility: visible;
+      visibility: visible;
   }
+
+
   
   </style>
