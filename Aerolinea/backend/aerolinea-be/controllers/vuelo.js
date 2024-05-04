@@ -123,6 +123,60 @@ export const getAsientosDisponibles = async (req, res) => {
   }
 };
 
+export const getCiudadesDisponibles = async (req, res) => {
+    try {
+      const vuelos = await Vuelo.find();
+      let ciudadesOrigen = new Set();
+      let ciudadesDestino = new Set();
+      vuelos.forEach(vuelo => {
+        ciudadesOrigen.add(vuelo.ciudad_origen);
+        ciudadesDestino.add(vuelo.ciudad_destino);
+      });
+      res.status(200).json({ origen: [...ciudadesOrigen], destino: [...ciudadesDestino] });
+    } catch (error) {
+      res.status(500).json({ message: "Error al obtener las ciudades disponibles", error });
+    }
+  };
+  
+  
+  export const buscarVuelosConEscala = async (req, res) => {
+    const { origen, destino } = req.query;
+    console.log("Origen:", origen, "Destino:", destino);  // Debug: imprimir parámetros
+
+    try {
+        const vuelosDirectos = await Vuelo.find({ ciudad_origen: origen, ciudad_destino: destino });
+        console.log("Vuelos Directos:", vuelosDirectos.length);  // Debug: cantidad de vuelos directos
+
+        const vuelosDesdeOrigen = await Vuelo.find({ ciudad_origen: origen });
+        const vuelosHaciaDestino = await Vuelo.find({ ciudad_destino: destino });
+        console.log("Vuelos Desde Origen:", vuelosDesdeOrigen.length, "Vuelos Hacia Destino:", vuelosHaciaDestino.length);  // Debug: cantidades
+
+        let combinaciones = [];
+        
+        vuelosDesdeOrigen.forEach(vuelo1 => {
+            vuelosHaciaDestino.forEach(vuelo2 => {
+                if (vuelo1.ciudad_destino === vuelo2.ciudad_origen) {
+                    let tiempoEscala = new Date(vuelo2.fecha_salida) - new Date(vuelo1.fecha_salida);
+                    tiempoEscala = tiempoEscala / (1000 * 60 * 60);  // Convertir a horas
+
+                    if (tiempoEscala >= 2 && tiempoEscala <= 48) {
+                        combinaciones.push({ vuelo1, vuelo2, tiempoEscala });
+                    }
+                }
+            });
+        });
+
+        console.log("Combinaciones encontradas:", combinaciones.length);  // Debug: cantidad de combinaciones
+        res.status(200).json({ directos: vuelosDirectos, conEscala: combinaciones });
+    } catch (error) {
+        console.error("Error al buscar vuelos", error);
+        res.status(500).json({ message: "Error al buscar vuelos", error });
+    }
+};
+
+
+
+
 
   
 

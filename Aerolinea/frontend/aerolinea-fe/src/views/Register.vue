@@ -43,8 +43,12 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import axios from 'axios';
-  import Recaptcha2 from 'vue3-recaptcha2'; // Importing as default export
-  
+  import Recaptcha2 from 'vue3-recaptcha2';
+  import emailjs from 'emailjs-com';
+
+
+
+
   const countries = ref([
       'Afghanistan',
       'Albania',
@@ -255,6 +259,27 @@
   const onCaptchaVerified = (token) => {
     recaptchaToken.value = token;
   };
+
+
+
+  const sendConfirmationEmail = () => {
+  const templateParams = {
+    to_name: nombre.value,
+    to_email: email.value,
+  };
+
+  emailjs.send('service_db-dw', 'template_nzi1pho', templateParams, 'BLyjSRydByFGcVhN6')
+    .then((result) => {
+        console.log('Email successfully sent!', result.text);
+    }, (error) => {
+        console.error('Failed to send email. Error: ', error.text);
+    });
+};
+
+
+
+
+
   
   const register = async () => {
     const user = {
@@ -270,6 +295,8 @@
   
     try {
       await axios.post(import.meta.env.VITE_BACKEND_URL + '/auth/register', user);
+      sendConfirmationEmail(); // Envía el correo de confirmación
+
       alert('Registro exitoso. Por favor, inicia sesión.');
       router.push('/login');
     } catch (error) {

@@ -2,6 +2,7 @@
 import Boleto from "../models/Boleto.js";
 import Vuelo from "../models/Vuelo.js";
 import Usuario from "../models/Usuario.js";
+import { generarCodigoReserva } from '../utils/codigoreserva.js';
 
 export const createBoleto = async (req, res, next) => {
     try {
@@ -31,10 +32,14 @@ export const createBoleto = async (req, res, next) => {
             return res.status(400).json({ message: "Tipo de asiento no válido." });
         }
 
+
         await vuelo.save(); 
 
         let boletosCreados = [];
         for (let i = 0; i < cantidad; i++) {
+            const codigoReserva = generarCodigoReserva(10);
+            console.log(`Generado código de reserva para boleto ${i + 1}: ${codigoReserva}`);
+
             const nuevoBoleto = new Boleto({
                 usuarioId,
                 vueloId,
@@ -42,11 +47,13 @@ export const createBoleto = async (req, res, next) => {
                 precioFinal: tipoAsiento === 'ejecutivo' ? vuelo.precio * 1.5 : vuelo.precio,
                 ciudad_origen: vuelo.ciudad_origen,
                 ciudad_destino: vuelo.ciudad_destino,
-                fecha_salida: vuelo.fecha_salida
+                fecha_salida: vuelo.fecha_salida,
+                codigoReserva 
             });
 
             const boletoGuardado = await nuevoBoleto.save();
-            boletosCreados.push(boletoGuardado);
+            console.log('Boleto creado con código:', boletoGuardado.codigoReserva);
+            res.status(201).json(boletoGuardado);
         }
 
         console.log(`${cantidad} boleto(s) creado(s) exitosamente.`);
@@ -64,7 +71,7 @@ export const createBoleto = async (req, res, next) => {
 export const getBoletosPorUsuario = async (req, res, next) => {
     try {
         const usuarioId = req.params.usuarioId;
-        const boletos = await Boleto.find({ usuarioId }).populate('vueloId'); 
+        const boletos = await Boleto.find({ usuarioId }).populate('vueloId').populate('usuarioId', 'email');
         res.status(200).json(boletos);
     } catch (err) {
         next(err);
@@ -75,13 +82,14 @@ export const getBoletosPorUsuario = async (req, res, next) => {
 
 export const getAllBoletos = async (req, res, next) => {
     try {
-        const boletos = await Boleto.find().populate('vueloId').populate('usuarioId');
+        const boletos = await Boleto.find().populate('vueloId').populate('usuarioId', 'email');
         res.status(200).json(boletos);
     } catch (err) {
         console.error("Error obteniendo todos los boletos:", err);
         next(err);
     }
 };
+
 
 
 
@@ -103,15 +111,13 @@ export const cancelarBoleto = async (req, res) => {
             return res.status(404).send('Vuelo no encontrado');
         }
 
-        // Increment available seats according to the seat type of the ticket
         if (boleto.tipoAsiento === 'turista') {
             vuelo.asientosTuristaDisponibles += 1;
         } else if (boleto.tipoAsiento === 'ejecutivo') {
             vuelo.asientosEjecutivosDisponibles += 1;
         }
 
-        // Save the vuelo without modifying fields not involved in the operation
-        await vuelo.save({ validateBeforeSave: false }); // Option to skip validation if not updating duracion
+        await vuelo.save({ validateBeforeSave: false });
 
         res.send('Boleto cancelado y vuelo actualizado');
     } catch (error) {
@@ -137,6 +143,67 @@ export const updateBoleto = async (req, res) => {
         res.status(500).send('Error updating boleto');
     }
 };
+
+
+export const createBoletoCombinacion = async (req, res, next) => {
+    console.log("Received data for combination booking:", req.body);
+
+    try {
+        const { usuarioId, vuelos } = req.body;
+        if (!vuelos || vuelos.length !== 2) {
+            return res.status(400).json({ message: "Invalid data for flight combination booking." });
+        }
+
+        const results = [];
+        for (let vueloInfo of vuelos) {
+            const { vueloId, tipoAsiento, cantidad } = vueloInfo;
+            const vuelo = await Vuelo.findById(vueloId);
+            if (!vuelo) {
+                throw new Error(`Flight not found: ${vueloId}`);
+            }
+            const codigoReserva = generarCodigoReserva(10);
+            console.log(`Generated reservation code for flight ${vueloId}: ${codigoReserva}`);
+
+            const nuevoBoleto = new Boleto({
+                usuarioId,
+                vueloId,
+                tipoAsiento,
+                cantidad,
+                precioFinal: tipoAsiento === 'ejecutivo' ? vuelo.precio * 1.5 : vuelo.precio,
+                ciudad_origen: vuelo.ciudad_origen,
+                ciudad_destino: vuelo.ciudad_destino,
+                fecha_salida: vuelo.fecha_salida,
+                codigoReserva
+            });
+            const boletoGuardado = await nuevoBoleto.save();
+            results.push(boletoGuardado);
+        }
+
+        res.status(201).json(results);
+    } catch (err) {
+        console.error("Error al crear la reserva de combinación:", err);
+        res.status(500).json({ message: "Error processing combination booking", error: err.message });
+    }
+};
+
+
+
+
+export const buscarBoletoPorCodigo = async (req, res, next) => {
+    try {
+        const codigoReserva = req.params.codigo;
+        const boletos = await Boleto.find({ codigoReserva }).populate('vueloId').populate('usuarioId', 'email');
+        if (boletos.length === 0) {
+            return res.status(404).json({ message: 'No se encontró un boleto con ese código de reserva.' });
+        }
+        res.status(200).json(boletos);
+    } catch (err) {
+        console.error("Error buscando el boleto por código:", err);
+        next(err);
+    }
+};
+
+
 
 
 /*

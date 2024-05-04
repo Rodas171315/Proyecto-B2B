@@ -12,6 +12,9 @@
               <router-link to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</router-link>
             </li>
             <li class="nav-item">
+              <router-link to="/explorar" class="nav-link">Explorar</router-link>
+            </li>
+            <li class="nav-item">
                 <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
               </li>
             <!-- Solo visible para administradores -->

@@ -1,6 +1,16 @@
 <template>
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Historial de Reservas</h2>
+        <h2 class="text-center mb-4">Administrar Boletos</h2>
+        <div class="mb-4">
+            <input
+                v-model="codigoReserva"
+                type="text"
+                placeholder="Buscar por código de reserva"
+                class="form-control"
+            />
+            <button class="btn btn-primary mt-2" @click="buscarBoleto">Buscar</button>
+            <button class="btn btn-secondary mt-2" @click="cargarBoletos">Mostrar todos</button>
+        </div>
         <div v-if="boletos && boletos.length === 0" class="alert alert-info" role="alert">
             No tienes reservas.
         </div>
@@ -17,25 +27,34 @@
                         </h5>
                         <small>{{ fechayhoraFormateada(boleto.fecha_salida, 'read') }}</small>
                         <p class="mb-1">Tipo de asiento: {{ boleto.tipoAsiento }}</p>
+                        <p class="mb-1">Código de Reserva: {{ boleto.codigoReserva }}</p>
                         <p class="mb-1" v-if="!boleto.estadoReserva">
                             <strong>Estado:</strong> Cancelado
                         </p>
+                        <p class="mb-1">
+                            <strong>Email del Usuario:</strong> {{ boleto.usuarioId.email }}
+                        </p>
                         <small class="text-muted">Precio final: Q{{ boleto.precioFinal }}</small>
                     </div>
-                    <button
-                        v-if="boleto.estadoReserva"
-                        class="btn btn-primary"
-                        @click="openEditModal(boleto)"
-                    >
-                        Editar
-                    </button>
-                    <button
-                        v-if="boleto.estadoReserva"
-                        class="btn btn-warning"
-                        @click="cancelarBoleto(boleto._id)"
-                    >
-                        Cancelar
-                    </button>
+                    <div>
+                        <button
+                            v-if="boleto.estadoReserva"
+                            class="btn btn-primary"
+                            @click="openEditModal(boleto)"
+                        >
+                            Editar
+                        </button>
+                        <button
+                            v-if="boleto.estadoReserva"
+                            class="btn btn-warning"
+                            @click="cancelarBoleto(boleto._id)"
+                        >
+                            Cancelar
+                        </button>
+                        <button class="btn btn-info" @click="openNotifyModal(boleto)">
+                            Notificar Cambios
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,6 +77,28 @@
                 </div>
             </div>
         </div>
+        <!-- Notify Changes Modal -->
+        <div v-if="notifyModalOpen" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Notificar Cambios en el Boleto</h4>
+                    <button class="close-button" @click="closeNotifyModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Enviar notificación a: {{ selectedBoleto.usuarioId.email }}</p>
+                    <textarea
+                        v-model="notificationMessage"
+                        placeholder="Ingrese el comentario aquí..."
+                        class="form-control"
+                    ></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button @click="sendNotification" class="btn btn-success">
+                        Confirmar y enviar correo
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -66,17 +107,19 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { fechayhoraFormateada } from '../functions.js';
+import emailjs from 'emailjs-com';
 
 const router = useRouter();
 const boletos = ref([]);
 const selectedBoleto = ref(null);
+const codigoReserva = ref('');
+const notificationMessage = ref('');
+const notifyModalOpen = ref(false);
 
 onMounted(async () => {
     try {
         const usuarioId = localStorage.getItem('user_id');
-        const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`,
-        );
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos`);
         boletos.value = response.data;
     } catch (error) {
         console.error('Error al cargar el historial de reservas:', error);
@@ -95,6 +138,79 @@ const cancelarBoleto = async (boletoId) => {
     } catch (error) {
         console.error('Error al cancelar la reserva:', error);
         alert('No se pudo cancelar la reserva.');
+    }
+};
+
+const cargarBoletos = async () => {
+    try {
+        if (!codigoReserva.value) {
+            // Solo cargar boletos por usuario si no se está buscando por código de reserva
+            const usuarioId = localStorage.getItem('user_id');
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`,
+            );
+            boletos.value = response.data;
+        }
+    } catch (error) {
+        console.error('Error al cargar el historial de reservas:', error);
+    }
+};
+
+const buscarBoleto = async () => {
+    try {
+        if (!codigoReserva.value) {
+            alert('Por favor, introduce un código de reserva para buscar.');
+            return;
+        }
+        const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/boletos/buscar/${codigoReserva.value}`,
+        );
+        boletos.value = response.data;
+    } catch (error) {
+        console.error('Error al buscar el boleto por código de reserva:', error);
+        alert('No se pudo encontrar el boleto con ese código.');
+    }
+};
+
+onMounted(cargarBoletos);
+
+const openNotifyModal = (boleto) => {
+    selectedBoleto.value = boleto;
+    notifyModalOpen.value = true;
+};
+
+const closeNotifyModal = () => {
+    notifyModalOpen.value = false;
+};
+
+const sendNotification = async () => {
+    const templateParams = {
+        to_name: selectedBoleto.value.usuarioId.nombre,
+        to_email: selectedBoleto.value.usuarioId.email,
+        flight_origin: selectedBoleto.value.vueloId.ciudad_origen,
+        flight_destination: selectedBoleto.value.vueloId.ciudad_destino,
+        flight_departure: fechayhoraFormateada(selectedBoleto.value.fecha_salida, 'read'),
+        flight_arrival: fechayhoraFormateada(selectedBoleto.value.fecha_llegada, 'read'), // Asumiendo que tienes una fecha de llegada
+        seat_type: selectedBoleto.value.tipoAsiento,
+        price_final: selectedBoleto.value.precioFinal,
+        reservation_code: selectedBoleto.value.codigoReserva,
+        comment: notificationMessage.value,
+    };
+
+    try {
+        const result = await emailjs.send(
+            'service_70213zp',
+            'template_t39e2rp',
+            templateParams,
+            'o0L4US0fOKNNKshuq',
+        );
+
+        console.log('Confirmation email sent!', result.text);
+        alert('Correo de notificación enviado con éxito.');
+        closeNotifyModal();
+    } catch (error) {
+        console.error('Failed to send confirmation email:', error);
+        alert('Error al enviar el correo de notificación.');
     }
 };
 
