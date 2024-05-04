@@ -21,7 +21,7 @@ const BookingHistoryPage = () => {
   const fetchReservations = async () => {
     console.log('Fetching reservations for user:', user.id);
     try {
-      const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
+      const response = await fetch(`http://localhost:8080/reservas/usuario/${user.id}`);
       if (response.ok) {
         const data = await response.json();
         console.log('Reservations fetched successfully:', data);
