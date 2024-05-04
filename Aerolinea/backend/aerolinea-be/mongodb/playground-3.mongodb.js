@@ -3,7 +3,6 @@
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
 // See databases
-show dbs;
 db.getMongo().getDBs();
 
 const database = 'NEW_DATABASE_NAME';
