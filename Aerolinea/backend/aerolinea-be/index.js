@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import connectDB from "./services/mongo.connect.js";
+import switchDB from "./services/mongo.switch.js";
 import authRoute from "./routes/auth.js";
 import usuariosRoute from "./routes/usuarios.js";
 import vuelosRoute from "./routes/vuelos.js";
@@ -12,6 +14,7 @@ import respuestasRouter from './routes/comentarios.js';
 import suscriptoresRoute from './routes/suscriptores.js';
 import analiticos from './routes/analiticos.js';  
 import revisiones from './routes/revisiones.js';
+import aerolineasRoute from './routes/aerolineas.js';
 
 
 const app = express();
@@ -38,22 +41,13 @@ app.get("/", (req,res) => {
 });
 
 app.listen(process.env.BACKEND_PORT, () => {
-    connect();
+    connectDB();
     console.log("Connected to backend on "+process.env.BACKEND_URL);
 });
 
-const connect = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URL);
-        console.log("Connected to mongoDB.");
-    } catch (error) {
-        throw error;
-    }
-};
-
 mongoose.connection.on("disconnected", () => {
     console.log("mongoDB disconnected!");
-    connect();
+    connectDB();
 });
 
 //middlewares
@@ -70,6 +64,7 @@ app.use('/respuestas', respuestasRouter);
 app.use('/suscriptores', suscriptoresRoute);
 app.use('/analiticos', analiticos);
 app.use('/revisiones', revisiones);
+app.use('/aerolineas', aerolineasRoute);
 
 
 
