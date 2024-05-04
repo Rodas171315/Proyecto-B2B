@@ -1,6 +1,11 @@
 <template>
   <div class="container mt-5">
-    <h2 class="text-center mb-4">Historial de Reservas</h2>
+    <h2 class="text-center mb-4">Administrar Boletos</h2>
+    <div class="mb-4">
+      <input v-model="codigoReserva" type="text" placeholder="Buscar por código de reserva" class="form-control">
+      <button class="btn btn-primary mt-2" @click="buscarBoleto">Buscar</button>
+      <button class="btn btn-secondary mt-2" @click="cargarBoletos">Mostrar todos</button>
+    </div>
     <div v-if="boletos && boletos.length === 0" class="alert alert-info" role="alert">
       No tienes reservas.
     </div>
@@ -11,7 +16,9 @@
             <h5 class="mb-1">{{ boleto.vueloId.ciudad_origen }} - {{ boleto.vueloId.ciudad_destino }}</h5>
             <small>{{ fechayhoraFormateada(boleto.fecha_salida, 'read') }}</small>
             <p class="mb-1">Tipo de asiento: {{ boleto.tipoAsiento }}</p>
+            <p class="mb-1">Código de Reserva: {{ boleto.codigoReserva }}</p> 
             <p class="mb-1" v-if="!boleto.estadoReserva"><strong>Estado:</strong> Cancelado</p>
+            <p class="mb-1"><strong>Email del Usuario:</strong> {{ boleto.usuarioId.email }}</p> 
             <small class="text-muted">Precio final: Q{{ boleto.precioFinal }}</small>
           </div>
           <button v-if="boleto.estadoReserva" class="btn btn-primary" @click="openEditModal(boleto)">Editar</button>
@@ -50,11 +57,13 @@ import { fechayhoraFormateada } from '../functions.js';
 const router = useRouter();
 const boletos = ref([]);
 const selectedBoleto = ref(null);
+const codigoReserva = ref('');
+
 
 onMounted(async () => {
   try {
     const usuarioId = localStorage.getItem('user_id');
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos`);
     boletos.value = response.data;
   } catch (error) {
     console.error('Error al cargar el historial de reservas:', error);
@@ -73,6 +82,39 @@ const cancelarBoleto = async (boletoId) => {
     alert('No se pudo cancelar la reserva.');
   }
 };
+
+
+
+
+const cargarBoletos = async () => {
+  try {
+    if (!codigoReserva.value) { // Solo cargar boletos por usuario si no se está buscando por código de reserva
+      const usuarioId = localStorage.getItem('user_id');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
+      boletos.value = response.data;
+    }
+  } catch (error) {
+    console.error('Error al cargar el historial de reservas:', error);
+  }
+};
+
+const buscarBoleto = async () => {
+  try {
+    if (!codigoReserva.value) {
+      alert('Por favor, introduce un código de reserva para buscar.');
+      return;
+    }
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/buscar/${codigoReserva.value}`);
+    boletos.value = response.data;
+  } catch (error) {
+    console.error('Error al buscar el boleto por código de reserva:', error);
+    alert('No se pudo encontrar el boleto con ese código.');
+  }
+};
+
+onMounted(cargarBoletos);
+
+
 
 const openEditModal = (boleto) => {
   selectedBoleto.value = {...boleto};

@@ -71,7 +71,7 @@ export const createBoleto = async (req, res, next) => {
 export const getBoletosPorUsuario = async (req, res, next) => {
     try {
         const usuarioId = req.params.usuarioId;
-        const boletos = await Boleto.find().populate('vueloId').populate('usuarioId', 'email');
+        const boletos = await Boleto.find({ usuarioId }).populate('vueloId').populate('usuarioId', 'email');
         res.status(200).json(boletos);
     } catch (err) {
         next(err);

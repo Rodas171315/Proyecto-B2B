@@ -40,6 +40,8 @@ const codigoReserva = ref(''); // Estado para almacenar el código de reserva
 // Función para cargar todos los boletos de un usuario
 const cargarBoletos = async () => {
   const usuarioId = localStorage.getItem('user_id');
+  console.log('Usuario actual:', usuarioId); // Agregar log para mostrar el user_id actual
+
   const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
   boletos.value = response.data;
 };
