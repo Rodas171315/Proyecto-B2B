@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
       <h2 class="text-center mb-4">Confirmar Reserva de Vuelos con Escala</h2>
-      <div v-if="combinacion">
+      <div v-if="combinacion && usuario">
         <!-- Detalles del primer vuelo -->
         <div class="card mb-3">
           <div class="card-header">
@@ -51,8 +51,10 @@
   import axios from 'axios';
   import { useRouter } from 'vue-router';
   import { fechayhoraFormateada } from '../functions.js';
-  
+  import emailjs from 'emailjs-com';
+
   const router = useRouter();
+  const usuario = ref(null);
   const combinacion = ref(null);
   const tipoAsiento1 = ref('turista');
   const tipoAsiento2 = ref('turista');
@@ -62,16 +64,34 @@
   const cantidad2 = ref(1);
   
   onMounted(async () => {
-    const combinacionSeleccionada = localStorage.getItem('combinacionSeleccionada');
-    if (combinacionSeleccionada) {
-      combinacion.value = JSON.parse(combinacionSeleccionada);
-      await cargarAsientosDisponibles(combinacion.value.vuelo1._id, asientosDisponibles1);
-      await cargarAsientosDisponibles(combinacion.value.vuelo2._id, asientosDisponibles2);
-    } else {
-      console.error('No se han proporcionado detalles de la combinación.');
-      router.push({ name: 'VuelosDisponibles' });
-    }
-  });
+  const usuarioId = localStorage.getItem('user_id');
+  const combinacionSeleccionada = localStorage.getItem('combinacionSeleccionada');
+
+  if (!usuarioId) {
+    alert('Por favor, inicia sesión.');
+    router.push({ name: 'login' });
+    return;
+  }
+
+  if (combinacionSeleccionada) {
+    combinacion.value = JSON.parse(combinacionSeleccionada);
+    await cargarAsientosDisponibles(combinacion.value.vuelo1._id, asientosDisponibles1);
+    await cargarAsientosDisponibles(combinacion.value.vuelo2._id, asientosDisponibles2);
+  } else {
+    console.error('No se han proporcionado detalles de la combinación.');
+    router.push({ name: 'VuelosDisponibles' });
+  }
+
+  try {
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/usuarios/${usuarioId}`);
+    usuario.value = data;
+  } catch (error) {
+    console.error('Error al cargar datos del usuario:', error);
+  }
+});
+
+
+
   
   const cargarAsientosDisponibles = async (vueloId, asientos) => {
     try {
@@ -100,7 +120,7 @@
   }
 
   const payload = {
-    usuarioId,
+    usuarioId: usuario.value._id, // Cambio aquí para usar el campo correcto
     vuelos: [{
       vueloId: combinacion.value.vuelo1._id,
       tipoAsiento: tipoAsiento1.value,
@@ -123,6 +143,7 @@
   try {
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos/reservar-combinacion`, payload);
     alert('Reserva de combinación confirmada con éxito.');
+    sendConfirmationEmail(); // Asegúrate de que esta función se llama correctamente
     router.push({ name: 'historialreservas' });
   } catch (error) {
     console.error('Error al confirmar la reserva de la combinación:', error);
@@ -130,5 +151,34 @@
   }
 };
 
-  </script>
-  
+
+
+
+const sendConfirmationEmail = () => {
+  const templateParams = {
+    to_name: usuario.value.nombre,
+    to_email: usuario.value.email,
+    flight1_origin: combinacion.value.vuelo1.ciudad_origen,
+    flight1_destination: combinacion.value.vuelo1.ciudad_destino,
+    flight1_departure: fechayhoraFormateada(combinacion.value.vuelo1.fecha_salida, 'read'),
+    flight1_arrival: fechayhoraFormateada(calculaHoraLlegada(combinacion.value.vuelo1.fecha_salida, combinacion.value.vuelo1.duracion), 'read'),
+    flight1_seat_type: tipoAsiento1.value,
+    flight1_quantity: cantidad1.value,
+    flight1_price: combinacion.value.vuelo1.precio,
+    flight2_origin: combinacion.value.vuelo2.ciudad_origen,
+    flight2_destination: combinacion.value.vuelo2.ciudad_destino,
+    flight2_departure: fechayhoraFormateada(combinacion.value.vuelo2.fecha_salida, 'read'),
+    flight2_arrival: fechayhoraFormateada(calculaHoraLlegada(combinacion.value.vuelo2.fecha_salida, combinacion.value.vuelo2.duracion), 'read'),
+    flight2_seat_type: tipoAsiento2.value,
+    flight2_quantity: cantidad2.value,
+    flight2_price: combinacion.value.vuelo2.precio,
+  };
+
+  emailjs.send('service_pzs5mlz', 'template_ggdpe47', templateParams, '4KZRrnu_XlHEApeh4')
+    .then((result) => {
+      console.log('Confirmation email sent!', result.text);
+    }, (error) => {
+      console.error('Failed to send confirmation email:', error.text);
+    });
+};
+</script>
