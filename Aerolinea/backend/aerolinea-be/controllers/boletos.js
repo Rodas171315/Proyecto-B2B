@@ -157,12 +157,12 @@ export const createBoletoCombinacion = async (req, res, next) => {
         const results = [];
         for (let vueloInfo of vuelos) {
             const { vueloId, tipoAsiento, cantidad } = vueloInfo;
-
             const vuelo = await Vuelo.findById(vueloId);
             if (!vuelo) {
                 throw new Error(`Flight not found: ${vueloId}`);
             }
-
+            const codigoReserva = generarCodigoReserva(10);
+            console.log(`Generated reservation code for flight ${vueloId}: ${codigoReserva}`);
 
             const nuevoBoleto = new Boleto({
                 usuarioId,
@@ -172,7 +172,8 @@ export const createBoletoCombinacion = async (req, res, next) => {
                 precioFinal: tipoAsiento === 'ejecutivo' ? vuelo.precio * 1.5 : vuelo.precio,
                 ciudad_origen: vuelo.ciudad_origen,
                 ciudad_destino: vuelo.ciudad_destino,
-                fecha_salida: vuelo.fecha_salida
+                fecha_salida: vuelo.fecha_salida,
+                codigoReserva
             });
             const boletoGuardado = await nuevoBoleto.save();
             results.push(boletoGuardado);
@@ -184,6 +185,7 @@ export const createBoletoCombinacion = async (req, res, next) => {
         res.status(500).json({ message: "Error processing combination booking", error: err.message });
     }
 };
+
 
 
 

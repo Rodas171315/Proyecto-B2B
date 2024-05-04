@@ -120,7 +120,7 @@
   }
 
   const payload = {
-    usuarioId: usuario.value._id, // Cambio aquí para usar el campo correcto
+    usuarioId: usuario.value._id,
     vuelos: [{
       vueloId: combinacion.value.vuelo1._id,
       tipoAsiento: tipoAsiento1.value,
@@ -142,9 +142,14 @@
 
   try {
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos/reservar-combinacion`, payload);
-    alert('Reserva de combinación confirmada con éxito.');
-    sendConfirmationEmail(); // Asegúrate de que esta función se llama correctamente
-    router.push({ name: 'historialreservas' });
+    if (response.data && response.data.length === 2) {
+
+      sendConfirmationEmail(response.data[0].codigoReserva, response.data[1].codigoReserva);
+      alert('Reserva de combinación confirmada con éxito.');
+      router.push({ name: 'historialreservas' });
+    } else {
+      alert('No se recibieron los códigos de reserva.');
+    }
   } catch (error) {
     console.error('Error al confirmar la reserva de la combinación:', error);
     alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
@@ -154,7 +159,13 @@
 
 
 
-const sendConfirmationEmail = () => {
+const sendConfirmationEmail = (code1, code2) => {
+  console.log(`Sending email with codes: ${code1}, ${code2}`); 
+
+  if (!combinacion.value || !usuario.value) {
+    console.error('Faltan datos para enviar el correo.');
+    return;
+  }
   const templateParams = {
     to_name: usuario.value.nombre,
     to_email: usuario.value.email,
@@ -165,6 +176,7 @@ const sendConfirmationEmail = () => {
     flight1_seat_type: tipoAsiento1.value,
     flight1_quantity: cantidad1.value,
     flight1_price: combinacion.value.vuelo1.precio,
+    flight1_reservation_code: code1,
     flight2_origin: combinacion.value.vuelo2.ciudad_origen,
     flight2_destination: combinacion.value.vuelo2.ciudad_destino,
     flight2_departure: fechayhoraFormateada(combinacion.value.vuelo2.fecha_salida, 'read'),
@@ -172,6 +184,8 @@ const sendConfirmationEmail = () => {
     flight2_seat_type: tipoAsiento2.value,
     flight2_quantity: cantidad2.value,
     flight2_price: combinacion.value.vuelo2.precio,
+    flight2_reservation_code: code2
+
   };
 
   emailjs.send('service_pzs5mlz', 'template_ggdpe47', templateParams, '4KZRrnu_XlHEApeh4')
@@ -181,4 +195,5 @@ const sendConfirmationEmail = () => {
       console.error('Failed to send confirmation email:', error.text);
     });
 };
+
 </script>
