@@ -21,8 +21,11 @@
             <p class="mb-1"><strong>Email del Usuario:</strong> {{ boleto.usuarioId.email }}</p> 
             <small class="text-muted">Precio final: Q{{ boleto.precioFinal }}</small>
           </div>
-          <button v-if="boleto.estadoReserva" class="btn btn-primary" @click="openEditModal(boleto)">Editar</button>
-          <button v-if="boleto.estadoReserva" class="btn btn-warning" @click="cancelarBoleto(boleto._id)">Cancelar</button>
+          <div>
+            <button v-if="boleto.estadoReserva" class="btn btn-primary" @click="openEditModal(boleto)">Editar</button>
+            <button v-if="boleto.estadoReserva" class="btn btn-warning" @click="cancelarBoleto(boleto._id)">Cancelar</button>
+            <button class="btn btn-info" @click="openNotifyModal(boleto)">Notificar Cambios</button>
+          </div>
         </div>
       </div>
     </div>
@@ -45,6 +48,22 @@
         </div>
       </div>
     </div>
+    <!-- Notify Changes Modal -->
+    <div v-if="notifyModalOpen" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Notificar Cambios en el Boleto</h4>
+          <button class="close-button" @click="closeNotifyModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Enviar notificación a: {{ selectedBoleto.usuarioId.email }}</p>
+          <textarea v-model="notificationMessage" placeholder="Ingrese el comentario aquí..." class="form-control"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button @click="sendNotification" class="btn btn-success">Confirmar y enviar correo</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -53,11 +72,15 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { fechayhoraFormateada } from '../functions.js';
+import emailjs from 'emailjs-com';
+
 
 const router = useRouter();
 const boletos = ref([]);
 const selectedBoleto = ref(null);
 const codigoReserva = ref('');
+const notificationMessage = ref('');
+const notifyModalOpen = ref(false);
 
 
 onMounted(async () => {
@@ -113,6 +136,49 @@ const buscarBoleto = async () => {
 };
 
 onMounted(cargarBoletos);
+
+
+
+
+
+
+
+const openNotifyModal = (boleto) => {
+  selectedBoleto.value = boleto;
+  notifyModalOpen.value = true;
+};
+
+const closeNotifyModal = () => {
+  notifyModalOpen.value = false;
+};
+
+const sendNotification = async () => {
+  const templateParams = {
+  to_name: selectedBoleto.value.usuarioId.nombre,
+  to_email: selectedBoleto.value.usuarioId.email,
+  flight_origin: selectedBoleto.value.vueloId.ciudad_origen,
+  flight_destination: selectedBoleto.value.vueloId.ciudad_destino,
+  flight_departure: fechayhoraFormateada(selectedBoleto.value.fecha_salida, 'read'),
+  flight_arrival: fechayhoraFormateada(selectedBoleto.value.fecha_llegada, 'read'), // Asumiendo que tienes una fecha de llegada
+  seat_type: selectedBoleto.value.tipoAsiento,
+  price_final: selectedBoleto.value.precioFinal,
+  reservation_code: selectedBoleto.value.codigoReserva,
+  comment: notificationMessage.value
+};
+
+
+  try {
+    const result =     await emailjs.send('service_70213zp', 'template_t39e2rp', templateParams, 'o0L4US0fOKNNKshuq');
+
+    console.log('Confirmation email sent!', result.text);
+    alert('Correo de notificación enviado con éxito.');
+    closeNotifyModal();
+  } catch (error) {
+    console.error('Failed to send confirmation email:', error);
+    alert('Error al enviar el correo de notificación.');
+  }
+};
+
 
 
 
