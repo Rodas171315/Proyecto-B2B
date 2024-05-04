@@ -57,7 +57,7 @@ const HotelDetailsPage = () => {
 
   const fetchHotelImages = async (idHotel) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/hoteles/${idHotel}/imagenes`);
+      const response = await fetch(`http://localhost:8080/hoteles/${idHotel}/imagenes`);
       if (!response.ok) throw new Error('Error al cargar imágenes del hotel');
       const images = await response.json();
       setHotelImages(prevImages => ({ ...prevImages, [idHotel]: images }));
@@ -76,7 +76,7 @@ const HotelDetailsPage = () => {
 
   const fetchRoomTypes = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/tipos_habitacion');
+      const response = await fetch('http://localhost:8080/tipos_habitacion');
       if (!response.ok) throw new Error('Error al cargar los tipos de habitación');
       const data = await response.json();
       setRoomTypes(data.reduce((map, roomType) => {
@@ -93,7 +93,7 @@ const HotelDetailsPage = () => {
 
   const fetchPaises = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/hoteles/pais');
+      const response = await fetch('http://localhost:8080/hoteles/pais');
       if (!response.ok) throw new Error('Error al cargar los países');
       const data = await response.json();
       setPaises(data);
@@ -103,13 +103,13 @@ const HotelDetailsPage = () => {
   };
 
   const fetchHotelsAndRooms = async (pais = '') => {
-    let url = pais ? `http://35.211.214.127:8080/hoteles/por-pais/${pais}` : `http://35.211.214.127:8080/hoteles`;
+    let url = pais ? `http://localhost:8080/hoteles/por-pais/${pais}` : `http://localhost:8080/hoteles`;
     try {
       const hotelsResponse = await fetch(url);
       if (!hotelsResponse.ok) throw new Error('Error al cargar hoteles');
       const hotelsData = await hotelsResponse.json();
   
-      const roomTypesResponse = await fetch('http://35.211.214.127:8080/tipos_habitacion');
+      const roomTypesResponse = await fetch('http://localhost:8080/tipos_habitacion');
       const roomTypesData = await roomTypesResponse.json();
       const roomTypesMap = roomTypesData.reduce((acc, roomType) => {
         acc[roomType.id_tipo] = roomType.imagenUrl || defaultRoomImage;
@@ -117,7 +117,7 @@ const HotelDetailsPage = () => {
       }, {});
   
       const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
-        const roomsResponse = await fetch(`http://35.211.214.127:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
         const roomsData = await roomsResponse.json();
         const roomsWithImages = roomsData.map(room => ({
           ...room,

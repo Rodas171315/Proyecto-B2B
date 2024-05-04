@@ -12,19 +12,22 @@ const FormDialog = ({ open, handleClose, handleSubmit, entity, isEditing, tipo }
 
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [url, setUrl] = useState('');
 
   useEffect(() => {
     if (entity && isEditing) {
       setNombre(entity.nombre);
       setDescripcion(entity.descripcion);
+      setUrl(entity.url);
     } else {
       setNombre('');
       setDescripcion('');
+      setUrl('');
     }
   }, [entity, isEditing]);
 
   const onSubmit = () => {
-    handleSubmit({ id: entity?.id, nombre, descripcion, tipo });
+    handleSubmit({ id: entity?.id, nombre, descripcion, url, tipo });
     handleClose();
   };
 
@@ -52,6 +55,16 @@ const FormDialog = ({ open, handleClose, handleSubmit, entity, isEditing, tipo }
           variant="standard"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          id="url"
+          label="Url"
+          type="text"
+          fullWidth
+          variant="standard"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
         />
       </DialogContent>
       <DialogActions>
@@ -116,6 +129,7 @@ const AfiliadosComponent = () => {
         body: JSON.stringify({
           nombre: entity.nombre,
           descripcion: entity.descripcion,
+          url: entity.url,
           
           ...(entity.tipo === 'hotel' && { ubicacion: entity.ubicacion }) 
         }),
@@ -169,6 +183,7 @@ const AfiliadosComponent = () => {
         <CardContent>
           <Typography variant="h6">{hotel.nombre}</Typography>
           <Typography variant="body2" color="text.secondary">{hotel.descripcion}</Typography>
+          <Typography variant="body2" color="text.secondary">{hotel.url}</Typography>
         </CardContent>
         {user && user.rol === 2 && (
         <CardActions>
@@ -192,6 +207,7 @@ const AfiliadosComponent = () => {
         <CardContent>
           <Typography variant="h6">{aerolinea.nombre}</Typography>
           <Typography variant="body2" color="text.secondary">{aerolinea.descripcion}</Typography>
+          <Typography variant="body2" color="text.secondary">{aerolinea.url}</Typography>
         </CardContent>
         {user && user.rol === 2 && (
         <CardActions>

@@ -67,8 +67,12 @@ const ListaPaquetes = () => {
           const reserva = await reservaResponse.json();
           if (reserva.estadoReserva === 'Cancelada') {
             await cancelarVuelo(paquete.idBoleto, paquete);
+            await cancelarPaquete1(paquete.idPaquete);
+
             if (paquete.idBoletoVuelta) {
               await cancelarVuelo(paquete.idBoletoVuelta, paquete);
+              await cancelarPaquete1(paquete.idPaquete);
+
             }
           }
         }
@@ -80,8 +84,10 @@ const ListaPaquetes = () => {
             return;
           }
           const boleto = await boletoResponse.json();
-          if (boleto.estadoReserva === 'Cancelado') {
+          if (boleto.estadoReserva === false) {
             await cancelarReserva(paquete.idReservaHabitacion, paquete);
+            await cancelarPaquete1(paquete.idPaquete);
+
           }
         }
     
@@ -92,8 +98,9 @@ const ListaPaquetes = () => {
             return;
           }
           const boletoVuelta = await boletoVueltaResponse.json();
-          if (boletoVuelta.estadoReserva === 'Cancelado') {
+          if (boletoVuelta.estadoReserva === false) {
             await cancelarReserva(paquete.idReservaHabitacion, paquete);
+            await cancelarPaquete1(paquete.idPaquete);
           }
         }
       } catch (error) {
@@ -144,6 +151,21 @@ const ListaPaquetes = () => {
         console.error(`Error al cancelar la reserva con ID ${idReserva}:`, error);
       }
     };
+
+    const cancelarPaquete1 = async (idPaquete) => {
+      try {
+        let responsePaquete = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
+        });
+        if (!responsePaquete.ok) throw new Error('No se pudo cancelar el paquete.');
+        console.log(`Paquete con ID ${idPaquete} cancelado exitosamente.`);
+      } catch (error) {
+        console.error(`Error al cancelar el paquete con ID ${idPaquete}:`, error);
+      }
+    };
+    
     
     
     const enviarEmailCancelacion = async (paquete, tipo) => {
@@ -163,7 +185,7 @@ const ListaPaquetes = () => {
       };
     
       try {
-        const result = await emailjs.send('service_521uswb', 'template_8uqs7l7', emailParams, 'BaaC73U6PfMwmi5uk');
+        const result = await emailjs.send('service_mxuy6c7', 'template_jytvzaf', emailParams, 'LergnmYa7Rid--u-g');
         console.log('Correo de confirmación de cancelación enviado exitosamente:', result.text);
       } catch (err) {
         console.error('Error al enviar el correo de confirmación de cancelación:', err);
@@ -257,7 +279,7 @@ const ListaPaquetes = () => {
           ticket_price: paquete.precioA,
           total_paid: (parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10)).toString()
       };
-      await emailjs.send('service_521uswb', 'template_8uqs7l7', emailParams, 'BaaC73U6PfMwmi5uk')
+      await emailjs.send('service_mxuy6c7', 'template_jytvzaf', emailParams, 'LergnmYa7Rid--u-g')
           .then((response) => {
               console.log('Email sent successfully', response.status, response.text);
               alert('Paquete cancelado y correo de confirmación enviado.');
@@ -326,11 +348,11 @@ useEffect(() => {
                               </Typography>
                             </CardContent>
                             <CardActions>
-                            {/* {user.rol === 2 &&(
+                            {user.rol === 2 &&(
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
-                            )} */}
+                            )}
                             {paquete.estadoPaquete === 'Disponible' && user.rol === 2 && (
                               <Button size="small" color="secondary" onClick={() => cancelarPaquete(paquete.idPaquete)}>
                                 Cancelar
@@ -352,5 +374,3 @@ useEffect(() => {
 };
 
 export default ListaPaquetes;
-
-

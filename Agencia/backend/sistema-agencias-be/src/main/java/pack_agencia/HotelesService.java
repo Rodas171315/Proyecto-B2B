@@ -55,6 +55,7 @@ public class HotelesService {
             hotelExistente.setNombre(detallesHotel.getNombre());
             hotelExistente.setDescripcion(detallesHotel.getDescripcion());
             hotelExistente.setUbicacion(detallesHotel.getUbicacion());
+            hotelExistente.setUrl(detallesHotel.getUrl());
             return hotelExistente;
         }
         throw new WebApplicationException("Hotel con id " + id + " no encontrado", Response.Status.NOT_FOUND);

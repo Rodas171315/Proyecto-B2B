@@ -19,14 +19,14 @@ function FAQs() {
 
     // Fetch FAQs
     async function fetchFaqs() {
-        const response = await fetch('http://35.211.214.127:8080/faqs');
+        const response = await fetch('http://localhost:8080/faqs');
         const data = await response.json();
         setFaqs(data);
     }
 
     // Fetch Secciones Generales
     async function fetchSeccionesGenerales() {
-        const response = await fetch('http://35.211.214.127:8080/secciones-generales');
+        const response = await fetch('http://localhost:8080/secciones-generales');
         const data = await response.json();
         setSeccionesGenerales(data);
     }
@@ -40,7 +40,7 @@ function FAQs() {
     // Submit FAQ
     async function handleSubmitFaq(e) {
         e.preventDefault();
-        const url = faqEdit.id ? `http://35.211.214.127:8080/faqs/${faqEdit.id}` : 'http://35.211.214.127:8080/faqs';
+        const url = faqEdit.id ? `http://localhost:8080/faqs/${faqEdit.id}` : 'http://localhost:8080/faqs';
         const method = faqEdit.id ? 'PUT' : 'POST';
 
         await fetch(url, {
@@ -58,7 +58,7 @@ function FAQs() {
     // Submit Sección General
     async function handleSubmitSeccion(e) {
         e.preventDefault();
-        const url = seccionEdit.id ? `http://35.211.214.127:8080/secciones-generales/${seccionEdit.id}` : 'http://35.211.214.127:8080/secciones-generales';
+        const url = seccionEdit.id ? `http://localhost:8080/secciones-generales/${seccionEdit.id}` : 'http://localhost:8080/secciones-generales';
         const method = seccionEdit.id ? 'PUT' : 'POST';
 
         await fetch(url, {
@@ -75,13 +75,13 @@ function FAQs() {
 
     // Delete FAQ
     async function deleteFaq(id) {
-        await fetch(`http://35.211.214.127:8080/faqs/${id}`, { method: 'DELETE' });
+        await fetch(`http://localhost:8080/faqs/${id}`, { method: 'DELETE' });
         fetchFaqs(); // Refetch FAQs
     }
 
     // Delete Sección General
     async function deleteSeccion(id) {
-        await fetch(`http://35.211.214.127:8080/secciones-generales/${id}`, { method: 'DELETE' });
+        await fetch(`http://localhost:8080/secciones-generales/${id}`, { method: 'DELETE' });
         fetchSeccionesGenerales(); // Refetch Secciones Generales
     }
 

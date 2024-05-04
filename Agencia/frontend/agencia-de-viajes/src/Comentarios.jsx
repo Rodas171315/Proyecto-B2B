@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Button, Container } from '@mui/material';
 
-function Comentarios({ idHabitacion }) {
+function Comentarios({ idHabitacion, proveedorSeleccionado }) {
     const [comentarios, setComentarios] = useState([]);
     const [mostrarComentarios, setMostrarComentarios] = useState(false);
 
     useEffect(() => {
-        fetchComentarios();
-    }, [idHabitacion]);
-
-    const fetchComentarios = async () => {
-        try {
-            const response = await fetch(`http://localhost:8080/comentarios/por-habitacion/${idHabitacion}`);
-            if (response.ok) {
-                const data = await response.json();
-                setComentarios(data);
-            } else {
-                console.error('Error al recuperar los comentarios:', response);
-            }
-        } catch (error) {
-            console.error('Error al recuperar los comentarios:', error);
+        if (proveedorSeleccionado) {
+            fetchComentarios();
+        } else {
+            console.error('Proveedor no definido');
         }
-    };
+    }, [idHabitacion, proveedorSeleccionado]);
+
+
+const fetchComentarios = async () => {
+    console.log('URL utilizada para comentarios:', proveedorSeleccionado);
+    try {
+        const response = await fetch(`${proveedorSeleccionado}/comentarios/por-habitacion/${idHabitacion}`);
+        if (response.ok) {
+            const data = await response.json();
+            setComentarios(data);
+        } else {
+            console.error('Error al recuperar los comentarios:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error al recuperar los comentarios:', error);
+    }
+};
+
+    
 
     const toggleComentarios = () => {
         setMostrarComentarios(!mostrarComentarios);

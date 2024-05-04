@@ -31,7 +31,7 @@ const AdministrarReservas = () => {
   const fetchReservations = async () => {
     console.log('Fetching reservations for user:', user.id);
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/detalle/todas`);
+      const response = await fetch(`http://localhost:8080/reservas/detalle/todas`);
       if (response.ok) {
         const data = await response.json();
         console.log('Reservations fetched successfully:', data);
@@ -77,7 +77,7 @@ const AdministrarReservas = () => {
 
   const cancelarReserva = async (idReserva) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/${idReserva}/cancelar`, {
+      const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const AdministrarReservas = () => {
   const actualizarReserva = async (reservaActualizada) => {
     console.log('Updating reservation with:', reservaActualizada);
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/${reservaActualizada.idReserva}`, {
+      const response = await fetch(`http://localhost:8080/reservas/${reservaActualizada.idReserva}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservaActualizada),
@@ -196,7 +196,7 @@ const AdministrarReservas = () => {
 
   const fetchUserReservations = async (userId) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/reservas/historial/${userId}`);
+      const response = await fetch(`http://localhost:8080/reservas/historial/${userId}`);
       if (!response.ok) {
         throw new Error('No se pudo cargar el historial de reservas');
       }

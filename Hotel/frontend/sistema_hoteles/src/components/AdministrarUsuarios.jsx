@@ -59,7 +59,7 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
     const fetchUsuarios = async () => {
       setCargando(true);
       try {
-        const response = await fetch('http://35.211.214.127:8080/usuarios/detalles');
+        const response = await fetch('http://localhost:8080/usuarios/detalles');
         if (!response.ok) throw new Error('Algo salió mal al obtener los usuarios');
         const data = await response.json();
         setUsuarios(data);
@@ -98,7 +98,7 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
       console.log("Enviando datos al backend:", formData);
     
       try {
-        const response = await fetch('http://35.211.214.127:8080/usuarios/crear', {
+        const response = await fetch('http://localhost:8080/usuarios/crear', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -130,7 +130,7 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
     
     const eliminarUsuario = async (id) => {
       try {
-        const response = await fetch(`http://35.211.214.127:8080/usuarios/${id}`, {
+        const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
           method: 'DELETE',
         });
   
@@ -149,7 +149,7 @@ const countries = [    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
       const formData = { rol: nuevoRol };
       
       try {
-        const response = await fetch(`http://35.211.214.127:8080/usuarios/${id}`, {
+        const response = await fetch(`http://localhost:8080/usuarios/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),

@@ -80,7 +80,7 @@ const applyAdditionalFilters = () => {
 
   const fetchCapacidades = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/habitaciones/capacidades');
+      const response = await fetch('http://localhost:8080/habitaciones/capacidades');
       if (!response.ok) throw new Error('No se pudieron cargar las capacidades de las habitaciones');
       const capacidadesUnicas = await response.json();
       setCapacidades(capacidadesUnicas.sort((a, b) => a - b));
@@ -97,7 +97,7 @@ const applyAdditionalFilters = () => {
 
   const fetchHotelImages = async (idHotel) => {
     try {
-      const response = await fetch(`http://35.211.214.127:8080/hoteles/${idHotel}/imagenes`);
+      const response = await fetch(`http://localhost:8080/hoteles/${idHotel}/imagenes`);
       if (!response.ok) throw new Error('Error al cargar imágenes del hotel');
       const images = await response.json();
       setHotelImages(prevImages => ({ ...prevImages, [idHotel]: images }));
@@ -116,7 +116,7 @@ const applyAdditionalFilters = () => {
 
   const fetchRoomTypes = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/tipos_habitacion');
+      const response = await fetch('http://localhost:8080/tipos_habitacion');
       if (!response.ok) throw new Error('Error al cargar los tipos de habitación');
       const data = await response.json();
       setRoomTypes(data.reduce((map, roomType) => {
@@ -133,7 +133,7 @@ const applyAdditionalFilters = () => {
 
   const fetchPaises = async () => {
     try {
-      const response = await fetch('http://35.211.214.127:8080/hoteles/pais');
+      const response = await fetch('http://localhost:8080/hoteles/pais');
       if (!response.ok) throw new Error('Error al cargar los países');
       const data = await response.json();
       setPaises(data);
@@ -144,11 +144,11 @@ const applyAdditionalFilters = () => {
 
   const fetchInitialHotelsAndRooms = async () => {
     try {
-      const hotelsResponse = await fetch('http://35.211.214.127:8080/hoteles');
+      const hotelsResponse = await fetch('http://localhost:8080/hoteles');
       if (!hotelsResponse.ok) throw new Error('Error al cargar hoteles');
       const hotelsData = await hotelsResponse.json();
   
-      const roomTypesResponse = await fetch('http://35.211.214.127:8080/tipos_habitacion');
+      const roomTypesResponse = await fetch('http://localhost:8080/tipos_habitacion');
       if (!roomTypesResponse.ok) throw new Error('Error al cargar tipos de habitación');
       const roomTypesData = await roomTypesResponse.json();
   
@@ -158,7 +158,7 @@ const applyAdditionalFilters = () => {
       }, {});
   
       const hotelsWithRooms = await Promise.all(hotelsData.map(async (hotel) => {
-        const roomsResponse = await fetch(`http://35.211.214.127:8080/habitaciones?hotelId=${hotel.id_hotel}`); 
+        const roomsResponse = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`); 
         if (!roomsResponse.ok) {
           console.error('Error fetching rooms for hotel', hotel.id_hotel); 
           return { ...hotel, rooms: [] }; // Devuelve el hotel sin modificarlo si hay un error
@@ -188,16 +188,9 @@ const applyAdditionalFilters = () => {
     }
 
     try {
-<<<<<<< HEAD
-        const response = await fetch(`http://localhost:8080/habitaciones/buscar${queryParams}`);
-        if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
-        const filteredRooms = await response.json();
-  
-=======
-      const response = await fetch(`http://35.211.214.127:8080/habitaciones/buscar${queryParams}`);
+      const response = await fetch(`http://localhost:8080/habitaciones/buscar${queryParams}`);
       if (!response.ok) throw new Error('Error al cargar hoteles y habitaciones filtradas');
       const filteredRooms = await response.json();
->>>>>>> server
   
       // trasn las habitaciones filtradas en una estructura de hoteles con habitaciones
       const hotelsMap = {};

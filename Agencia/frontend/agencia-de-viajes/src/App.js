@@ -25,11 +25,13 @@ import UserReservationsList from './UserReservationsList';
 import AllReservationsList from './AllReservationsList';
 import ListaPaquetes from './ListaPaquetes';
 import CrearPaquete from './CrearPaquete';
+import { ProveedoresProvider } from './ProveedoresContext';
 
 function App() {
   return (
     <Router>
       <UserProvider>
+      <ProveedoresProvider>
         <div className="App">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -56,6 +58,7 @@ function App() {
             <Route path="/compra-promocion/:id" element={<PrivateRoute><CompraPromocion /></PrivateRoute>} />
           </Routes>
         </div>
+        </ProveedoresProvider>
       </UserProvider>
     </Router>
   );

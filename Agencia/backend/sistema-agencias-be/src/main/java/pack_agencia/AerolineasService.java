@@ -61,6 +61,7 @@ public class AerolineasService {
         if (aerolineaExistente != null) {
             aerolineaExistente.setNombre(detallesAerolinea.getNombre());
             aerolineaExistente.setDescripcion(detallesAerolinea.getDescripcion());
+            aerolineaExistente.setUrl(detallesAerolinea.getUrl());
             return aerolineaExistente;
         }
         throw new WebApplicationException("Aerolínea con id " + id + " no encontrada", Response.Status.NOT_FOUND);

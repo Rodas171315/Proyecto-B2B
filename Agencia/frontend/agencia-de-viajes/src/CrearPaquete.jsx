@@ -170,6 +170,19 @@ const CrearPaquete = () => {
         console.error('Error al procesar la creación del paquete:', error);
         alert('Hubo un error al procesar tu compra. Por favor, intenta nuevamente.');
     }
+    const templateParams = {
+      to_name: user.name, 
+      to_email: user.email, 
+      
+  };
+
+  
+  emailjs.send('service_97sfyyu', 'template_vt8izap', templateParams, 'JuvkFpFUkVC3f6giZ')
+      .then((response) => {
+          console.log('Correo enviado exitosamente', response.text);
+      }, (error) => {
+          console.log('Error al enviar correo', error.text);
+      });
 };
 
 
