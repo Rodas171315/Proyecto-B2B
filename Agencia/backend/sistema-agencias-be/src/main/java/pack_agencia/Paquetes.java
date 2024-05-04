@@ -35,6 +35,9 @@ public class Paquetes {
     @Column(name = "ID_Vuelo", length = 500)
     private String idVuelo;
 
+    @Column(name = "ID_VueloVuelta", length = 500)
+    private String idVueloVuelta;
+
     @Column(name = "estadoPaquete", nullable = false, length = 20)
     private String estadoPaquete;
 
@@ -46,6 +49,10 @@ public class Paquetes {
 
     @Column(name = "id_Boleto")
     private String idBoleto;
+
+    @Column(name = "id_BoletoVuelta")
+    private String idBoletoVuelta;
+
 
     /**
      * Obtiene el ID del paquete.
@@ -95,6 +102,10 @@ public class Paquetes {
         return idVuelo;
     }
 
+    public String getIdVueloVuelta() {
+        return idVueloVuelta;
+    }
+
     /**
      * Obtiene el estado del paquete.
      * @return El estado del paquete.
@@ -125,6 +136,10 @@ public class Paquetes {
      */
     public String getIdBoleto() {
         return idBoleto;
+    }
+
+    public String getIdBoletoVuelta() {
+        return idBoletoVuelta;
     }
 
     /**
@@ -175,6 +190,10 @@ public class Paquetes {
         this.idVuelo = idVuelo;
     }
 
+    public void setIdVueloVuelta(String idVueloVuelta) {
+        this.idVueloVuelta = idVueloVuelta;
+    }
+
     /**
      * Establece el estado del paquete.
      * @param estadoPaquete El nuevo estado del paquete.
@@ -205,6 +224,10 @@ public class Paquetes {
      */
     public void setIdBoleto(String idBoleto) {
         this.idBoleto = idBoleto;
+    }
+
+    public void setIdBoletoVuelta(String idBoletoVuelta) {
+        this.idBoletoVuelta = idBoletoVuelta;
     }
 }
 

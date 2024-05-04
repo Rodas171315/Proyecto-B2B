@@ -28,6 +28,10 @@ public class Hoteles {
     @Column(name = "Ubicacion", length = 1000)
     private String ubicacion;
 
+    @Column(name = "url")
+    private String url;
+
+
     /**
      * Constructor por defecto.
      */
@@ -99,5 +103,13 @@ public class Hoteles {
      */
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

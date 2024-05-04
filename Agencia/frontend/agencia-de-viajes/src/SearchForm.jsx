@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, InputLabel, Select, MenuItem, TextField, Grid, Container, Typography, Tab, Tabs, Box, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useProveedores } from './ProveedoresContext';
 
 
 function TabPanel(props) {
@@ -42,6 +43,8 @@ const SearchForm = () => {
     const [destinos, setDestinos] = useState([]);
     const [origenSeleccionado, setOrigenSeleccionado] = useState('');
     const [destinoSeleccionado, setDestinoSeleccionado] = useState('');
+    const [proveedorSeleccionado, setProveedorSeleccionado] = useState('');
+    const { proveedoresVuelos, proveedoresHoteles } = useProveedores();
 
 
 
@@ -53,7 +56,6 @@ const SearchForm = () => {
 
     
     useEffect(() => {
-
         const fetchVuelos = async () => {
             try {
                 const response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + '/vuelos');
@@ -68,32 +70,34 @@ const SearchForm = () => {
                 console.error('Error al cargar los vuelos:', error);
             }
         };
-        
+    
         const fetchPaises = async () => {
             try {
-                const response = await fetch('http://localhost:8080/hoteles/pais');
+                const response = await fetch(`${proveedorSeleccionado}/hoteles/pais`);
                 if (!response.ok) throw new Error('Error al cargar los países');
                 const data = await response.json();
                 setPaises(data);
             } catch (error) {
                 console.error('Error al cargar los países:', error);
-                setDialogMessage('Error al cargar los países.');
-                setOpenDialog(true);
+                /* setDialogMessage('Error al cargar los países.');
+                setOpenDialog(true); */
             }
         };
+    
         fetchVuelos();
         fetchPaises();
-    }, []);
+    }, [proveedorSeleccionado]);
+    
 
     const handleBuscarHospedaje = async () => {
         try {
-            
-            const url = new URL('http://localhost:8080/habitaciones/buscar');
+            const baseURL = proveedorSeleccionado; 
+            const url = new URL(`${baseURL}/habitaciones/buscar`);
             
             url.searchParams.append('fechaIngreso', fechaCheckIn);
             url.searchParams.append('fechaSalida', fechaCheckOut);
             url.searchParams.append('numeroPersonas', capacidadPersona);
-            url.searchParams.append('pais', paisSeleccionado); 
+            url.searchParams.append('pais', paisSeleccionado);
     
             const response = await fetch(url);
             if (!response.ok) throw new Error('Error al buscar hospedajes');
@@ -103,7 +107,8 @@ const SearchForm = () => {
                 setDialogMessage('No se encontraron hoteles disponibles para las fechas seleccionadas.');
                 setOpenDialog(true);
             } else {
-                navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles } });
+                console.log("Navigating with provider:", proveedorSeleccionado);
+                navigate('/hospedajes-disponibles', { state: { paisSeleccionado, hoteles, proveedorSeleccionado } });
             }
         } catch (error) {
             console.error('Error al buscar hospedaje:', error);
@@ -116,14 +121,15 @@ const SearchForm = () => {
     
     const handleBuscarVuelos = async () => {
         try {
-            const baseURL = process.env.REACT_APP_AIRLINE_BACKEND_URL + '/vuelos/filtered';
+            console.log("Proveedor seleccionado para buscar vuelos:", proveedorSeleccionado);
+            const baseURL = proveedorSeleccionado; 
             let queryParamsIda = new URLSearchParams({
                 ciudad_origen: origenSeleccionado,
                 ciudad_destino: destinoSeleccionado,
                 fecha_salida: fechaIda,
                 clase: claseVuelo,
             }).toString();
-            const urlIda = `${baseURL}?${queryParamsIda}`;
+            const urlIda = `${baseURL}/vuelos/filtered?${queryParamsIda}`; 
     
             let vuelosIda = [];
             const responseIda = await fetch(urlIda);
@@ -138,7 +144,7 @@ const SearchForm = () => {
                     fecha_salida: fechaVuelta,
                     clase: claseVuelo,
                 }).toString();
-                const urlVuelta = `${baseURL}?${queryParamsVuelta}`;
+                const urlVuelta = `${baseURL}/vuelos/filtered?${queryParamsVuelta}`;
     
                 const responseVuelta = await fetch(urlVuelta);
                 if (!responseVuelta.ok) throw new Error('No se pudieron encontrar vuelos de vuelta.');
@@ -151,7 +157,7 @@ const SearchForm = () => {
                 setDialogMessage('No se encontraron vuelos disponibles con los criterios proporcionados.');
                 setOpenDialog(true);
             } else {
-                navigate('/vuelos-disponibles', { state: { vuelos: vuelosEncontrados } });
+                navigate('/vuelos-disponibles', { state: { vuelos: vuelosEncontrados, proveedorSeleccionado: proveedorSeleccionado } });
             }
         } catch (error) {
             console.error(error);
@@ -159,6 +165,8 @@ const SearchForm = () => {
             setOpenDialog(true);
         }
     };
+    
+    
     
     
     
@@ -212,6 +220,20 @@ const SearchForm = () => {
             </Tabs>
             <TabPanel value={tabValue} index={0}>
                 <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                        <InputLabel>Proveedor de Hoteles</InputLabel>
+                        <Select
+                            value={proveedorSeleccionado}
+                            onChange={e => setProveedorSeleccionado(e.target.value)}
+                            label="Proveedor de Hoteles"
+                        >
+                            {proveedoresHoteles.map((proveedor, index) => (
+                                <MenuItem key={index} value={proveedor.url}>{proveedor.nombre}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
                 <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
                             <InputLabel>País</InputLabel>
@@ -275,6 +297,20 @@ const SearchForm = () => {
 
             <TabPanel value={tabValue} index={1}>
                 <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <FormControl fullWidth>
+                        <InputLabel>Proveedor</InputLabel>
+                        <Select
+                            value={proveedorSeleccionado}
+                            onChange={e => setProveedorSeleccionado(e.target.value)}
+                            label="Proveedor"
+                        >
+                            {proveedoresVuelos.map((proveedor, index) => (
+                                <MenuItem key={index} value={proveedor.url}>{proveedor.nombre}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
                 <Grid item xs={12} sm={6}>
                     <FormControl fullWidth>
                         <InputLabel>Origen</InputLabel>
@@ -371,7 +407,10 @@ const SearchForm = () => {
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
-                <Box sx={{ mt: 3 }}>
+            <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={() => navigate('/crear-paquete')}>
+                Reservar Paquete
+            </Button>
+                {/* <Box sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <TextField 
@@ -466,7 +505,7 @@ const SearchForm = () => {
                     <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
                         Buscar Paquetes
                     </Button>
-                </Box>
+                </Box>*/}
             </TabPanel>
         </Container>
         

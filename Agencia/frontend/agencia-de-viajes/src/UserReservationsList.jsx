@@ -46,7 +46,7 @@ const UserReservationsList = () => {
 
     const fetchReservations = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/reservas/detalle/usuario/${user.id}`);
+        const response = await fetch(`http://localhost:8080/reservas/usuario/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setReservations(data);
@@ -58,18 +58,26 @@ const UserReservationsList = () => {
       }
     };
 
-    const fetchFlightReservations = () => {
-      const storedReservations = localStorage.getItem('reservasVuelosAgencia');
-      if (storedReservations) {
-        const reservations = JSON.parse(storedReservations);
-        
-        const userFlightReservations = reservations.filter(reservation => reservation.usuarioId === user.id);
-        console.log("Reservas de vuelo encontradas:", userFlightReservations);
-        setFlightReservations(userFlightReservations);
-      } else {
-        console.log("No hay reservas de vuelos almacenadas en localStorage.");
+    const fetchFlightReservations = async () => {
+      const userId = "6610fa0f69bd0f1affec1601"; 
+      try {
+          const response = await fetch(`http://35.211.149.93:8800/boletos/usuario/${userId}`, {
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          });
+          if (!response.ok) {
+              throw new Error('Failed to fetch flight reservations');
+          }
+          const reservationsData = await response.json();
+          setFlightReservations(reservationsData);
+          console.log("Reservas de vuelo encontradas para el usuario:", reservationsData);
+      } catch (error) {
+          console.error("Error fetching flight reservations for user:", error);
       }
-    };
+  };
+  
+  
     
     const fetchPackages = async () => {
       try {
@@ -80,15 +88,17 @@ const UserReservationsList = () => {
           paquetesData = paquetesData.filter(paquete => paquete.idUsuario === user.id);
 
           const detailedPackages = await Promise.all(paquetesData.map(async (paquete) => {
-              const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
+              const [hotelRes, habitacionRes, vueloRes, vueloVueltaRes] = await Promise.all([
                   fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
                   fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-                  fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + `/vuelos/${paquete.idVuelo}`),
+                  fetch(`http://35.211.149.93:8800/vuelos/${paquete.idVuelo}`),
+                  fetch(`http://35.211.149.93:8800/vuelos/${paquete.idVueloVuelta}`),
               ]);
           
               const hotel = await hotelRes.json();
               const habitacion = await habitacionRes.json();
               const vuelo = await vueloRes.json();
+              const vueloVuelta = await vueloVueltaRes.json();
               
               return {
                   ...paquete,
@@ -98,6 +108,9 @@ const UserReservationsList = () => {
                   vuelo: `${vuelo.ciudad_origen} a ${vuelo.ciudad_destino}`,
                   precioA: vuelo.precio,
                   fecha: vuelo.fecha_salida,
+                  vueloVuelta: `${vueloVuelta.ciudad_origen} a ${vueloVuelta.ciudad_destino}`,
+                  precioB: vueloVuelta.precio,
+                  fechaB: vueloVuelta.fecha_salida,
               };
           }));
           
@@ -191,8 +204,9 @@ const UserReservationsList = () => {
           ["Hotel", paquete.hotel],
           ["Habitación", `${paquete.habitacion}, $${paquete.precioH} por noche`],
           ["Vuelo", `${paquete.vuelo}, $${paquete.precioA}`],
-          ["Fecha de Salida del Vuelo", new Date(paquete.fecha).toLocaleDateString()],
-          ["Precio Total del Paquete", `$${parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10)}`],
+          ["Vuelo", `${paquete.vueloVuelta}, $${paquete.precioB}`],
+          ["Fecha de Salida del Vuelo", new Date(paquete.fechaB).toLocaleDateString()],
+          ["Precio Total del Paquete", `$${parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10) + parseInt(paquete.precioB, 10)}`],
           ["Estado del Paquete", paquete.estadoPaquete],
       ];
   
@@ -254,52 +268,51 @@ const UserReservationsList = () => {
               </Container>
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
-              <Container maxWidth="md">
-                <Typography variant="h4" gutterBottom>
-                  Historial de Reservas de Vuelos
-                </Typography>
-                {flightReservations.length > 0 ? (
-                  <Grid container spacing={4}>
-                    {flightReservations.map((reservation, index) => (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <Card>
-                          <CardMedia
-                            component="img"
-                            height="140"
-                            image={`https://source.unsplash.com/random?flight&sig=${index}`}
-                            alt="Imagen de vuelo"
-                          />
-                          <CardContent>
-                            {reservation.detallesVuelo ? (
-                              <>
-                                <Typography variant="h6">
-                                  {reservation.detallesVuelo.origen} - {reservation.detallesVuelo.destino}
-                                </Typography>
-                                <Typography color="textSecondary">
-                                  Fecha y Hora: {new Date(reservation.detallesVuelo.fechaSalida).toLocaleString()}
-                                </Typography>
-                                <Typography color="textSecondary">
-                                  Precio: ${reservation.detallesVuelo.precio}
-                                </Typography>
-                                <Button onClick={() => downloadFlightReservationPdf(reservation)}>
-                                  Descargar Reserva
-                                </Button>
-                              </>
-                            ) : (
-                              <Typography variant="body2" color="error">
-                                Detalle de vuelo no disponible.
-                              </Typography>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                ) : (
-                  <Typography>No se encontraron reservas de vuelos.</Typography>
-                )}
-              </Container>
-              </TabPanel>
+                <Container maxWidth="md">
+                    <Typography variant="h4" gutterBottom>
+                        Historial de Reservas de Vuelos
+                    </Typography>
+                    {flightReservations.length > 0 ? (
+                        <Grid container spacing={4}>
+                            {flightReservations.map((reservation, index) => (
+                                <Grid item xs={12} sm={6} md={4} key={reservation._id}>
+                                    <Card>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            image={`https://source.unsplash.com/random?flight&sig=${index}`}
+                                            alt="Imagen de vuelo"
+                                        />
+                                        <CardContent>
+                                            <Typography variant="h6">
+                                                {reservation.ciudad_origen} - {reservation.ciudad_destino}
+                                            </Typography>
+                                            <Typography color="textSecondary">
+                                                Fecha y Hora: {new Date(reservation.fecha_salida).toLocaleString()}
+                                            </Typography>
+                                            <Typography color="textSecondary">
+                                                Precio: ${reservation.precioFinal}
+                                            </Typography>
+                                            <Typography color="textSecondary">
+                                                Tipo de Asiento: {reservation.tipoAsiento}
+                                            </Typography>
+                                            <Typography color="textSecondary">
+                                                Estado de la Reserva: {reservation.estadoReserva ? "Confirmada" : "Cancelada"}
+                                            </Typography>
+                                            <Button onClick={() => downloadFlightReservationPdf(reservation)}>
+                                                Descargar Reserva
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    ) : (
+                        <Typography>No se encontraron reservas de vuelos.</Typography>
+                    )}
+                </Container>
+            </TabPanel>
+
               <TabPanel value={tabValue} index={2}> 
             <Container maxWidth="md">
                 <Typography variant="h4" gutterBottom>

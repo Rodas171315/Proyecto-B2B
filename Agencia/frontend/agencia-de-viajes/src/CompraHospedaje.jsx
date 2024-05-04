@@ -10,7 +10,7 @@ const CompraHospedaje = () => {
     const navigate = useNavigate();
     const { state } = useLocation();
     const { user } = useUser();
-    const { hotelDetails, roomDetails } = state; 
+    const { hotelDetails, roomDetails, proveedorSeleccionado } = state; 
     const [openDialog, setOpenDialog] = useState(false);
     const [checkIn, setCheckIn] = useState('');
     const [checkOut, setCheckOut] = useState('');
@@ -19,12 +19,12 @@ const CompraHospedaje = () => {
     const [cardName, setCardName] = useState('');
     const [address, setAddress] = useState('');
 
+    console.log("Proveedor seleccionado:", proveedorSeleccionado);
+
     const precioConDescuento = (precio) => precio - precio * 0.20;
     const realizarReserva = async () => {
-        
         const formattedCheckIn = new Date(checkIn).toISOString().split('T')[0];
         const formattedCheckOut = new Date(checkOut).toISOString().split('T')[0];
-        
         const precioPorNoche = Number(roomDetails.precioxnoche);
         const dias = (new Date(formattedCheckOut) - new Date(formattedCheckIn)) / (1000 * 60 * 60 * 24);
         const totalSinComision = precioPorNoche * dias;
@@ -42,10 +42,12 @@ const CompraHospedaje = () => {
             codigoReserva: Math.floor(Math.random() * 1000000).toString(),
             estadoReserva: "confirmada",
         };
-        console.log("Datos de reserva a enviar:", reservaData);
-        try {
 
-            const responseDisponibilidad = await fetch('http://localhost:8080/reservas/verificar-disponibilidad', {
+        try {
+            console.log("Proveedor seleccionado:", proveedorSeleccionado);
+            console.log("URL completa:", `${proveedorSeleccionado}/reservas/verificar-disponibilidad`);
+
+            const responseDisponibilidad = await fetch(`${proveedorSeleccionado}/reservas/verificar-disponibilidad`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -54,21 +56,20 @@ const CompraHospedaje = () => {
                     fechaSalida: reservaData.fechaSalida,
                 }),
             });
-    
-            
+
             if (responseDisponibilidad.ok) {
                 const disponibilidad = await responseDisponibilidad.json();
-    
                 if (!disponibilidad.esDisponible) {
                     alert('La habitación no está disponible para las fechas seleccionadas. Por favor, elige otras fechas.');
                     return;
                 }
             } else {
-                
                 throw new Error('No se pudo verificar la disponibilidad de la habitación');
             }
-
-            const responseReserva = await fetch('http://localhost:8080/reservas', {
+            console.log("Proveedor seleccionado:", proveedorSeleccionado);
+            console.log("URL completa:", `${proveedorSeleccionado}/reservas/verificar-disponibilidad`);
+            
+            const responseReserva = await fetch(`${proveedorSeleccionado}/reservas`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reservaData),
