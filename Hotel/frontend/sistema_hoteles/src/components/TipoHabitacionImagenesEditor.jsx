@@ -19,7 +19,7 @@ const TipoHabitacionImagenesEditor = ({ idTipoHabitacion }) => {
     useEffect(() => {
         const cargarImagen = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/tipos_habitacion/${idTipoHabitacion}`);
+                const response = await fetch(`http://35.211.214.127:8080/tipos_habitacion/${idTipoHabitacion}`);
                 if (!response.ok) throw new Error('Error al cargar la imagen');
                 const data = await response.json();
                 setImagenUrl(data.imagenUrl || 'URL por defecto');
@@ -36,7 +36,7 @@ const TipoHabitacionImagenesEditor = ({ idTipoHabitacion }) => {
         if (!nuevaImagen) return;
     
         try {
-            await fetch(`http://localhost:8080/tipos_habitacion/${idTipoHabitacion}`, {
+            await fetch(`http://35.211.214.127:8080/tipos_habitacion/${idTipoHabitacion}`, {
                 method: 'PUT', // Cambio crítico aquí
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ imagenUrl: nuevaImagen }),
