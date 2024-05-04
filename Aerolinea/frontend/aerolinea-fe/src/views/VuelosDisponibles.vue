@@ -250,6 +250,16 @@ const reservarVuelo = (vueloId) => {
     localStorage.setItem('vueloSeleccionado', JSON.stringify(vueloSeleccionado));
     router.push({ name: 'Checkout' });
 };
+
+
+const reservarCombinacion = (combinacion) => {
+  localStorage.setItem('combinacionSeleccionada', JSON.stringify(combinacion));
+  router.push({ name: 'checkoutescala' });
+};
+
+
+
+
 </script>
 
 
