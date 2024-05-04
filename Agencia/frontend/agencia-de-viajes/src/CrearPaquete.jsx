@@ -3,25 +3,26 @@ import { Button, FormControl, InputLabel, Select, MenuItem, TextField, Container
 import Header from './Header';
 import Footer from './Footer';
 import { useNavigate } from 'react-router-dom';
+import emailjs from 'emailjs-com';
+import { useUser } from './UserContext';
 
 const CrearPaquete = () => {
+  const { user } = useUser();
   const [hoteles, setHoteles] = useState([]);
   const [habitaciones, setHabitaciones] = useState([]);
-  const [vuelos, setVuelos] = useState([]);
   const [vuelosIda, setVuelosIda] = useState([]);
   const [vuelosVuelta, setVuelosVuelta] = useState([]);
   const [destino, setDestino] = useState('');
   const [origen, setOrigen] = useState('');
   const [hotelSeleccionado, setHotelSeleccionado] = useState(''); 
   const [habitacionSeleccionada, setHabitacionSeleccionada] = useState('');
-  const [vueloSeleccionado, setVueloSeleccionado] = useState('');
-  const [nombrePaquete, setNombrePaquete] = useState('');
-  const [descripcionPaquete, setDescripcionPaquete] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
   const [vueloIdaSeleccionado, setVueloIdaSeleccionado] = useState('');
   const [vueloVueltaSeleccionado, setVueloVueltaSeleccionado] = useState('');
   const [fechaIda, setFechaIda] = useState('');
   const [fechaVuelta, setFechaVuelta] = useState('');
+  const [nombrePaquete, setNombrePaquete] = useState('');
+  const [descripcionPaquete, setDescripcionPaquete] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,35 +52,20 @@ const CrearPaquete = () => {
       url.searchParams.append('pais', destino);
       url.searchParams.append('fechaIngreso', fechaIda);
       url.searchParams.append('fechaSalida', fechaVuelta);
-     
   
       fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-          if (data && data.length > 0) {
+          if (data.length > 0) {
             setHabitaciones(data);
           } else {
-            console.log('No se encontraron habitaciones disponibles para los criterios dados.');
-            
+            console.log('No se encontraron habitaciones disponibles.');
           }
         })
-        .catch(error => {
-          console.error('Error al cargar habitaciones disponibles:', error);
-        });
+        .catch(error => console.error('Error al cargar habitaciones:', error));
     }
   }, [destino, fechaIda, fechaVuelta]); 
   
-  
-  
-  
-  
-  
-
   const translateTipoHabitacion = (tipoHabitacion) => {
     const tipoHabitacionMap = {
       1: "Doble",
@@ -90,50 +76,179 @@ const CrearPaquete = () => {
     return tipoHabitacionMap[tipoHabitacion] || "Desconocida";
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    
+
     if (!nombrePaquete) {
-      console.error('El nombre del paquete es requerido');
-      return; 
+        console.error('El nombre del paquete es requerido');
+        return;
     }
-    
+
+    try {
+        const habitacion = habitaciones.find(h => h.id_habitacion === habitacionSeleccionada);
+        if (!habitacion) {
+            console.error('No se encontró la habitación seleccionada');
+            alert('La habitación seleccionada no está disponible. Por favor, selecciona otra.');
+            return;
+        }
+
+        const capacidadPersonas = habitacion.capacidad_personas;
+
+        
+        const idBoletoIda = await realizarCompraBoleto(vueloIdaSeleccionado, 'turista', 1, fechaIda);
+        if (!idBoletoIda) {
+            console.error('No se pudo obtener el ID del boleto de ida.');
+            alert('No se pudo completar la compra del boleto de ida correctamente.');
+            return;
+        }
+
+        
+        let idBoletoVuelta = null;
+        if (vueloVueltaSeleccionado) {
+            idBoletoVuelta = await realizarCompraBoleto(vueloVueltaSeleccionado, 'turista', 1, fechaVuelta);
+            if (!idBoletoVuelta) {
+                console.error('No se pudo obtener el ID del boleto de vuelta.');
+                alert('No se pudo completar la compra del boleto de vuelta correctamente.');
+                return;
+            }
+        }
 
 
-    const paqueteData = {
-      nombrePaquete,
-      descripcion: descripcionPaquete,
-      idHotel: parseInt(hotelSeleccionado, 10), 
-      idHabitacion: parseInt(habitacionSeleccionada, 10), 
-      idVuelo: vueloSeleccionado,
-      estadoPaquete: "Disponible",
-    };
-    
-  
-    console.log('Paquete a crear:', paqueteData);
-  
-    fetch(process.env.REACT_APP_BACKEND_URL + '/paquetes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(paqueteData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Paquete creado:', data);
-      setOpenDialog(true); 
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+        const precioPorNoche = habitacion.precioxnoche;
+        const fechaInicio = new Date(fechaIda);
+        const fechaFin = new Date(fechaVuelta);
+        const diferenciaTiempo = fechaFin.getTime() - fechaInicio.getTime();
+        const noches = diferenciaTiempo / (1000 * 3600 * 24);
+
+        const totalReserva = precioPorNoche * noches;
+
+        const idReservaHabitacion = await realizarReservaHabitacion(
+            habitacionSeleccionada,
+            fechaIda,
+            fechaVuelta,
+            habitacion.capacidad_personas,
+            totalReserva
+        );
+        if (!idReservaHabitacion) {
+            console.error('No se pudo obtener un ID válido para la reserva de la habitación.');
+            alert('No se pudo crear la reserva de la habitación correctamente.');
+            return;
+        }
+
+        
+        const paqueteData = {
+            nombrePaquete,
+            descripcion: descripcionPaquete,
+            idHotel: parseInt(hotelSeleccionado, 10),
+            idHabitacion: parseInt(habitacionSeleccionada, 10),
+            idVuelo: vueloIdaSeleccionado,
+            idVueloVuelta: vueloVueltaSeleccionado,
+            idUsuario: user.id,
+            idReservaHabitacion,
+            idBoleto: idBoletoIda,
+            idBoletoVuelta,
+            estadoPaquete: "Disponible",
+        };
+
+        const response = await fetch('http://localhost:8081/paquetes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paqueteData),
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            console.error('Error al crear el paquete:', errorDetails);
+            throw new Error('No se pudo crear el paquete: ' + errorDetails);
+        }
+
+        const paqueteCreado = await response.json();
+        console.log('Paquete creado con éxito:', paqueteCreado);
+        setOpenDialog(true);
+    } catch (error) {
+        console.error('Error al procesar la creación del paquete:', error);
+        alert('Hubo un error al procesar tu compra. Por favor, intenta nuevamente.');
+    }
+    const templateParams = {
+      to_name: user.name, 
+      to_email: user.email, 
+      
   };
+
   
+  emailjs.send('service_97sfyyu', 'template_vt8izap', templateParams, 'JuvkFpFUkVC3f6giZ')
+      .then((response) => {
+          console.log('Correo enviado exitosamente', response.text);
+      }, (error) => {
+          console.log('Error al enviar correo', error.text);
+      });
+};
+
+
+
+async function realizarCompraBoleto(vueloId, tipoAsiento, cantidad, fecha) {
+  const response = await fetch('http://35.211.149.93:8800/boletos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuarioId: '6610fa0f69bd0f1affec1601', vueloId, tipoAsiento, cantidad }),
+  });
+
+  if (!response.ok) {
+      
+      const responseText = await response.text();
+      try {
+          const errorDetails = JSON.parse(responseText);
+          throw new Error(`No se pudo completar la compra del boleto: ${errorDetails.message}`);
+      } catch {
+          throw new Error('Error en la respuesta del servidor: ' + responseText);
+      }
+  }
+
+  const responseData = await response.json();
+  const ticketId = responseData[0]._id; 
+  console.log("ID del boleto obtenido:", ticketId);
+  return ticketId;
+}
+
+
+async function realizarReservaHabitacion(habitacionId, fechaIngreso, fechaSalida, personasReserva, totalReserva) {
+  const codigoReserva = Math.floor(Math.random() * 1000000).toString();
+
+  const response = await fetch('http://localhost:8080/reservas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      idHotel: parseInt(hotelSeleccionado, 10),
+      idHabitacion: habitacionId,
+      fechaIngreso,
+      fechaSalida,
+      idUsuario: user.id,
+      codigoReserva: codigoReserva,
+      personasReserva: personasReserva,
+      totalReserva
+    }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Reserva creada con éxito:', data);
+    return data.idReserva; 
+  } else {
+    const errorResponse = await response.text();  
+    console.error('Error en la creación de la reserva:', errorResponse);
+    alert('Error en la creación de la reserva: ' + errorResponse);
+    return null;
+  }
+}
+
+
+
+
 
   const handleClose = () => {
     setOpenDialog(false);
-    navigate('/lista-paquetes'); 
+    navigate('/reservations');
   };
 
   return (
@@ -141,7 +256,7 @@ const CrearPaquete = () => {
       <Header />
       <Container component="main" maxWidth="md">
         <Typography component="h1" variant="h5">
-          Crear Nuevo Paquete
+          Reservar un Paquete
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
@@ -286,7 +401,7 @@ const CrearPaquete = () => {
             color="primary"
             sx={{ mt: 3, mb: 2 }}
           >
-            Crear Paquete
+            Reservar Paquete
           </Button>
         </form>
       </Container>
@@ -300,7 +415,7 @@ const CrearPaquete = () => {
         <DialogTitle id="alert-dialog-title">{"Paquete Creado"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Tu paquete ha sido creado con éxito.
+            Tu paquete ha sido reservado con éxito.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -27,7 +27,7 @@ public class PaquetesService {
     @POST
     @Transactional
     public Response createPaquete(Paquetes paquete) {
-        System.out.println("Recibiendo paquete: " + paquete.getNombrePaquete());
+        System.out.println("Recibiendo paquete completo: " + paquete.getNombrePaquete());
         paquetesRepository.persist(paquete);
         return Response.status(Response.Status.CREATED).entity(paquete).build();
     }

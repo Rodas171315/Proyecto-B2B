@@ -20,36 +20,37 @@ const HospedajesDisponibles = () => {
     const tiposHabitacionDisponibles = ["Doble", "Junior Suite", "Suite", "Gran Suite"];
     const ratingsDisponibles = [0, 1, 2, 3, 4, 5];
 
+
+    const { paisSeleccionado, proveedorSeleccionado } = location.state ? location.state : { paisSeleccionado: '', proveedorSeleccionado: '' };
+
+    console.log("Received state in HospedajesDisponibles:", location.state);
+
     useEffect(() => {
-        const { paisSeleccionado } = location.state ? location.state : { paisSeleccionado: '' };
-        if (paisSeleccionado) {
-            fetchHotelsAndRooms(paisSeleccionado);
+        if (paisSeleccionado && proveedorSeleccionado) {
+            fetchHotelsAndRooms(paisSeleccionado, proveedorSeleccionado);
         }
     }, [location.state]);
+    console.log("Received state in HospedajesDisponibles:", location.state);
 
-    const fetchHotelsAndRooms = async (pais) => {
+
+    const fetchHotelsAndRooms = async (pais, baseUrl) => {
         try {
-            const responseHoteles = await fetch(`http://localhost:8080/hoteles/por-pais/${pais}`);
+            console.log("Fetching hotels from URL:", `${baseUrl}/hoteles/por-pais/${pais}`);
+            const responseHoteles = await fetch(`${baseUrl}/hoteles/por-pais/${pais}`);
             if (!responseHoteles.ok) throw new Error('Error al cargar hoteles');
             const hoteles = await responseHoteles.json();
 
             const hotelesConHabitacionesPromesas = hoteles.map(async (hotel) => {
-                const respuestaHabitaciones = await fetch(`http://localhost:8080/habitaciones?hotelId=${hotel.id_hotel}`);
+                const respuestaHabitaciones = await fetch(`${baseUrl}/habitaciones?hotelId=${hotel.id_hotel}`);
                 if (!respuestaHabitaciones.ok) {
                     console.error(`Error al cargar habitaciones para el hotel: ${hotel.nombre}`);
                     return { ...hotel, habitaciones: [] };
                 }
                 const habitaciones = await respuestaHabitaciones.json();
-                console.log(`Habitaciones cargadas para ${hotel.nombre}:`, habitaciones); 
                 return { ...hotel, habitaciones };
             });
 
             const hotelesConHabitaciones = await Promise.all(hotelesConHabitacionesPromesas);
-            hotelesConHabitaciones.forEach(hotel => {
-            hotel.habitaciones.forEach(habitacion => {
-                habitacion.tipoHabitacion = translateTipoHabitacion(habitacion.tipo_habitacion);
-            });
-            });
             setHotelesConHabitaciones(hotelesConHabitaciones);
         } catch (error) {
             console.error('Error al cargar hoteles y habitaciones:', error);
@@ -72,7 +73,9 @@ const HospedajesDisponibles = () => {
 
     const iniciarCompra = (hotel, habitacion) => {
         console.log("Datos de la habitación:", habitacion);
-        navigate('/comprahospedaje', { state: { hotelDetails: hotel, roomDetails: habitacion } });
+        console.log("Enviando proveedor a CompraHospedaje:", proveedorSeleccionado);
+        navigate('/comprahospedaje', { state: { hotelDetails: hotel, roomDetails: habitacion, proveedorSeleccionado: proveedorSeleccionado } });
+
     };
 
     const toggleComentarios = (idHabitacion) => {
@@ -205,8 +208,10 @@ const HospedajesDisponibles = () => {
                                         </Button>
                                     </CardActions>
                                     {comentariosVisibles[habitacion.id_habitacion] && (
-                                        <Comentarios idHabitacion={habitacion.id_habitacion} />
+                                        console.log("Pasando proveedor a Comentarios:", proveedorSeleccionado),
+                                        <Comentarios idHabitacion={habitacion.id_habitacion} proveedorSeleccionado={proveedorSeleccionado} />
                                     )}
+
 
 
                                 </Card>

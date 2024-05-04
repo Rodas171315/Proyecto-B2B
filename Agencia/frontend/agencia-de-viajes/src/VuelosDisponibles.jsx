@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const VuelosDisponibles = () => {
     const location = useLocation();
-    const { vuelos } = location.state || { vuelos: [] };
+    const { vuelos, proveedorSeleccionado } = location.state || { vuelos: [], proveedorSeleccionado: '' };
     const navigate = useNavigate();
 
     const [precioMin, setPrecioMin] = useState('');
@@ -21,7 +21,8 @@ const VuelosDisponibles = () => {
     };
 
     const comprarVuelo = (vuelo) => {
-        navigate('/compra-vuelo', { state: { vuelo } });
+        console.log("Enviando proveedor a CompraVuelo:", proveedorSeleccionado);
+        navigate('/compra-vuelo', { state: { vuelo, proveedorSeleccionado: proveedorSeleccionado } });
     };
 
     return (

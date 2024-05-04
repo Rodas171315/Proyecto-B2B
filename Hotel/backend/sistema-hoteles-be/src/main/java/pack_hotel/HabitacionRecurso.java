@@ -25,6 +25,7 @@ import java.time.format.DateTimeParseException;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 
 
@@ -195,34 +196,33 @@ public class HabitacionRecurso {
     @GET
     @Path("/buscar")
     public Response buscarPorPaisYDisponibilidad(
+            @Context UriInfo uriInfo,  // Inyecta UriInfo para acceder a detalles de la URI de la solicitud
             @QueryParam("pais") String pais,
             @QueryParam("fechaIngreso") String fechaIngresoStr,
             @QueryParam("fechaSalida") String fechaSalidaStr,
             @QueryParam("numeroPersonas") int numeroPersonas,
-            @QueryParam("usuarioId") Long usuarioId) {  //  usuarioId como parámetro 
+            @QueryParam("usuarioId") Long usuarioId) {
+
+        int puerto = uriInfo.getBaseUri().getPort();  // Obtiene el puerto de la URI base
 
         try {
             RegistroBusqueda registro = new RegistroBusqueda();
             registro.setParametrosBusqueda("pais=" + pais + "; fechaIngreso=" + fechaIngresoStr + "; fechaSalida=" + fechaSalidaStr + "; numeroPersonas=" + numeroPersonas);
-            registro.setUsuarioId(usuarioId);  // Usar directamente el usuarioId recibido
+            registro.setUsuarioId(usuarioId);
             registro.setFechaHora(LocalDateTime.now());
-            registro.setTipoAcceso("web");  // Asumiendo acceso web, de momento para problar
-            registro.setEsAutenticado(usuarioId != null);  // Es autenticado si usuarioId no es null
+            registro.setTipoAcceso(puerto == 3000 ? "web" : "REST");  // Establece el tipo de acceso basado en el puerto
+            registro.setEsAutenticado(usuarioId != null);
             
             registroBusquedaRepositorio.persist(registro);
-            System.out.println("Registro de búsqueda guardado con usuarioId: " + usuarioId);
+            System.out.println("Registro de búsqueda guardado con usuarioId: " + usuarioId + " desde el puerto: " + puerto);
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al registrar búsqueda").build();
         }
-        
-
-
 
         LocalDate fechaIngreso = null;
         LocalDate fechaSalida = null;
         
-        // Manejo de las fechas
         try {
             if (fechaIngresoStr != null && !fechaIngresoStr.isEmpty()) {
                 fechaIngreso = LocalDate.parse(fechaIngresoStr, DateTimeFormatter.ISO_LOCAL_DATE);
@@ -241,7 +241,6 @@ public class HabitacionRecurso {
         
         return Response.ok(habitacionesDisponibles).build();
     }
-
 
     /**
      * Cambia el estado de una habitación y actualiza las reservas relacionadas si es necesario.

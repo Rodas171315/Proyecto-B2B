@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Typography, Button, Container, TextField, Card, Grid,
-  CardContent, CardMedia, Dialog, DialogActions,
-  DialogContent, DialogContentText, DialogTitle, FormControl,
-  InputLabel, Select, MenuItem
-} from '@mui/material';
+import { Typography, Button, Container, TextField, Card, Grid, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, Select, MenuItem} from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
 import { useUser } from './UserContext';
 import emailjs from 'emailjs-com';
 
 const CompraVuelo = () => {
-  const { vuelo } = useLocation().state;
+  const { vuelo, proveedorSeleccionado } = useLocation().state;
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -27,12 +22,12 @@ const CompraVuelo = () => {
 
   const completarCompra = async () => {
     try {
-      
       const precioConDescuento = tipoAsiento === 'ejecutivo'
         ? vuelo.precio * 1.5 * cantidad * 0.8 
-        : vuelo.precio * cantidad * 0.8; 
+        : vuelo.precio * cantidad * 0.8;
   
-      const response = await fetch(process.env.REACT_APP_AIRLINE_BACKEND_URL + '/boletos', {
+        console.log(proveedorSeleccionado);
+      const response = await fetch(`${proveedorSeleccionado}/boletos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,7 +35,7 @@ const CompraVuelo = () => {
           vueloId: vuelo._id,
           tipoAsiento,
           cantidad,
-          precioFinal: precioConDescuento, 
+          precioFinal: precioConDescuento,
         }),
       });
   

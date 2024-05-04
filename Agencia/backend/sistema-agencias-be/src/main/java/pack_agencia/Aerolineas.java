@@ -25,6 +25,9 @@ public class Aerolineas {
     @Column(name = "Descripcion", length = 1000)
     private String descripcion;
 
+    @Column(name = "url")
+    private String url;
+
     /**
      * Constructor por defecto para la clase Aerolineas.
      */
@@ -55,6 +58,10 @@ public class Aerolineas {
         return descripcion;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     /**
      * Establece el identificador único de la aerolínea.
      * @param id El nuevo identificador de la aerolínea.
@@ -77,6 +84,10 @@ public class Aerolineas {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
 
