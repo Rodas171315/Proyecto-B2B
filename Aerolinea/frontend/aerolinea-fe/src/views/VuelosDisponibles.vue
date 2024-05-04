@@ -56,12 +56,9 @@
 
 
 
-
-      <!-- Añadir una sección para vuelos con escala -->
-<!-- Añadir una sección para vuelos con escala -->
 <div v-for="(combinacion, idx) in vuelosConEscala" :key="'combinacion-' + idx" class="card m-2" style="width: 18rem">
   <div class="card-body">
-    <h5 class="card-title">Combinación: {{ combinacion.vuelo1.ciudad_origen }} - {{ combinacion.vuelo2.ciudad_destino }}</h5>
+    <h5 class="card-title">Viaje Sugerido: {{ combinacion.vuelo1.ciudad_origen }} - {{ combinacion.vuelo2.ciudad_destino }}</h5>
     <h6 class="card-subtitle mb-2 text-muted">Escala en {{ combinacion.vuelo1.ciudad_destino }}</h6>
     <p class="card-text">Salida del vuelo 1: {{ fechayhoraFormateada(combinacion.vuelo1.fecha_salida, 'read') }}</p>
     <p class="card-text">Llegada estimada del vuelo 1: {{ fechayhoraFormateada(calculaHoraLlegada(combinacion.vuelo1.fecha_salida, combinacion.vuelo1.duracion), 'read') }}</p>
@@ -97,11 +94,10 @@ const ciudadesOrigen = ref([]);
 const ciudadesDestino = ref([]);
 const userId = localStorage.getItem('user_id');
 
-// Consolidated data fetching method
 async function fetchData() {
   await fetchCiudadesDisponibles();
   await cargarVuelos();
-  await cargarVuelosConFiltro(); // Renaming to reflect functionality
+  await cargarVuelosConFiltro(); 
 
 }
 
@@ -110,8 +106,8 @@ const fetchCiudadesDisponibles = async () => {
     const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos/ciudades-disponibles');
     ciudadesOrigen.value = response.data.origen;
     ciudadesDestino.value = response.data.destino;
-    console.log('Ciudades Origen:', ciudadesOrigen.value); // Debugging
-    console.log('Ciudades Destino:', ciudadesDestino.value); // Debugging
+    console.log('Ciudades Origen:', ciudadesOrigen.value);
+    console.log('Ciudades Destino:', ciudadesDestino.value); 
   } catch (error) {
     console.error('Error al obtener ciudades disponibles:', error);
   }
@@ -122,7 +118,7 @@ async function cargarVuelos() {
     const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/vuelos');
     vuelos.value = response.data;
     load.value = true;
-    console.log('Vuelos cargados:', vuelos.value); // Debugging
+    console.log('Vuelos cargados:', vuelos.value); 
   } catch (error) {
     console.error('Error al obtener los vuelos:', error);
     load.value = true;
@@ -132,7 +128,7 @@ async function cargarVuelos() {
 
 
 async function cargarVuelosConFiltro() {
-    load.value = false; // Establecer a false mientras carga
+    load.value = false;
     try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/vuelos/buscar-con-escala`, {
             params: { origen: filtroOrigen.value, destino: filtroDestino.value, fecha: filtroFecha.value }
@@ -142,7 +138,7 @@ async function cargarVuelosConFiltro() {
     } catch (error) {
         console.error('Error al buscar vuelos:', error);
     } finally {
-        load.value = true; // Restablecer a true una vez que los datos se han cargado
+        load.value = true; 
     }
 }
 
@@ -158,7 +154,7 @@ const vuelosFiltrados = computed(() => vuelos.value.filter((vuelo) => {
 }));
 
 async function aplicarFiltros() {
-    await cargarVuelosConFiltro(); // Correct the function name here
+    await cargarVuelosConFiltro(); 
     await registrarBusqueda();
 }
 
@@ -166,45 +162,33 @@ async function aplicarFiltros() {
 const calculaDuracionTotal = (combinacion) => {
     if (!combinacion || !combinacion.vuelo1 || !combinacion.vuelo2) return 0;
 
-    // Convertimos las fechas de salida a objetos Date.
     const fechaSalidaVuelo1 = new Date(combinacion.vuelo1.fecha_salida);
     const fechaSalidaVuelo2 = new Date(combinacion.vuelo2.fecha_salida);
 
-    // Mostramos las fechas de salida.
     console.log("Fecha de salida vuelo 1:", fechaSalidaVuelo1);
     console.log("Fecha de salida vuelo 2:", fechaSalidaVuelo2);
 
-    // Calculamos la llegada del primer vuelo basándonos en su duración.
-    const duracionVuelo1EnMinutos = combinacion.vuelo1.duracion * 60; // Duración del primer vuelo en minutos.
+    const duracionVuelo1EnMinutos = combinacion.vuelo1.duracion * 60;
     const fechaLlegadaVuelo1 = new Date(fechaSalidaVuelo1.getTime() + duracionVuelo1EnMinutos * 60000); // Tiempo de llegada del primer vuelo.
 
-    // Mostramos la hora de llegada calculada y la duración del vuelo.
     console.log("Hora de llegada del vuelo 1:", fechaLlegadaVuelo1);
     console.log("Duración del vuelo 1 (minutos):", duracionVuelo1EnMinutos);
 
-    // Calculamos el tiempo de layover en minutos.
-    const layoverDurationInMinutes = (fechaSalidaVuelo2 - fechaLlegadaVuelo1) / 60000; // Duración del layover en minutos.
+    const layoverDurationInMinutes = (fechaSalidaVuelo2 - fechaLlegadaVuelo1) / 60000; 
 
-    // Mostramos la duración del layover.
     console.log("Duración del layover (minutos):", layoverDurationInMinutes);
 
-    // Duración del segundo vuelo en minutos.
     const duracionVuelo2EnMinutos = combinacion.vuelo2.duracion * 60;
 
-    // Mostramos la duración del segundo vuelo.
     console.log("Duración del vuelo 2 (minutos):", duracionVuelo2EnMinutos);
 
-    // Tiempo total de viaje en minutos, incluyendo vuelos y layover.
     const totalTravelTimeInMinutes = duracionVuelo1EnMinutos + layoverDurationInMinutes + duracionVuelo2EnMinutos;
 
-    // Convertimos el tiempo total de viaje en minutos a horas para la presentación.
-    const totalTravelTimeInHours = totalTravelTimeInMinutes / 60;  // Convertimos minutos a horas.
+    const totalTravelTimeInHours = totalTravelTimeInMinutes / 60;  
 
-    // Mostramos el tiempo total de viaje en horas antes del redondeo.
     console.log("Tiempo total de viaje (horas):", totalTravelTimeInHours);
 
-    // Redondeamos a dos decimales para la presentación.
-    return totalTravelTimeInHours.toFixed(2);  // Redondeo a dos decimales.
+    return totalTravelTimeInHours.toFixed(2);
 };
 
 
@@ -214,7 +198,7 @@ const calculaDuracionTotal = (combinacion) => {
 
 const calculaHoraLlegada = (fechaSalida, duracion) => {
   const fechaInicio = new Date(fechaSalida);
-  const tiempoTotalMs = fechaInicio.getTime() + duracion * 3600000; // Convierte horas en milisegundos
+  const tiempoTotalMs = fechaInicio.getTime() + duracion * 3600000;
   return new Date(tiempoTotalMs);
 };
 
