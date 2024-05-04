@@ -222,7 +222,6 @@ const save = async () => {
                         <i class="fa-solid fa-lock"></i>
                     </span>
                     <input
-                        autofocus
                         type="password"
                         v-model="form.password"
                         placeholder="Contraseña"

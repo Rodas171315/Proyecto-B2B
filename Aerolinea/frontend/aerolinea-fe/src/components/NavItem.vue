@@ -1,83 +1,96 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">UNIS Airlines</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <router-link to="/vuelosdisponibles" class="nav-link">Vuelos Disponibles</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/explorar" class="nav-link">Explorar</router-link>
-            </li>
-            <li class="nav-item">
-                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
-              </li>
-            <!-- Solo visible para administradores -->
-            <template v-if="isAdmin">
-              <li class="nav-item">
-                <router-link to="/vuelos" class="nav-link">Vuelos</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/usuarios" class="nav-link">Usuarios</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/analiticos" class="nav-link">Analíticos</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/reports" class="nav-link">Reportes</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/administrar-boletos" class="nav-link">Administrar Boletos</router-link>
-              </li>
-
-            </template>
-            <!-- Solo visible para no autenticados -->
-            <template v-if="!isAuthenticated">
-              <li class="nav-item">
-                <router-link to="/register" class="nav-link">Registrarse</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/historialreservas" class="nav-link">Mis Reservas</router-link>
-              </li>
-            </template>
-            <!-- Solo visible para autenticados -->
-            <template v-if="isAuthenticated">
-              <li class="nav-item">
-                <router-link to="/perfil" class="nav-link">Perfil</router-link>
-              </li>
-
-            </template>
-          </ul>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">UNIS Airlines</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <router-link to="/vuelosdisponibles" class="nav-link"
+                            >Vuelos Disponibles</router-link
+                        >
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/explorar" class="nav-link">Explorar</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/historialreservas" class="nav-link"
+                            >Mis Reservas</router-link
+                        >
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/create-aerolinea" class="nav-link"
+                            >Registrar Aerolinea</router-link
+                        >
+                    </li>
+                    <!-- Solo visible para administradores -->
+                    <template v-if="isAdmin">
+                        <li class="nav-item">
+                            <router-link to="/vuelos" class="nav-link">Vuelos</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/usuarios" class="nav-link">Usuarios</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/analiticos" class="nav-link">Analíticos</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/reports" class="nav-link">Reportes</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/administrar-boletos" class="nav-link"
+                                >Administrar Boletos</router-link
+                            >
+                        </li>
+                    </template>
+                    <!-- Solo visible para no autenticados -->
+                    <template v-if="!isAuthenticated">
+                        <li class="nav-item">
+                            <router-link to="/register" class="nav-link">Registrarse</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/historialreservas" class="nav-link"
+                                >Mis Reservas</router-link
+                            >
+                        </li>
+                    </template>
+                    <!-- Solo visible para autenticados -->
+                    <template v-if="isAuthenticated">
+                        <li class="nav-item">
+                            <router-link to="/perfil" class="nav-link">Perfil</router-link>
+                        </li>
+                    </template>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
-  </template>
-  
-  <script setup>
-  import { ref, watchEffect } from 'vue';
-  
-  const isAuthenticated = ref(localStorage.getItem('user_id') !== null);
-  const isAdmin = ref(localStorage.getItem('isAdmin') === 'true');
-  
-  // Reaccionar a cambios en el almacenamiento local
-  watchEffect(() => {
+</template>
+
+<script setup>
+import { ref, watchEffect } from 'vue';
+
+const isAuthenticated = ref(localStorage.getItem('user_id') !== null);
+const isAdmin = ref(localStorage.getItem('isAdmin') === 'true');
+
+// Reaccionar a cambios en el almacenamiento local
+watchEffect(() => {
     isAuthenticated.value = localStorage.getItem('user_id') !== null;
     isAdmin.value = localStorage.getItem('isAdmin') === 'true';
-  });
-  </script>
-  
-  
-
-
-
+});
+</script>
 
 <style scoped>
 /* Tus estilos aquí */

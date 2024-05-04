@@ -69,3 +69,8 @@ export function fechayhoraFormateada(fechayhora, operacion) {
         }
     }
 }
+
+export const handleLogout = () => {
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('isAdmin');
+};
