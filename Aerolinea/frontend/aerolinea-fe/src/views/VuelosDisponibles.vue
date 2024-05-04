@@ -20,9 +20,9 @@
                 <h3>Cargando vuelos...</h3>
             </div>
         </div>
-        <div v-else-if="vuelosFiltrados.length === 0" class="alert alert-warning" role="alert">
-            No hay vuelos disponibles en este momento.
-        </div>
+        <div v-else-if="vuelosDirectos.length === 0 && vuelosConEscala.length === 0" class="alert alert-warning">
+      No hay vuelos disponibles en este momento.
+    </div>
         <div v-else class="d-flex flex-wrap justify-content-center">
             <div
                 v-for="(vuelo, index) in vuelosFiltrados"
@@ -30,15 +30,15 @@
                 class="card m-2"
                 style="width: 18rem"
             >
-                <div v-if="vuelo.imagenesUrl && vuelo.imagenesUrl.length">
-                    <!-- Mostrar solo las primeras 2 imágenes -->
-                    <img :src="vuelo.imagenesUrl[0]" class="card-img-top" alt="Imagen del vuelo" />
-                    <img
-                        v-if="vuelo.imagenesUrl[1]"
-                        :src="vuelo.imagenesUrl[1]"
-                        class="card-img-top"
-                        alt="Imagen secundaria del vuelo"
-                    />
+            <div v-for="(vuelo, index) in vuelosDirectos" :key="vuelo._id" class="card m-2" style="width: 18rem">
+        <template v-if="vuelo.imagenesUrl && vuelo.imagenesUrl.length">
+          <!-- Mostrar solo las primeras 2 imágenes -->
+          <img :src="vuelo.imagenesUrl[0]" class="card-img-top" alt="Imagen del vuelo" />
+          <img v-if="vuelo.imagenesUrl[1]" :src="vuelo.imagenesUrl[1]" class="card-img-top" alt="Imagen secundaria del vuelo" />
+        </template>
+
+
+                    
                 </div>
         <div class="card-body">
           <h5 class="card-title">{{ vuelo.ciudad_origen }} - {{ vuelo.ciudad_destino }}</h5>
@@ -53,16 +53,26 @@
           <button @click="reservarVuelo(vuelo._id)" class="btn btn-primary">Reservar</button>
         </div>
       </div>
+
+
+
+
       <!-- Añadir una sección para vuelos con escala -->
-      <div v-for="(combinacion, idx) in vuelosConEscala" :key="'combinacion-' + idx" class="card m-2" style="width: 18rem">
-        <div class="card-body">
-          <h5 class="card-title">Combinación: {{ combinacion.vuelo1.ciudad_origen }} - {{ combinacion.vuelo2.ciudad_destino }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">Escala en {{ combinacion.vuelo1.ciudad_destino }}</h6>
-          <p class="card-text">Tiempo total de viaje: {{ calculaDuracionTotal(combinacion) }} horas (incluye escala)</p>
-          <p class="card-text">Costo total: Q{{ combinacion.vuelo1.precio + combinacion.vuelo2.precio }}</p>
-          <button @click="reservarCombinacion(combinacion)" class="btn btn-primary">Reservar Viaje</button>
-        </div>
-      </div>
+<!-- Añadir una sección para vuelos con escala -->
+<div v-for="(combinacion, idx) in vuelosConEscala" :key="'combinacion-' + idx" class="card m-2" style="width: 18rem">
+  <div class="card-body">
+    <h5 class="card-title">Combinación: {{ combinacion.vuelo1.ciudad_origen }} - {{ combinacion.vuelo2.ciudad_destino }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Escala en {{ combinacion.vuelo1.ciudad_destino }}</h6>
+    <p class="card-text">Salida del vuelo 1: {{ fechayhoraFormateada(combinacion.vuelo1.fecha_salida, 'read') }}</p>
+    <p class="card-text">Llegada estimada del vuelo 1: {{ fechayhoraFormateada(calculaHoraLlegada(combinacion.vuelo1.fecha_salida, combinacion.vuelo1.duracion), 'read') }}</p>
+    <p class="card-text">Salida del vuelo 2: {{ fechayhoraFormateada(combinacion.vuelo2.fecha_salida, 'read') }}</p>
+    <p class="card-text">Llegada estimada del vuelo 2: {{ fechayhoraFormateada(calculaHoraLlegada(combinacion.vuelo2.fecha_salida, combinacion.vuelo2.duracion), 'read') }}</p>
+    <p class="card-text">Tiempo total de viaje: {{ calculaDuracionTotal(combinacion) }} horas (incluye escala)</p>
+    <p class="card-text">Costo total: Q{{ combinacion.vuelo1.precio + combinacion.vuelo2.precio }}</p>
+    <button @click="reservarCombinacion(combinacion)" class="btn btn-primary">Reservar Viaje</button>
+  </div>
+</div>
+
     </div>
   </div>
 </template>
@@ -74,7 +84,10 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { confirmation, fechayhoraFormateada } from '../functions';
 import { useRouter } from 'vue-router';
 
+
 const router = useRouter();
+const vuelosDirectos = ref([]);
+const vuelosConEscala = ref([]); 
 const vuelos = ref([]);
 const load = ref(false);
 const filtroOrigen = ref('');
@@ -88,6 +101,8 @@ const userId = localStorage.getItem('user_id');
 async function fetchData() {
   await fetchCiudadesDisponibles();
   await cargarVuelos();
+  await cargarVuelosConFiltro(); // Renaming to reflect functionality
+
 }
 
 const fetchCiudadesDisponibles = async () => {
@@ -114,29 +129,94 @@ async function cargarVuelos() {
   }
 }
 
-onMounted(fetchData);
 
-const vuelosFiltrados = computed(() => {
-    return vuelos.value.filter((vuelo) => {
-        const cumpleOrigen = vuelo.ciudad_origen
-            .toLowerCase()
-            .includes(filtroOrigen.value.toLowerCase());
-        const cumpleDestino = vuelo.ciudad_destino
-            .toLowerCase()
-            .includes(filtroDestino.value.toLowerCase());
-        const fechaVuelo = new Date(vuelo.fecha_salida).toISOString().slice(0, 10);
-        const cumpleFecha = !filtroFecha.value || fechaVuelo === filtroFecha.value;
-        return cumpleOrigen && cumpleDestino && cumpleFecha;
-    });
-});
 
-async function aplicarFiltros() {
-    cargarVuelos();
-    registrarBusqueda();
+async function cargarVuelosConFiltro() {
+    load.value = false; // Establecer a false mientras carga
+    try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/vuelos/buscar-con-escala`, {
+            params: { origen: filtroOrigen.value, destino: filtroDestino.value, fecha: filtroFecha.value }
+        });
+        vuelosDirectos.value = response.data.directos;
+        vuelosConEscala.value = response.data.conEscala;
+    } catch (error) {
+        console.error('Error al buscar vuelos:', error);
+    } finally {
+        load.value = true; // Restablecer a true una vez que los datos se han cargado
+    }
 }
 
 
 
+onMounted(fetchData);
+
+const vuelosFiltrados = computed(() => vuelos.value.filter((vuelo) => {
+  const cumpleOrigen = vuelo.ciudad_origen.toLowerCase().includes(filtroOrigen.value.toLowerCase());
+  const cumpleDestino = vuelo.ciudad_destino.toLowerCase().includes(filtroDestino.value.toLowerCase());
+  const fechaVuelo = new Date(vuelo.fecha_salida).toISOString().slice(0, 10);
+  return cumpleOrigen && cumpleDestino && (!filtroFecha.value || fechaVuelo === filtroFecha.value);
+}));
+
+async function aplicarFiltros() {
+    await cargarVuelosConFiltro(); // Correct the function name here
+    await registrarBusqueda();
+}
+
+
+const calculaDuracionTotal = (combinacion) => {
+    if (!combinacion || !combinacion.vuelo1 || !combinacion.vuelo2) return 0;
+
+    // Convertimos las fechas de salida a objetos Date.
+    const fechaSalidaVuelo1 = new Date(combinacion.vuelo1.fecha_salida);
+    const fechaSalidaVuelo2 = new Date(combinacion.vuelo2.fecha_salida);
+
+    // Mostramos las fechas de salida.
+    console.log("Fecha de salida vuelo 1:", fechaSalidaVuelo1);
+    console.log("Fecha de salida vuelo 2:", fechaSalidaVuelo2);
+
+    // Calculamos la llegada del primer vuelo basándonos en su duración.
+    const duracionVuelo1EnMinutos = combinacion.vuelo1.duracion * 60; // Duración del primer vuelo en minutos.
+    const fechaLlegadaVuelo1 = new Date(fechaSalidaVuelo1.getTime() + duracionVuelo1EnMinutos * 60000); // Tiempo de llegada del primer vuelo.
+
+    // Mostramos la hora de llegada calculada y la duración del vuelo.
+    console.log("Hora de llegada del vuelo 1:", fechaLlegadaVuelo1);
+    console.log("Duración del vuelo 1 (minutos):", duracionVuelo1EnMinutos);
+
+    // Calculamos el tiempo de layover en minutos.
+    const layoverDurationInMinutes = (fechaSalidaVuelo2 - fechaLlegadaVuelo1) / 60000; // Duración del layover en minutos.
+
+    // Mostramos la duración del layover.
+    console.log("Duración del layover (minutos):", layoverDurationInMinutes);
+
+    // Duración del segundo vuelo en minutos.
+    const duracionVuelo2EnMinutos = combinacion.vuelo2.duracion * 60;
+
+    // Mostramos la duración del segundo vuelo.
+    console.log("Duración del vuelo 2 (minutos):", duracionVuelo2EnMinutos);
+
+    // Tiempo total de viaje en minutos, incluyendo vuelos y layover.
+    const totalTravelTimeInMinutes = duracionVuelo1EnMinutos + layoverDurationInMinutes + duracionVuelo2EnMinutos;
+
+    // Convertimos el tiempo total de viaje en minutos a horas para la presentación.
+    const totalTravelTimeInHours = totalTravelTimeInMinutes / 60;  // Convertimos minutos a horas.
+
+    // Mostramos el tiempo total de viaje en horas antes del redondeo.
+    console.log("Tiempo total de viaje (horas):", totalTravelTimeInHours);
+
+    // Redondeamos a dos decimales para la presentación.
+    return totalTravelTimeInHours.toFixed(2);  // Redondeo a dos decimales.
+};
+
+
+
+
+
+
+const calculaHoraLlegada = (fechaSalida, duracion) => {
+  const fechaInicio = new Date(fechaSalida);
+  const tiempoTotalMs = fechaInicio.getTime() + duracion * 3600000; // Convierte horas en milisegundos
+  return new Date(tiempoTotalMs);
+};
 
 
 
