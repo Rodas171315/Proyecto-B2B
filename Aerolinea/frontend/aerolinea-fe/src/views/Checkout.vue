@@ -119,6 +119,8 @@
   const nuevoComentario = ref('');
   const comentarioSeleccionado = ref(null);
   const nuevoRespuesta = ref('');
+  const codigoReserva = ref('');
+
   
   
   
@@ -162,30 +164,79 @@
 
 
 
+
+  const confirmarReserva = async () => {
+    const usuarioId = localStorage.getItem('user_id');
+    if (!usuario.value._id) {
+        alert('Por favor, inicia sesión.');
+        console.error('Usuario no logueado');
+        return;
+    }
+
+    const cantidad = parseInt(cantidadSeleccionada.value);
+    if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
+        alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
+        return;
+    }
+
+    try {
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
+            usuarioId: usuario.value._id,
+            vueloId: vuelo.value._id,
+            tipoAsiento: tipoAsiento.value,
+            cantidad
+        });
+
+        // Verifica que la respuesta incluya el código de reserva
+        if (response.data && response.data.codigoReserva) {
+            codigoReserva.value = response.data.codigoReserva;
+            alert('Reserva confirmada con éxito.');
+            console.log('Reserva confirmada con éxito:', response.data);
+
+            // Asegúrate de que el correo solo se envíe después de que el código está asignado
+            await sendTicketEmail();
+
+            await cargarAsientosDisponibles(vuelo.value._id);
+            router.push({ name: 'historialreservas' });
+        } else {
+            console.error('No se recibió el código de reserva:', response);
+            alert('Error: No se recibió el código de reserva.');
+        }
+    } catch (error) {
+        console.error('Error al confirmar la reserva:', error);
+        alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
+    }
+};
+
+
+
+
   const sendTicketEmail = () => {
-  if (!usuario.value.email || !usuario.value.nombre) {
-    console.error('Datos del usuario no disponibles para enviar el correo.');
-    return;
-  }
+    if (!usuario.value.email || !usuario.value.nombre || !codigoReserva.value) {
+        console.error('Datos del usuario o código de reserva no disponibles para enviar el correo.');
+        console.error('Email:', usuario.value.email, 'Nombre:', usuario.value.nombre, 'Código:', codigoReserva.value);
+        return;
+    }
 
-  const templateParams = {
-    to_name: usuario.value.nombre,
-    from_name: "Unis Airlines",
-    to_email: usuario.value.email,
-    flight_origin: vuelo.value.ciudad_origen,
-    flight_destination: vuelo.value.ciudad_destino,
-    flight_date: fechayhoraFormateada(vuelo.value.fecha_salida, 'read'),
-    seat_type: tipoAsiento.value,
-    quantity: cantidadSeleccionada.value,
-    total_price: vuelo.value.precio * cantidadSeleccionada.value
-  };
+    const templateParams = {
+        to_name: usuario.value.nombre,
+        from_name: "Unis Airlines",
+        to_email: usuario.value.email,
+        flight_origin: vuelo.value.ciudad_origen,
+        flight_destination: vuelo.value.ciudad_destino,
+        flight_date: fechayhoraFormateada(vuelo.value.fecha_salida, 'read'),
+        seat_type: tipoAsiento.value,
+        quantity: cantidadSeleccionada.value,
+        total_price: vuelo.value.precio * cantidadSeleccionada.value,
+        reservation_code: codigoReserva.value
+    };
 
-  emailjs.send('service_pzs5mlz', 'template_9m8cigb', templateParams, '4KZRrnu_XlHEApeh4')
-    .then((result) => {
-      console.log('Confirmation email sent!', result.text);
-    }, (error) => {
-      console.error('Failed to send confirmation email:', error.text);
-    });
+    emailjs.send('service_pzs5mlz', 'template_9m8cigb', templateParams, '4KZRrnu_XlHEApeh4')
+        .then((result) => {
+            console.log('Confirmation email sent!', result.text);
+        }, (error) => {
+            console.error('Failed to send confirmation email:', error);
+        });
 };
 
 
@@ -194,44 +245,11 @@
 
 
 
-  
-  const confirmarReserva = async () => {
-      const usuarioId = localStorage.getItem('user_id');
-      if (!usuario.value._id) {
-          alert('Por favor, inicia sesión.');
-          console.error('Usuario no logueado');
-          return;
-      }
-  
-      const cantidad = parseInt(cantidadSeleccionada.value);
-      if (isNaN(cantidad) || cantidad <= 0 || cantidad > asientosDisponibles.value[tipoAsiento.value]) {
-          alert('Por favor, selecciona una cantidad válida de asientos dentro del rango disponible.');
-          return;
-      }
-  
-      try {
-          const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/boletos`, {
-            usuarioId: usuario.value._id,
-              vueloId: vuelo.value._id,
-              tipoAsiento: tipoAsiento.value,
-              cantidad 
-          });
-          
-          alert('Reserva confirmada con éxito.');
-          console.log('Reserva confirmada con éxito:', response.data);
-          sendTicketEmail();
 
-        
-          await cargarAsientosDisponibles(vuelo.value._id);
-          router.push({ name: 'historialreservas' }).catch(err => {
-  console.error('Routing error:', err);
-});
-      } catch (error) {
-          console.error('Error al confirmar la reserva:', error);
-          alert('Hubo un problema al confirmar tu reserva. Por favor, intenta de nuevo.');
-      }
-  };
+
   
+
+
   
   
   const transformComentarios = (flatComments) => {

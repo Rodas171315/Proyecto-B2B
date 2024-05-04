@@ -39,7 +39,14 @@ const BoletoSchema = new mongoose.Schema({
     fecha_salida: {
         type: Date,
         required: true
+    },
+
+    codigoReserva: {
+        type: String,
+        required: true,
+        unique: true
     }
+    
 }, { timestamps: true });
 
 export default mongoose.model("Boleto", BoletoSchema);

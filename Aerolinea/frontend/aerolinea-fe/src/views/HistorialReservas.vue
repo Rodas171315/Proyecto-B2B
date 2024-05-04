@@ -1,6 +1,11 @@
 <template>
   <div class="container mt-5">
     <h2 class="text-center mb-4">Historial de Reservas</h2>
+    <div class="mb-4">
+      <input v-model="codigoReserva" type="text" placeholder="Buscar por código de reserva" class="form-control">
+      <button class="btn btn-primary mt-2" @click="buscarBoleto">Buscar</button>
+      <button class="btn btn-secondary mt-2" @click="cargarBoletos">Mostrar todos</button>
+    </div>
     <div v-if="boletos && boletos.length === 0" class="alert alert-info" role="alert">
       No tienes reservas.
     </div>
@@ -11,7 +16,9 @@
             <h5 class="mb-1">{{ boleto.vueloId.ciudad_origen }} - {{ boleto.vueloId.ciudad_destino }}</h5>
             <small>{{ fechayhoraFormateada(boleto.fecha_salida, 'read') }}</small>
             <p class="mb-1">Tipo de asiento: {{ boleto.tipoAsiento }}</p>
+            <p class="mb-1">Código de Reserva: {{ boleto.codigoReserva }}</p> 
             <p class="mb-1" v-if="!boleto.estadoReserva"><strong>Estado:</strong> Cancelado</p>
+            <p class="mb-1"><strong>Email del Usuario:</strong> {{ boleto.usuarioId.email }}</p> 
             <small class="text-muted">Precio final: Q{{ boleto.precioFinal }}</small>
           </div>
           <button class="btn btn-success" @click="downloadPDF(boleto)">Descargar PDF</button>
@@ -28,12 +35,33 @@ import { jsPDF } from 'jspdf';
 import { fechayhoraFormateada } from '../functions.js';
 
 const boletos = ref([]);
+const codigoReserva = ref(''); // Estado para almacenar el código de reserva
 
-onMounted(async () => {
+// Función para cargar todos los boletos de un usuario
+const cargarBoletos = async () => {
   const usuarioId = localStorage.getItem('user_id');
   const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/usuario/${usuarioId}`);
   boletos.value = response.data;
-});
+};
+
+// Función para buscar un boleto por código de reserva
+const buscarBoleto = async () => {
+  if (!codigoReserva.value) {
+    alert('Por favor, introduce un código de reserva para buscar.');
+    return;
+  }
+  const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/boletos/buscar/${codigoReserva.value}`);
+  if (response.data.length > 0) {
+    boletos.value = response.data;
+  } else {
+    boletos.value = [];
+    alert('No se encontraron reservas con ese código.');
+  }
+};
+
+onMounted(cargarBoletos);
+
+
 
 function downloadPDF(boleto) {
   const doc = new jsPDF();
@@ -57,6 +85,8 @@ function downloadPDF(boleto) {
   doc.text(`Fecha de Salida: ${fechayhoraFormateada(boleto.fecha_salida, 'read')}`, 20, verticalOffset);
   verticalOffset += 10;
   doc.text(`Tipo de Asiento: ${boleto.tipoAsiento}`, 20, verticalOffset);
+  verticalOffset += 10;
+  doc.text(`Código de Reserva: ${boleto.codigoReserva}`, 20, verticalOffset);
   verticalOffset += 10;
   doc.text(`Estado: ${boleto.estadoReserva ? 'Activo' : 'Cancelado'}`, 20, verticalOffset);
   verticalOffset += 10;
