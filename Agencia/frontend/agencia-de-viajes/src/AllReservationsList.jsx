@@ -72,7 +72,7 @@ const AllReservationsList = () => {
 
   const fetchFlightReservations = async () => {
     try {
-        const response = await fetch(`http://35.211.214.127:8800/boletos`);
+        const response = await fetch(`http://35.211.149.93:8800/boletos`);
         if (!response.ok) {
             throw new Error('Error al cargar reservas de vuelos');
         }
@@ -137,7 +137,7 @@ const AllReservationsList = () => {
   };
 
   const cancelarBoletoVuelo = async (idBoleto) => {
-    const url = `http://35.211.214.127:8800/boletos/cancelar/${idBoleto}`; 
+    const url = `http://35.211.149.93:8800/boletos/cancelar/${idBoleto}`; 
     try {
       const response = await fetch(url, {
         method: 'PUT',

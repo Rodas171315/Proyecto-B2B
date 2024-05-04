@@ -13,6 +13,12 @@ const ListaPaquetes = () => {
   const { user } = useUser();
 
   useEffect(() => {
+    fetchPaquetes();
+    const intervalId = setInterval(fetchPaquetes, 60000000);  
+    return () => clearInterval(intervalId);
+  }, []);
+
+
     const fetchPaquetes = async () => {
       try {
         const resPaquetes = await fetch('http://localhost:8081/paquetes');
@@ -26,7 +32,7 @@ const ListaPaquetes = () => {
           const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
             fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
             fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-            fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+            fetch(`http://35.211.149.93:8800/vuelos/${paquete.idVuelo}`),
           ]);
         
           const hotel = await hotelRes.json();
@@ -54,8 +60,118 @@ const ListaPaquetes = () => {
       }
     };
 
-    fetchPaquetes();
-  }, []);
+    const verificarYCancelarComponentes = async (paquete) => {
+      try {
+        if (paquete.idReservaHabitacion) {
+          const reservaResponse = await fetch(`http://localhost:8080/reservas/${paquete.idReservaHabitacion}`);
+          const reserva = await reservaResponse.json();
+          if (reserva.estadoReserva === 'Cancelada') {
+            await cancelarVuelo(paquete.idBoleto, paquete);
+            if (paquete.idBoletoVuelta) {
+              await cancelarVuelo(paquete.idBoletoVuelta, paquete);
+            }
+          }
+        }
+    
+        if (paquete.idBoleto) {
+          const boletoResponse = await fetch(`http://35.211.149.93:8800/boletos/${paquete.idBoleto}`);
+          if (!boletoResponse.ok) {
+            console.log(`No se encontró vuelo con ID ${paquete.idBoleto}, ya esta cancelado.`);
+            return;
+          }
+          const boleto = await boletoResponse.json();
+          if (boleto.estadoReserva === 'Cancelado') {
+            await cancelarReserva(paquete.idReservaHabitacion, paquete);
+          }
+        }
+    
+        if (paquete.idBoletoVuelta) {
+          const boletoVueltaResponse = await fetch(`http://35.211.149.93:8800/boletos/${paquete.idBoletoVuelta}`);
+          if (!boletoVueltaResponse.ok) {
+            console.log(`No se encontró vuelo de retorno con ID ${paquete.idBoletoVuelta}, ya esta cancelado.`);
+            return;
+          }
+          const boletoVuelta = await boletoVueltaResponse.json();
+          if (boletoVuelta.estadoReserva === 'Cancelado') {
+            await cancelarReserva(paquete.idReservaHabitacion, paquete);
+          }
+        }
+      } catch (error) {
+        console.error('Error al verificar y cancelar componentes:', error);
+      }
+    };
+    
+    const cancelarVuelo = async (idBoleto, paquete) => {
+      if (!idBoleto) {
+        console.log("El ID del vuelo es nulo o inválido.");
+        return;
+      }
+    
+      try {
+        const response = await fetch(`http://35.211.149.93:8800/boletos/cancelar/${idBoleto}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error al cancelar el vuelo con ID: ${idBoleto}`);
+        }
+        enviarEmailCancelacion(paquete, 'Vuelo');
+        console.log(`Vuelo con ID ${idBoleto} cancelado exitosamente.`);
+      } catch (error) {
+        console.error(`Error al cancelar el vuelo con ID ${idBoleto}:`, error);
+      }
+    };
+    
+    const cancelarReserva = async (idReserva, paquete) => {
+      if (!idReserva) {
+        console.log("El ID de la reserva es nulo o inválido.");
+        return;
+      }
+    
+      try {
+        const response = await fetch(`http://localhost:8080/reservas/${idReserva}/cancelar`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Error al cancelar la reserva con ID: ${idReserva}`);
+        }
+        enviarEmailCancelacion(paquete, 'Reserva');
+        console.log(`Reserva con ID ${idReserva} cancelada exitosamente.`);
+      } catch (error) {
+        console.error(`Error al cancelar la reserva con ID ${idReserva}:`, error);
+      }
+    };
+    
+    
+    const enviarEmailCancelacion = async (paquete, tipo) => {
+      const emailParams = {
+        to_name: user.name, 
+        to_email: user.email, 
+        package_name: paquete.nombrePaquete,
+        package_description: paquete.descripcion,
+        hotel_name: paquete.hotel,
+        room_type: paquete.habitacion,
+        room_price: paquete.precioH,
+        flight: paquete.vuelo,
+        flight_date: paquete.fecha,
+        ticket_price: paquete.precioA,
+        total_paid: (parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10)).toString(),
+        type: tipo  
+      };
+    
+      try {
+        const result = await emailjs.send('service_521uswb', 'template_8uqs7l7', emailParams, 'BaaC73U6PfMwmi5uk');
+        console.log('Correo de confirmación de cancelación enviado exitosamente:', result.text);
+      } catch (err) {
+        console.error('Error al enviar el correo de confirmación de cancelación:', err);
+      }
+    };
+    
+  
+  
 
   const eliminarPaquete = async (idPaquete) => {
     if (idPaquete == null) {
@@ -79,56 +195,67 @@ const ListaPaquetes = () => {
   
   const cancelarPaquete = async (idPaquete) => {
     try {
-        
-        let response = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
+        // Primero, obtén el paquete para acceder a los IDs de los boletos
+        const paqueteResponse = await fetch(`http://localhost:8081/paquetes/${idPaquete}`);
+        const paquete = await paqueteResponse.json();
+
+        // Cancela el paquete
+        let responsePaquete = await fetch(`http://localhost:8081/paquetes/cancelar/${idPaquete}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ estadoPaquete: 'Cancelado' }),
         });
-        if (!response.ok) throw new Error('No se pudo cancelar el paquete.');
+        if (!responsePaquete.ok) throw new Error('No se pudo cancelar el paquete.');
 
-        
-        const paqueteActualizado = paquetes.find(p => p.idPaquete === idPaquete);
-        if (!paqueteActualizado) throw new Error('Paquete no encontrado');
-
-        
-        if (paqueteActualizado.idReservaHabitacion) {
-          const responseCancelarReservaHabitacion = await fetch(`http://localhost:8080/reservas/${paqueteActualizado.idReservaHabitacion}/cancelar`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        
-          if (!responseCancelarReservaHabitacion.ok) {
-            throw new Error('No se pudo cancelar la reserva de habitación.');
-          }
+        // Cancela la reserva de la habitación
+        if (paquete.idReservaHabitacion) {
+            const responseCancelarReservaHabitacion = await fetch(`http://localhost:8080/reservas/${paquete.idReservaHabitacion}/cancelar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!responseCancelarReservaHabitacion.ok) {
+                throw new Error('No se pudo cancelar la reserva de habitación.');
+            }
         }
-        if (!response.ok) throw new Error('No se pudo cancelar la reserva de hospedaje.');
 
-        
-        response = await fetch(`http://35.211.214.127:8800/boletos/cancelar/${paqueteActualizado.idBoleto}`, {
-            method: 'PUT', 
-            headers: { 'Content-Type': 'application/json' },
-        });
-        if (!response.ok) throw new Error('No se pudo cancelar la reserva de vuelo.');
+        // Cancela el boleto de ida
+        if (paquete.idBoleto) {
+            const responseCancelarBoletoIda = await fetch(`http://35.211.149.93:8800/boletos/cancelar/${paquete.idBoleto}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!responseCancelarBoletoIda.ok) {
+                throw new Error('No se pudo cancelar el boleto de ida.');
+            }
+        }
 
-        
+        // Cancela el boleto de vuelta, si existe
+        if (paquete.idBoletoVuelta) {
+            const responseCancelarBoletoVuelta = await fetch(`http://35.211.149.93:8800/boletos/cancelar/${paquete.idBoletoVuelta}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!responseCancelarBoletoVuelta.ok) {
+                throw new Error('No se pudo cancelar el boleto de vuelta.');
+            }
+        }
+
+        // Actualiza la lista de paquetes en el estado local para reflejar los cambios
         const updatedPaquetes = paquetes.map(p => p.idPaquete === idPaquete ? { ...p, estadoPaquete: 'Cancelado' } : p);
         setPaquetes(updatedPaquetes);
 
         const emailParams = {
           to_name: user.name, 
           to_email: user.email, 
-          package_name: paqueteActualizado.nombrePaquete,
-          package_description: paqueteActualizado.descripcion,
-          hotel_name: paqueteActualizado.hotel,
-          room_type: paqueteActualizado.habitacion,
-          room_price: paqueteActualizado.precioH,
-          flight: paqueteActualizado.vuelo,
-          flight_date: paqueteActualizado.fecha,
-          ticket_price: paqueteActualizado.precioA,
-          total_paid: (parseInt(paqueteActualizado.precioH, 10) + parseInt(paqueteActualizado.precioA, 10)).toString()
+          package_name: paquete.nombrePaquete,
+          package_description: paquete.descripcion,
+          hotel_name: paquete.hotel,
+          room_type: paquete.habitacion,
+          room_price: paquete.precioH,
+          flight: paquete.vuelo,
+          flight_date: paquete.fecha,
+          ticket_price: paquete.precioA,
+          total_paid: (parseInt(paquete.precioH, 10) + parseInt(paquete.precioA, 10)).toString()
       };
       await emailjs.send('service_521uswb', 'template_8uqs7l7', emailParams, 'BaaC73U6PfMwmi5uk')
           .then((response) => {
@@ -145,7 +272,11 @@ const ListaPaquetes = () => {
     }
 };
 
-  
+
+
+useEffect(() => {
+  paquetes.forEach(verificarYCancelarComponentes);
+}, [paquetes]);
 
   return (
     <div>
@@ -186,9 +317,7 @@ const ListaPaquetes = () => {
                               <Typography>
                                 Descripcion: {paquete.descripcion}
                               </Typography>
-                              <Typography>
-                                Estado del paquete: {paquete.estadoPaquete}
-                              </Typography>
+                          
                               <Typography>
                                 Precio de vuelo: ${paquete.precioA}
                               </Typography>
@@ -197,21 +326,17 @@ const ListaPaquetes = () => {
                               </Typography>
                             </CardContent>
                             <CardActions>
-                            {user.rol === 2 &&(
+                            {/* {user.rol === 2 &&(
                             <Button size="small" color="primary" onClick={() => eliminarPaquete(paquete.idPaquete)}>
                               Eliminar
                             </Button>
-                            )}
-                            {paquete.estadoPaquete === 'Comprado' && user.rol === 2 && (
+                            )} */}
+                            {paquete.estadoPaquete === 'Disponible' && user.rol === 2 && (
                               <Button size="small" color="secondary" onClick={() => cancelarPaquete(paquete.idPaquete)}>
                                 Cancelar
                               </Button>
                             )}
-                            {paquete.estadoPaquete === 'Disponible' && (
-                                        <Button size="small" onClick={() => navigate('/compra-paquete', { state: { paquete } })}>
-                                            Comprar
-                                        </Button>
-                                    )}
+
                             </CardActions>
                         </Card>
                     </Grid>
@@ -227,4 +352,5 @@ const ListaPaquetes = () => {
 };
 
 export default ListaPaquetes;
+
 

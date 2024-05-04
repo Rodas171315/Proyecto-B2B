@@ -32,7 +32,7 @@ const PaquetesDisponibles = () => {
                     const [hotelRes, habitacionRes, vueloRes] = await Promise.all([
                         fetch(`http://localhost:8080/hoteles/${paquete.idHotel}`),
                         fetch(`http://localhost:8080/habitaciones/${paquete.idHabitacion}`),
-                        fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`),
+                        fetch(`http://35.211.149.93:8800/vuelos/${paquete.idVuelo}`),
                     ]);
                 
                     const hotel = await hotelRes.json();

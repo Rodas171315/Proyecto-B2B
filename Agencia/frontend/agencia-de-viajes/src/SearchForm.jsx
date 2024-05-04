@@ -56,7 +56,7 @@ const SearchForm = () => {
 
         const fetchVuelos = async () => {
             try {
-                const response = await fetch('http://35.211.214.127:8800/vuelos');
+                const response = await fetch('http://35.211.149.93:8800/vuelos');
                 if (!response.ok) throw new Error('Error al cargar los vuelos');
                 const data = await response.json();
                 setVuelos(data);
@@ -116,7 +116,7 @@ const SearchForm = () => {
     
     const handleBuscarVuelos = async () => {
         try {
-            const baseURL = 'http://35.211.214.127:8800/vuelos/filtered';
+            const baseURL = 'http://35.211.149.93:8800/vuelos/filtered';
             let queryParamsIda = new URLSearchParams({
                 ciudad_origen: origenSeleccionado,
                 ciudad_destino: destinoSeleccionado,
@@ -170,7 +170,7 @@ const SearchForm = () => {
     
             
             const vuelosRequests = paquetesData.map(paquete =>
-                fetch(`http://35.211.214.127:8800/vuelos/${paquete.idVuelo}`)
+                fetch(`http://35.211.149.93:8800/vuelos/${paquete.idVuelo}`)
             );
             const vuelosResponses = await Promise.all(vuelosRequests);
             const vuelosData = await Promise.all(vuelosResponses.map(res => res.json()));
@@ -371,7 +371,10 @@ const SearchForm = () => {
                 <Button variant="contained" color="primary" fullWidth onClick={handleBuscarVuelos}>Buscar Vuelos</Button>
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
-                <Box sx={{ mt: 3 }}>
+            <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={() => navigate('/crear-paquete')}>
+                Reservar Paquete
+            </Button>
+                {/* <Box sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                     <TextField 
@@ -466,7 +469,7 @@ const SearchForm = () => {
                     <Button variant="contained" color="primary" onClick={handleBuscarPaquetes}>
                         Buscar Paquetes
                     </Button>
-                </Box>
+                </Box>*/}
             </TabPanel>
         </Container>
         
