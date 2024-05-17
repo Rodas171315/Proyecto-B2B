@@ -33,7 +33,6 @@ export const enviarCorreo = (destinatario, asunto, mensaje) => {
                 'List-Unsubscribe': '<'+process.env.FRONTEND_URL+'/unsubscribe>',
             },
         });
-    
         if (error) {
             return console.error({ error });
         }
