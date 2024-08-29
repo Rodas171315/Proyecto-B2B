@@ -4,12 +4,40 @@ pipeline {
         pollSCM '*/5 * * * *'
     }
     stages {
+        stage('Rama') {
+            steps {
+                script {
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: "refs/heads/${env.BRANCH_NAME}"]], 
+                        userRemoteConfigs: [[url: 'https://github.com/Rodas171315/Proyecto-B2B.git']]
+                    ])
+                }
+            }
+        }
         stage('Build') {
             steps {
                 echo "Building.."
                 sh '''
                 echo "doing build stuff.."
                 '''
+            }
+        }
+        stage('Build Backend') {
+            steps {
+                dir('Hotel/backend/sistema-hoteles-be') {
+                    script {
+                        dockerImgBE = docker.build("hotel-quarkus-app:${env.BRANCH_NAME}")
+                    }
+                }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('Hotel/frontend/sistema_hoteles') {
+                    script {
+                        dockerImgFE = docker.build("hotel-react-app:${env.BRANCH_NAME}")
+                    }
+                }
             }
         }
         stage('Test') {
@@ -20,12 +48,34 @@ pipeline {
                 '''
             }
         }
+        stage('Unit Testing') {
+            steps {
+                dir('Hotel/backend/sistema-hoteles-be') {
+                    sh './mvnw test'
+                }
+                dir('Hotel/frontend/sistema_hoteles') {
+                    sh 'npm test'
+                }
+            }
+        }
         stage('Deliver') {
             steps {
                 echo 'Deliver....'
                 sh '''
                 echo "doing delivery stuff.."
                 '''
+            }
+        }
+    }
+    post {
+        failure {
+            mail to: 'rodas171315@unis.edu.gt',
+                subject: "Build Fallido: ${env.BUILD_TAG}",
+                body: "Algo salio mal con ${env.BUILD_URL}"
+        }
+        success {
+            script {
+                currentBuild.description = "Build Exitoso: ${env.BRANCH_NAME}"
             }
         }
     }
