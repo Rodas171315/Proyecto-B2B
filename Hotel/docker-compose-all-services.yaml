@@ -1,0 +1,96 @@
+# Docker compose for production (starting all)
+services:
+
+  # Oracle service (label used to access the service container)
+  oracle-db:
+
+    # Docker container name
+    container_name: oracle-db
+
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
+    image: gvenzl/oracle-xe:latest
+    restart: unless-stopped
+
+    # Provide passwords and other environment variables to container
+    environment:
+      ORACLE_PASSWORD: orapwd
+      APP_USER: doomslayer
+      APP_USER_PASSWORD: usepwd
+
+    # Forward Oracle port
+    ports:
+      - 1521:1521
+    
+    # Persistent database container (data is kept throughout container lifecycles)
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+    # Docker network
+    networks:
+      - hotel-net
+
+    # Provide healthcheck script options for startup
+    # options: >-
+    #   --health-cmd healthcheck.sh
+    #   --health-interval 10s
+    #   --health-timeout 5s
+    #   --health-retries 10
+
+  # Quarkus server (label used to access the server container)
+  quarkus-be:
+
+    # Docker container name
+    container_name: quarkus-be
+
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
+    image: hotel-quarkus-app:latest
+    restart: unless-stopped
+
+    # Provide passwords and other environment variables to container
+    environment:
+      QUARKUS_DATASOURCE_DB-KIND: oracle
+      QUARKUS_DATASOURCE_USERNAME: doomslayer
+      QUARKUS_DATASOURCE_PASSWORD: usepwd
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:oracle:thin:@//oracle-db:1521/XEPDB1
+
+    # Forward Quarkus port  
+    ports:
+      - "8080:8080"
+    depends_on:
+      - oracle-db
+
+    # Docker network
+    networks:
+      - hotel-net
+
+  # React client (label used to access the client container)
+  react-fe:
+
+    # Docker container name
+    container_name: react-fe
+
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
+    image: hotel-react-app:latest
+    restart: unless-stopped
+
+    # Provide passwords and other environment variables to container
+    environment:
+      REACT_APP_BACKEND_URL: http://quarkus-be:8080
+
+    # Forward Quarkus port  
+    ports:
+      - "3000:3000"
+    depends_on:
+      - quarkus-be
+
+    # Docker network
+    networks:
+      - hotel-net
+
+volumes:
+  oracle-data:
+
+networks:
+  hotel-net:
+    name: hotel-network
+    driver: bridge

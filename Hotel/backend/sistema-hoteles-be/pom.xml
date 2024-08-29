@@ -29,16 +29,20 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.24.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
-<dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-resteasy-client</artifactId>
-    <version>3.7.4</version>
-</dependency>
-
-
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-client</artifactId>
+      <version>3.7.4</version>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
@@ -69,43 +73,36 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
-
-
     <dependency>
-        <groupId>com.google.api-client</groupId>
-        <artifactId>google-api-client</artifactId>
-        <version>1.32.1</version>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>1.32.1</version>
     </dependency>
     <dependency>
-        <groupId>com.google.oauth-client</groupId>
-        <artifactId>google-oauth-client-jetty</artifactId>
-        <version>1.32.1</version>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client-jetty</artifactId>
+      <version>1.32.1</version>
     </dependency>
     <dependency>
-        <groupId>com.google.apis</groupId>
-        <artifactId>google-api-services-drive</artifactId>
-        <version>v3-rev197-1.25.0</version>
-    </dependency>
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.10.1</version> 
-</dependency>
-
-    <dependency>
-        <groupId>com.google.auth</groupId>
-        <artifactId>google-auth-library-oauth2-http</artifactId>
-        <version>1.2.1</version>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-drive</artifactId>
+      <version>v3-rev197-1.25.0</version>
     </dependency>
     <dependency>
-    <groupId>com.google.http-client</groupId>
-    <artifactId>google-http-client-jackson2</artifactId>
-    <version>1.40.1</version>
-</dependency>
-
-
-
-
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auth</groupId>
+      <artifactId>google-auth-library-oauth2-http</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client-jackson2</artifactId>
+      <version>1.40.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -124,27 +121,26 @@
           </execution>
         </executions>
       </plugin>
-              <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.3.1</version>
-            <executions>
-                <execution>
-                    <id>generate-javadocs</id>
-                    <goals>
-                        <goal>javadoc</goal>
-                    </goals>
-                    <phase>verify</phase> <!-- Binds the execution to the verify phase -->
-                </execution>
-            </executions>
-            <configuration>
-                <source>1.8</source> <!-- Use the appropriate Java source version -->
-                <detectJavaApiLink>false</detectJavaApiLink>
-                <additionalOptions>-Xdoclint:none</additionalOptions>
-                <sourcepath>${project.build.sourceDirectory}</sourcepath>
-                <subpackages>pack_hotel</subpackages>
-            </configuration>
-        </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>generate-javadocs</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <source>1.8</source>
+          <detectJavaApiLink>false</detectJavaApiLink>
+          <additionalOptions>-Xdoclint:none</additionalOptions>
+          <sourcepath>${project.build.sourceDirectory}</sourcepath>
+          <subpackages>pack_hotel</subpackages>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>

@@ -1,0 +1,45 @@
+# Docker compose for development (starting only the database and pgadmin)
+services:
+
+  # Oracle service (label used to access the service container)
+  oracle-db:
+
+    # Docker container name
+    container_name: oracle-db
+
+    # Docker Hub image (feel free to change the tag "latest" to any other available one)
+    image: gvenzl/oracle-xe:latest
+    restart: unless-stopped
+
+    # Provide passwords and other environment variables to container
+    environment:
+      ORACLE_PASSWORD: orapwd
+      APP_USER: doomslayer
+      APP_USER_PASSWORD: usepwd
+
+    # Forward Oracle port
+    ports:
+      - 1521:1521
+    
+    # Persistent database container (data is kept throughout container lifecycles)
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+    # Docker network
+    networks:
+      - oracle-net
+
+    # Provide healthcheck script options for startup
+    # options: >-
+    #   --health-cmd healthcheck.sh
+    #   --health-interval 10s
+    #   --health-timeout 5s
+    #   --health-retries 10
+
+volumes:
+  oracle-data:
+
+networks:
+  oracle-net:
+    name: oracle-network
+    driver: bridge
