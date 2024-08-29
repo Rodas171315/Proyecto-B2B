@@ -6,12 +6,13 @@ pipeline {
     stages {
         stage('Rama') {
             steps {
-                script {
-                    checkout([$class: 'GitSCM', 
-                        branches: [[name: "refs/heads/${env.BRANCH_NAME}"]], 
-                        userRemoteConfigs: [[url: 'https://github.com/Rodas171315/Proyecto-B2B.git']]
-                    ])
-                }
+                git(
+                    branch: 'docker-test',
+                    url: 'https://github.com/Rodas171315/Proyecto-B2B.git',
+                    changelog: false,
+                    poll: false,
+                    shallow: false
+                )
             }
         }
         stage('Build') {
