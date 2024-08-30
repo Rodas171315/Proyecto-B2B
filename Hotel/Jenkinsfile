@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Build Backend') {
             steps {
-                dir('Hotel/backend/sistema-hoteles-be') {
+                dir('Hotel/backend/sistema-hoteles-be/src/main/docker') {
                     script {
                         dockerImgBE = docker.build("hotel-quarkus-app:${env.BRANCH_NAME}")
                     }
