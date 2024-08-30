@@ -4,17 +4,6 @@ pipeline {
         pollSCM '*/5 * * * *'
     }
     stages {
-        stage('Rama') {
-            steps {
-                git(
-                    branch: 'docker-test',
-                    url: 'https://github.com/Rodas171315/Proyecto-B2B.git',
-                    changelog: false,
-                    poll: false,
-                    shallow: false
-                )
-            }
-        }
         stage('Build') {
             steps {
                 echo "Building.."
