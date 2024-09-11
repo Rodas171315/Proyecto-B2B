@@ -1,0 +1,28 @@
+version: "4"
+
+services:
+  drone:
+    container_name: drone
+    image: 'drone/drone:2'
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./volumes/drone:/data"
+      - '/etc/localtime:/etc/localtime:ro'
+  drone-agent:
+    container_name: drone-agent
+    image: drone/drone-runner-docker:1
+    restart: always
+    command: agent
+    env_file:
+      - .env
+    depends_on:
+      - drone
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '/etc/localtime:/etc/localtime:ro'
