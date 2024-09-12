@@ -17,9 +17,13 @@ steps:
 
 - name: sonar
   image: maven
+  environment:
+    SONAR_HOST_URL: http://172.203.224.203:9000
+    SONAR_LOGIN:
+      from_secret: sonar_token
   commands:
     - cd Hotel/backend/sistema-hoteles-be
-    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=http://172.203.224.203:9000 -Dsonar.login=sqp_b763ec7acd8759f0879df557a419676234d07cf8
+    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN
 
 - name: publish
   image: plugins/docker
@@ -47,7 +51,3 @@ steps:
     recipients:
       - rodas171315@unis.edu.gt
     subject: "Drone Build Notification"
-  when:
-    status:
-      - failure
-  failure: true
