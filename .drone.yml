@@ -20,16 +20,34 @@ steps:
   commands:
     - cd Hotel/backend/sistema-hoteles-be
     - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=http://172.203.224.203:9000 -Dsonar.login=sqp_b763ec7acd8759f0879df557a419676234d07cf8
-    - echo hola
 
 - name: publish
   image: plugins/docker
   settings:
     # registry: docker.io
-    repo: maniacalknight9/proyecto-b2b
+    repo: maniacalknight9/hotel-quarkus-app
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
     tags:
       - latest
+    dockerfile: Hotel/backend/sistema-hoteles-be/src/main/docker/Dockerfile.jvm
+    context: Hotel/backend/sistema-hoteles-be
+
+- name: email
+  image: drillster/drone-email
+  settings:
+    host: smtp.gmail.com
+    username:
+      from_secret: email_username
+    password:
+      from_secret: email_password
+    from: noreply@drone.com
+    recipients:
+      - rodas171315@unis.edu.gt
+    subject: "Drone Build Notification"
+  when:
+    status:
+      - failure
+  failure: true
