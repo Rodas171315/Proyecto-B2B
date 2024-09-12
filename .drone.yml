@@ -23,7 +23,7 @@ steps:
       from_secret: sonar_token
   commands:
     - cd Hotel/backend/sistema-hoteles-be
-    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN
+    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
 - name: publish
   image: plugins/docker
