@@ -19,10 +19,7 @@ steps:
   image: maven
   commands:
     - cd Hotel/backend/sistema-hoteles-be
-    - mvn clean verify sonar:sonar \
-        -Dsonar.projectKey=App-Test \
-        -Dsonar.host.url=http://172.203.224.203:9000 \
-        -Dsonar.login=sqp_b763ec7acd8759f0879df557a419676234d07cf8
+    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=http://172.203.224.203:9000 -Dsonar.login=sqp_b763ec7acd8759f0879df557a419676234d07cf8
     - echo hola
 
 - name: publish
