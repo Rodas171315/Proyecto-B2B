@@ -43,11 +43,14 @@ steps:
   image: drillster/drone-email
   settings:
     host: smtp.gmail.com
+    port: 25 #587
     username:
       from_secret: email_username
     password:
       from_secret: email_password
-    from.address: noreply@github.com
+    from:
+      from_secret: email_username
+    from.name: Drone Pipeline
     recipients:
       - rodas171315@unis.edu.gt
     subject: "Drone Build Notification"
