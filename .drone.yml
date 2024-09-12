@@ -56,8 +56,84 @@ steps:
       - dev
       - uat
       - prod
-    event:
-      - merge
+
+- name: email notification
+  pull: if-not-exists
+  image: drillster/drone-email
+  settings:
+    host: smtp.gmail.com
+    port: 587 #25
+    username:
+      from_secret: email_username
+    password:
+      from_secret: email_password
+    from:
+      rodas171315@unis.edu.gt
+    from.name: Drone Pipeline
+    recipients:
+      - proyectos.sistemas.mk9@gmail.com
+    subject: >
+          "Drone Build Notification"
+          [{{ build.status }}]
+          {{ repo.owner }}/{{ repo.name }}
+          ({{ build.branch }} - {{ truncate build.commit 8 }})
+  when:
+    status:
+      include:
+        - success
+        - failure
+
+trigger:
+  event:
+    - push
+    - pull_request
+    - merge
+
+---
+
+kind: pipeline
+type: docker
+name: frontend
+
+steps:
+- name: build
+  image: node:18-alpine
+  commands:
+    - cd Hotel/frontend/sistema_hoteles
+    - npm install
+    - npm run build
+
+- name: test
+  image: node:18-alpine
+  commands:
+    - cd Hotel/frontend/sistema_hoteles
+    - echo Testing stuff...
+
+- name: publish
+  image: plugins/docker
+  settings:
+    # registry: docker.io
+    repo: maniacalknight9/hotel-react-app
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    tags:
+      - latest
+    dockerfile: Hotel/frontend/sistema_hoteles/Dockerfile
+    context: Hotel/frontend/sistema_hoteles/
+
+- name: deploy
+  image: docker
+  commands:
+    - cd Hotel/
+    - echo Deploying stuff...
+  when:
+    branch:
+      - docker-test
+      - dev
+      - uat
+      - prod
 
 - name: email notification
   pull: if-not-exists
