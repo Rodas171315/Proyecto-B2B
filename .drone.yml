@@ -23,7 +23,13 @@ steps:
       from_secret: sonar_token
   commands:
     - cd Hotel/backend/sistema-hoteles-be
-    - mvn clean verify sonar:sonar -Dsonar.projectKey=App-Test -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+    - mvn clean verify sonar:sonar 
+      -Dsonar.projectKey=App-Test 
+      -Dsonar.host.url=$SONAR_HOST_URL 
+      -Dsonar.login=$SONAR_LOGIN 
+      -Dsonar.java.binaries=target/classes 
+      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml 
+      -Dsonar.verbose=true
 
 - name: publish
   image: plugins/docker
@@ -43,9 +49,17 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - docker pull maniacalknight9/hotel-quarkus-app:latest
+    - echo Deploying stuff...
+  when:
+    branch:
+      - docker-test
+      - dev
+      - uat
+      - prod
+    event:
+      - merge
 
-- name: notify
+- name: email notification
   pull: if-not-exists
   image: drillster/drone-email
   settings:
@@ -70,3 +84,9 @@ steps:
       include:
         - success
         - failure
+
+trigger:
+  event:
+    - push
+    - pull_request
+    - merge
