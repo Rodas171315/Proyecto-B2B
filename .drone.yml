@@ -43,7 +43,7 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - sudo docker pull maniacalknight9/hotel-quarkus-app:latest
+    - docker pull maniacalknight9/hotel-quarkus-app:latest
 
 - name: notify
   pull: if-not-exists
@@ -56,10 +56,10 @@ steps:
     password:
       from_secret: email_password
     from:
-      from_secret: email_username
+      rodas171315@unis.edu.gt
     from.name: Drone Pipeline
     recipients:
-      - rodas171315@unis.edu.gt
+      - proyectos.sistemas.mk9@gmail.com
     subject: >
           "Drone Build Notification"
           [{{ build.status }}]
