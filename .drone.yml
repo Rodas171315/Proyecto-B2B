@@ -43,10 +43,10 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - docker pull maniacalknight9/hotel-quarkus-app:latest
-    - docker run -i --rm -p 8080:8080 --name hotel-app-be maniacalknight9/hotel-quarkus-app
+    - sudo docker pull maniacalknight9/hotel-quarkus-app:latest
 
-- name: email
+- name: notify
+  pull: if-not-exists
   image: drillster/drone-email
   settings:
     host: smtp.gmail.com
@@ -60,4 +60,13 @@ steps:
     from.name: Drone Pipeline
     recipients:
       - rodas171315@unis.edu.gt
-    subject: "Drone Build Notification"
+    subject: >
+          "Drone Build Notification"
+          [{{ build.status }}]
+          {{ repo.owner }}/{{ repo.name }}
+          ({{ build.branch }} - {{ truncate build.commit 8 }})
+  when:
+    status:
+      include:
+        - success
+        - failure
