@@ -101,7 +101,6 @@ steps:
   commands:
     - cd Hotel/frontend/sistema_hoteles
     - npm install
-    - npm run build
 
 - name: test
   image: node:18-alpine
