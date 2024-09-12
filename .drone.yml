@@ -1,13 +1,30 @@
 kind: pipeline
 type: docker
-name: frontend
+name: backend
 
 steps:
 - name: build
+  image: maven
+  commands:
+    - cd Hotel/backend/sistema-hoteles-be
+    - mvn clean install
 
 - name: test
+  image: maven
+  commands:
+    - cd Hotel/backend/sistema-hoteles-be
+    - mvn verify
 
-- name: publish 
+- name: sonar
+  image: maven
+  commands:
+    - cd Hotel/backend/sistema-hoteles-be
+    - mvn clean verify sonar:sonar \
+        -Dsonar.projectKey=App-Test \
+        -Dsonar.host.url=http://172.203.224.203:9000 \
+        -Dsonar.login=sqp_b763ec7acd8759f0879df557a419676234d07cf8
+
+- name: publish
   image: plugins/docker
   settings:
     # registry: docker.io
@@ -16,7 +33,5 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    tags: 
+    tags:
       - latest
-
-- name: deploy
