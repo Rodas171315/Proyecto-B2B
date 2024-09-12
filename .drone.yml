@@ -39,11 +39,18 @@ steps:
     dockerfile: Hotel/backend/sistema-hoteles-be/src/main/docker/Dockerfile.jvm
     context: Hotel/backend/sistema-hoteles-be
 
+- name: deploy
+  image: docker
+  commands:
+    - cd Hotel/
+    - docker pull maniacalknight9/hotel-quarkus-app:latest
+    - docker run -i --rm -p 8080:8080 --name hotel-app-be maniacalknight9/hotel-quarkus-app
+
 - name: email
   image: drillster/drone-email
   settings:
     host: smtp.gmail.com
-    port: 25 #587
+    port: 587 #25
     username:
       from_secret: email_username
     password:
