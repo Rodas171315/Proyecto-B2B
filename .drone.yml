@@ -47,7 +47,7 @@ steps:
       from_secret: email_username
     password:
       from_secret: email_password
-    from: noreply@drone.com
+    from.address: noreply@github.com
     recipients:
       - rodas171315@unis.edu.gt
     subject: "Drone Build Notification"
