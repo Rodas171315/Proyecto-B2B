@@ -7,7 +7,7 @@ steps:
   image: plugins/docker
   settings:
     # registry: docker.io
-    repo: maniacalknight9/proyecto-b2b
+    repo: Rodas171315/Proyecto-B2B
     username:
       from_secret: docker_username
     password:
