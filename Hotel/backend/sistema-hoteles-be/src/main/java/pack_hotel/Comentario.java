@@ -17,9 +17,11 @@ import java.time.LocalDateTime;
 @Table(name = "COMENTARIOS")
 public class Comentario {
 
+    /*
     if(true) {
         int num = 1;
     }
+    */
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comentario_seq_generator")
