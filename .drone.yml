@@ -52,7 +52,6 @@ steps:
     - echo Deploying stuff...
   when:
     branch:
-      - docker-test
       - dev
       - uat
       - prod
@@ -85,7 +84,7 @@ steps:
 
 trigger:
   event:
-    #- push
+    - push
     - pull_request
     #- merge
 
@@ -131,7 +130,6 @@ steps:
     - docker compose -f docker-compose-full-stack.yaml up -d
   when:
     branch:
-      - docker-test
       - dev
       - uat
       - prod
