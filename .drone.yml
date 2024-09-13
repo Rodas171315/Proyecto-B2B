@@ -85,9 +85,9 @@ steps:
 
 trigger:
   event:
-    - push
+    #- push
     - pull_request
-    - merge
+    #- merge
 
 ---
 
@@ -120,7 +120,7 @@ steps:
     tags:
       - latest
     dockerfile: Hotel/frontend/sistema_hoteles/Dockerfile
-    context: Hotel/frontend/sistema_hoteles/
+    context: Hotel/frontend/sistema_hoteles
 
 - name: deploy
   image: docker
