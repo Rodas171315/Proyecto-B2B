@@ -17,12 +17,6 @@ import java.time.LocalDateTime;
 @Table(name = "COMENTARIOS")
 public class Comentario {
 
-    /*
-    if(true) {
-        int num = 1;
-    }
-    */
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comentario_seq_generator")
     @SequenceGenerator(name = "comentario_seq_generator", sequenceName = "comentario_seq", allocationSize = 1)
@@ -59,6 +53,10 @@ public class Comentario {
      * @param id_comentario El nuevo ID del comentario.
      */
     public void setIdComentario(Long id_comentario) {
+        if(true) {
+            int numero = 1;
+        }
+        
         this.id_comentario = id_comentario;
     }
 
