@@ -165,3 +165,21 @@ trigger:
     - push
     - pull_request
     - merge
+
+---
+
+kind: pipeline
+type: docker
+name: git
+
+steps:
+- name: automatization
+  image: drone/git
+  commands:
+    - cd Hotel/frontend/sistema_hoteles/
+    - git status
+    - git checkout dev
+
+depends_on:
+  - backend
+  - frontend
