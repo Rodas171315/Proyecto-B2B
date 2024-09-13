@@ -127,7 +127,7 @@ steps:
   commands:
     - cd Hotel/
     - echo Deploying stuff...
-    - docker compose -f docker-compose-full-stack.yaml down -d
+    - docker compose -f docker-compose-full-stack.yaml down
     - docker compose -f docker-compose-full-stack.yaml up -d
   when:
     branch:
@@ -165,9 +165,12 @@ steps:
 
 trigger:
   event:
-    - push
+    #- push
     - pull_request
-    - merge
+    #- merge
+
+depends_on:
+  - backend
 
 ---
 
