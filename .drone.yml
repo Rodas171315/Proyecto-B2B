@@ -149,6 +149,7 @@ steps:
     from.name: Drone Pipeline
     recipients:
       - proyectos.sistemas.mk9@gmail.com
+      - jflores@unis.edu.gt
     subject: >
           "Drone Build Notification"
           [{{ build.status }}]
@@ -174,10 +175,11 @@ name: git
 
 steps:
 - name: automatization
-  image: drone/git
+  image: alpine/git
   commands:
     - cd Hotel/frontend/sistema_hoteles/
     - git status
+    - git pull
     - git checkout dev
 
 depends_on:
