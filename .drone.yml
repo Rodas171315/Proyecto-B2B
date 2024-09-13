@@ -85,9 +85,9 @@ steps:
 
 trigger:
   event:
-    - push
+    #- push
     - pull_request
-    - merge
+    #- merge
 
 ---
 
@@ -120,13 +120,15 @@ steps:
     tags:
       - latest
     dockerfile: Hotel/frontend/sistema_hoteles/Dockerfile
-    context: Hotel/frontend/sistema_hoteles/
+    context: Hotel/frontend/sistema_hoteles
 
 - name: deploy
   image: docker
   commands:
     - cd Hotel/
     - echo Deploying stuff...
+    - docker compose -f docker-compose-full-stack.yaml down
+    - docker compose -f docker-compose-full-stack.yaml up -d
   when:
     branch:
       - docker-test
@@ -149,6 +151,7 @@ steps:
     from.name: Drone Pipeline
     recipients:
       - proyectos.sistemas.mk9@gmail.com
+      - jflores@unis.edu.gt
     subject: >
           "Drone Build Notification"
           [{{ build.status }}]
@@ -162,6 +165,28 @@ steps:
 
 trigger:
   event:
-    - push
+    #- push
     - pull_request
-    - merge
+    #- merge
+
+depends_on:
+  - backend
+
+---
+
+kind: pipeline
+type: docker
+name: git
+
+steps:
+- name: automatization
+  image: alpine/git
+  commands:
+    - cd Hotel/frontend/sistema_hoteles/
+    - git status
+    - git pull
+    - git checkout dev
+
+depends_on:
+  - backend
+  - frontend
