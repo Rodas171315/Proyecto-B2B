@@ -1,3 +1,6 @@
+# Drone Pipeline
+# *.drone.yml
+
 # Ignore specific backend build files and directories
 Agencia/backend/sistema-agencias-be/target/
 Hotel/backend/sistema-hoteles-be/target/
