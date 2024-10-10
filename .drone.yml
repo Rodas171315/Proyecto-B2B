@@ -49,7 +49,7 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - docker compose -f docker-compose-full-stack.yaml up -d quarkus-be
+    - docker-compose -f docker-compose-full-stack.yaml up -d quarkus-be
   when:
     branch:
       - dev
@@ -126,7 +126,7 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - docker compose -f docker-compose-full-stack.yaml up -d react-fe
+    - docker-compose -f docker-compose-full-stack.yaml up -d react-fe
   when:
     branch:
       - dev
