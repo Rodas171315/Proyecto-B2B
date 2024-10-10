@@ -53,9 +53,11 @@ public class Comentario {
      * @param id_comentario El nuevo ID del comentario.
      */
     public void setIdComentario(Long id_comentario) {
+        /*
         if(true) {
             int numero = 1;
         }
+        */
         
         this.id_comentario = id_comentario;
     }
