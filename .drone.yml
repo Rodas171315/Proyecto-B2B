@@ -49,7 +49,7 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - echo Deploying stuff...
+    - docker compose -f docker-compose-full-stack.yaml up -d quarkus-be
   when:
     branch:
       - dev
@@ -71,6 +71,7 @@ steps:
     from.name: Drone Pipeline
     recipients:
       - proyectos.sistemas.mk9@gmail.com
+      #- jflores@unis.edu.gt
     subject: >
           "Drone Build Notification"
           [{{ build.status }}]
@@ -125,9 +126,7 @@ steps:
   image: docker
   commands:
     - cd Hotel/
-    - echo Deploying stuff...
-    - docker compose -f docker-compose-full-stack.yaml down
-    - docker compose -f docker-compose-full-stack.yaml up -d
+    - docker compose -f docker-compose-full-stack.yaml up -d react-fe
   when:
     branch:
       - dev
@@ -149,7 +148,7 @@ steps:
     from.name: Drone Pipeline
     recipients:
       - proyectos.sistemas.mk9@gmail.com
-      - jflores@unis.edu.gt
+      #- jflores@unis.edu.gt
     subject: >
           "Drone Build Notification"
           [{{ build.status }}]
@@ -182,8 +181,8 @@ steps:
   commands:
     - cd Hotel/frontend/sistema_hoteles/
     - git status
-    - git pull
-    - git checkout dev
+    #- git pull
+    #- git checkout dev
 
 depends_on:
   - backend

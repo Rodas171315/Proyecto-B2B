@@ -27,7 +27,7 @@ services:
 
     # Docker network
     networks:
-      - oracle-net
+      - hotel-net
 
     # Provide healthcheck script options for startup
     # options: >-
@@ -40,6 +40,6 @@ volumes:
   oracle-data:
 
 networks:
-  oracle-net:
-    name: oracle-network
+  hotel-net:
+    name: hotel-network
     driver: bridge
